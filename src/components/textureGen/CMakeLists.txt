@@ -1,0 +1,2 @@
+set(APE_TEXTUREGEN_SOURCES
+        )
