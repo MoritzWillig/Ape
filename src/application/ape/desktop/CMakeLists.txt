@@ -12,4 +12,5 @@ add_executable(apeDesktop
         #$<TARGET_OBJECTS:worldState>
         )
 
-target_link_libraries(apeDesktop ${OpenCV_LIBS})
+include_directories(${OPENCV_INCLUDE_DIR})
+target_link_libraries(apeDesktop ${OPENCV_LIBRARIES})
