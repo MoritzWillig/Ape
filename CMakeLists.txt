@@ -14,7 +14,7 @@ else()
     set(suffix ".a")
 endif()
 
-set(OPEN_LIBRARIES
+set(OPENCV_LIBRARIES
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/lib/${prefix}opencv_core${suffix}"
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/lib/${prefix}opencv_videoio${suffix}")
 set(OPENCV_INCLUDE_DIR
