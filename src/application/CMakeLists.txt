@@ -1,3 +1,4 @@
+add_subdirectory(ape)
 add_subdirectory(imageProcessing)
 add_subdirectory(textureGen)
 add_subdirectory(visualization)

@@ -1,10 +1,10 @@
-project(Ape CXX)
+project(ApeDesktop CXX)
 
 set(APE_SOURCES
         ape.cpp
         )
 
-add_executable(ape
+add_executable(apeDesktop
         ${APE_SOURCES}
         $<TARGET_OBJECTS:apeImageProcessing>
         #$<TARGET_OBJECTS:textureGen>
