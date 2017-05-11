@@ -1,6 +1,6 @@
 
 namespace ape {
-  namespace imageProcessor {
+  namespace imageProcessing {
 
     class ImageProcessor {
     private:

@@ -1,4 +1,4 @@
-project(Ape CPP)
+project(Ape CXX)
 
 set(APE_SOURCES
         ape.cpp

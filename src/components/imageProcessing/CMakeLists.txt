@@ -1,3 +1,9 @@
+set(APE_IMAGEPROCESSING_INCLUDE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+
+
 set(APE_IMAGEPROCESSING_SOURCES
-        ImageProcessor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ImageProcessor.cpp
         )

@@ -1,7 +1,7 @@
-#include "ImageProcessor.cpp"
+#include "ImageProcessor.h"
 
 namespace ape {
-  namespace imageProcessor {
+  namespace imageProcessing {
 
     ImageProcessor::ImageProcessor() {
 

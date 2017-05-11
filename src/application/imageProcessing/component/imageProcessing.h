@@ -1,4 +1,4 @@
-#include "imageProcessor.h"
+#include "ImageProcessor.h"
 
 namespace ape {
   namespace imageProcessing {

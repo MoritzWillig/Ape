@@ -1,4 +1,6 @@
-#include "imageProcessor.h"
+#include <lzma.h>
+#include "imageProcessing.h"
+
 
 namespace ape {
   namespace imageProcessing {
@@ -8,7 +10,7 @@ namespace ape {
     }
 
     ImageProcessor* ImageProcessorController::getImageProcessor() {
-      return null;
+      return nullptr;
     }
   }
 }
