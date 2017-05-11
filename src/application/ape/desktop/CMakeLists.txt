@@ -11,3 +11,5 @@ add_executable(apeDesktop
         #$<TARGET_OBJECTS:visulization>
         #$<TARGET_OBJECTS:worldState>
         )
+
+target_link_libraries(apeDesktop ${OpenCV_LIBS})

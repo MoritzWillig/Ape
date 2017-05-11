@@ -10,9 +10,6 @@ get_directory_property(
 
 include_directories(${APE_IMAGEPROCESSING_INCLUDE_DIR})
 
-
-
-
 set(APE_IMAGEPROCESSING_COMPONENT_SOURCES
         ${APE_IMAGEPROCESSING_SOURCES}
         imageProcessing.cpp
