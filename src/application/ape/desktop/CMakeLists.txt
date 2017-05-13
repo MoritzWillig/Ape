@@ -13,4 +13,8 @@ add_executable(apeDesktop
         )
 
 include_directories(${OPENCV_INCLUDE_DIR})
+include_directories(${OGRE_INCLUDE_DIR})
+
 target_link_libraries(apeDesktop ${OPENCV_LIBRARIES})
+target_link_libraries(apeDesktop ${OGRE_LIBRARIES})
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )

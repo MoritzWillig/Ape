@@ -1,2 +1,10 @@
+
+set(APE_VISUALIZATION_INCLUDE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+
+
 set(APE_VISUALIZATION_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/SceneController.cpp
         )

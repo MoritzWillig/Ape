@@ -1,21 +1,60 @@
 #!/bin/bash
 
-git clone git@github.com:opencv/opencv.git opencv
-git clone git@github.com:opencv/opencv_contrib.git opencv_contrib
+skipOpenCV=true
+skipbgfx=true
+skipOGRE=false
 
-cd opencv_contrib
-git fetch --tags
-git checkout tags/3.2.0
-cd ..
+if [ "$skipOpenCV" = false ] ; then
+	git clone git@github.com:opencv/opencv.git opencv
+	git clone git@github.com:opencv/opencv_contrib.git opencv_contrib
 
-cd opencv
-git fetch --tags
-git checkout tags/3.2.0
+	cd opencv_contrib
+	git fetch --tags
+	git checkout tags/3.2.0
+	cd ..
 
-mkdir customInstall
-mkdir build
-cd build
+	cd opencv
+	git fetch --tags
+	git checkout tags/3.2.0
 
-cmake -DOPENCV_EXTRA_MODULES=../../opencv_contrib/modules -DWITH_CUDA=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../customInstall ..
-make -j4
-make install
+	mkdir customInstall
+	mkdir build
+	cd build
+
+	cmake -DOPENCV_EXTRA_MODULES=../../opencv_contrib/modules -DWITH_CUDA=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../customInstall ..
+	make -j4
+	make install
+
+	cd ../..
+fi
+
+if [ "$skipbgfx" = false ] ; then
+	git clone git://github.com/bkaradzic/bx.git bx
+	git clone git://github.com/bkaradzic/bimg.git bimg
+	git clone git://github.com/bkaradzic/bgfx.git bgfx
+
+	cd bgfx
+	make linux-debug64
+	
+	cd ..
+fi
+
+if [ "$skipOGRE" = false ] ; then
+	if [ ! -f 'ogre_src_v1-8-1.tar.bz2' ] ; then
+		wget 'https://downloads.sourceforge.net/project/ogre/ogre/1.8/1.8.1/ogre_src_v1-8-1.tar.bz2'
+	fi
+
+	tar xjf ogre_src_v1-8-1.tar.bz2
+	cd ogre_src_v1-8-1
+
+	mkdir customInstall
+	mkdir build
+	cd build
+	cmake -DCMAKE_INSTALL_PREFIX=../customInstall ..
+	make -j4
+	make install
+
+	cd ../..
+fi
+
+
