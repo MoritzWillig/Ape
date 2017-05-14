@@ -59,8 +59,14 @@ namespace ape {
       // add a camera
       mainCam = sceneMgr->createCamera("MainCam");
 
+      mainCam->setPosition(Ogre::Vector3(0.0f,0.0f,500.0f));
+      mainCam->lookAt(Ogre::Vector3(0.0f,0.0f,0.0f));
+      mainCam->setNearClipDistance(0.05f);
+      mainCam->setFarClipDistance(200.0f);
+
       // add viewport
       vp = renderWindow->addViewport(mainCam);
+      vp->setBackgroundColour(Ogre::ColourValue(0.2,0.3,0.7));
 
       return true;
     }
@@ -126,11 +132,28 @@ namespace ape {
       createPanel();
     }
 
-    void AppWindow::startRendering() {
-      FrameListener listener(renderWindow);  // Add the simple frame listener.
-      root->addFrameListener(&listener);
+    AppWindow::~AppWindow() {
+      renderWindow->removeViewport(vp->getZOrder());
+      sceneMgr->destroyCamera(mainCam);
+      root->destroySceneManager(sceneMgr);
+      renderWindow->destroy();
+      delete root;
+    }
 
-      root->startRendering();  // Start rendering.
+    void AppWindow::update(float timeStep) {
+      //FrameListener listener(renderWindow); // Add the simple frame listener.
+      //root->addFrameListener(&listener);
+      //root->startRendering(); //we implement our own loop
+
+      root->renderOneFrame(timeStep);
+      renderWindow->update(true);
+
+      //we need this ...
+      Ogre::WindowEventUtilities::messagePump();
+    }
+
+    bool AppWindow::isClosed() {
+      return renderWindow->isClosed();
     }
 
   }

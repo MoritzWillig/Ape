@@ -39,9 +39,11 @@ namespace ape {
       AppWindow& operator=(AppWindow&&)& = default;
 
       // Destructor
-      virtual ~AppWindow() = default;
+      virtual ~AppWindow();
 
-      void startRendering();
+      void update(float timeStep);
+
+      bool isClosed();
     };
 
   }

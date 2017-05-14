@@ -6,12 +6,21 @@ namespace ape {
 
     class VisualizationController {
     private:
+      AppWindow* scene;
     protected:
     public:
 
       VisualizationController();
 
-      AppWindow* getScene();
+      void startDisplay();
+
+      void showMenus();
+
+      void showScene();
+
+      void update(float timeStep);
+
+      bool getTerminateRequest();
     };
   }
 }
