@@ -10,24 +10,50 @@
 #define FONT_FOLDER "/usr/share/fonts/opentype/freefont/"
 #define FONT_FILE_NAME "FreeSans.otf"
 
+//FIXME remove
+class FrameListener : public Ogre::FrameListener {
+private:
+  Ogre::RenderWindow* renderWindow;
+public:
+  FrameListener(Ogre::RenderWindow* renderWindow): renderWindow(renderWindow) {}
+  bool frameStarted(const Ogre::FrameEvent& evt) {
+    // Stop render if main window is closed.
+    return !renderWindow->isClosed();
+  }
+  bool frameEnded(const Ogre::FrameEvent &evt) { return true; }
+};  // End of FrameListener class
+
 namespace ape {
   namespace visualization {
 
     bool AppWindow::createWindow() {
-      // create root
-      root = new Ogre::Root();
+      root = new Ogre::Root("", "");
 
-      // choose renderer
-      if (!root->
-          showConfigDialog()
-          ) {
-        return false;
-      }
-      // initialise root
+      root->loadPlugin(std::string(OGRE_PLUGIN_DIR)+"/RenderSystem_GL");
+      root->loadPlugin(std::string(OGRE_PLUGIN_DIR)+"/Plugin_OctreeSceneManager");
+
+      // we do this step just to get an iterator that we can use with setRenderSystem. In a future article
+      // we actually will iterate the list to display which renderers are available.
+      auto renderSystems = root->getAvailableRenderers();
+      root->setRenderSystem(renderSystems[0]);
       root->initialise(false);
-      // create main window
-      renderWindow = root->createRenderWindow("Main", 320, 240,
-                                                            false);
+
+      // load the basic resource location(s)
+      //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource", "FileSystem", "General");
+      //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource/gui.lcd", "Zip", "GUI");
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(FONT_FOLDER, "FileSystem", "GUI");
+
+      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
+      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
+
+      // setup main window; hardcode some defaults for the sake of presentation
+      Ogre::NameValuePairList opts;
+      opts["resolution"] = "1024x768";
+      opts["fullscreen"] = "false";
+      opts["vsync"] = "true";
+
+      renderWindow = root->createRenderWindow("Main", 1024, 768, false, &opts);
+
       // create the scene
       sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
       // add a camera
@@ -101,14 +127,10 @@ namespace ape {
     }
 
     void AppWindow::startRendering() {
-      /*
-      // setup frame listener
-      ExampleFrameListener *frameListener= new ExampleFrameListener(renderWindow, mainCam);
-      frameListener->showDebugOverlay(false);
-      root->addFrameListener(frameListener);
-      // start rendering
-      root->startRendering();
-      */
+      FrameListener listener(renderWindow);  // Add the simple frame listener.
+      root->addFrameListener(&listener);
+
+      root->startRendering();  // Start rendering.
     }
 
   }

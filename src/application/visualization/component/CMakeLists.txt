@@ -19,4 +19,6 @@ set(APE_VISUALIZATION_COMPONENT_SOURCES
         visualization.cpp
         )
 
+add_definitions(-DOGRE_PLUGIN_DIR=\"${OGRE_PLUGIN_DIR}\")
+
 add_library(apeVisualization OBJECT ${APE_VISUALIZATION_COMPONENT_SOURCES})

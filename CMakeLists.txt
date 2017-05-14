@@ -30,6 +30,8 @@ set(OGRE_LIBRARIES
 set(OGRE_INCLUDE_DIR
         "${Boost_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/include")
+set(OGRE_PLUGIN_DIR
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/OGRE")
 
 #set(BGFX_LIBRARIES
 #        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bgfx/.build/${prefix}opencv_core${suffix}"
