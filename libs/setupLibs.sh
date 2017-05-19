@@ -40,6 +40,8 @@ if [ "$skipbgfx" = false ] ; then
 fi
 
 if [ "$skipOGRE" = false ] ; then
+    # dependencies for ubuntu/debian
+    #sudo apt-get install libfreetype6-dev libfreeimage-dev libzzip-dev libxrandr-dev libxaw7-dev freeglut3-dev libgl1-mesa-dev libglu1-mesa-dev
 	if [ ! -f 'ogre_src_v1-8-1.tar.bz2' ] ; then
 		wget 'https://downloads.sourceforge.net/project/ogre/ogre/1.8/1.8.1/ogre_src_v1-8-1.tar.bz2'
 	fi
@@ -50,7 +52,7 @@ if [ "$skipOGRE" = false ] ; then
 	mkdir customInstall
 	mkdir build
 	cd build
-	cmake -DCMAKE_INSTALL_PREFIX=../customInstall ..
+	cmake -DCMAKE_INSTALL_PREFIX=../customInstall -DCMAKE_CXX_FLAGS=-std=gnu++98 ..
 	make -j4
 	make install
 
