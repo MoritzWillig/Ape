@@ -1,8 +1,24 @@
 #!/bin/bash
 
-skipOpenCV=true
+skipGLM=false
+skipOpenCV=false
 skipbgfx=true
 skipOGRE=false
+
+if [ "$skipGLM" = false ] ; then
+    git clone git@github.com:g-truc/glm.git glm
+    
+    cd glm
+    git fetch --tags
+    git checkout tags/0.9.8.4
+
+    #we dont want to pollute our includes with glm helper
+    #files
+    mkdir include
+    mv glm include/glm
+    
+    cd ..
+fi
 
 if [ "$skipOpenCV" = false ] ; then
 	git clone git@github.com:opencv/opencv.git opencv
@@ -21,7 +37,7 @@ if [ "$skipOpenCV" = false ] ; then
 	mkdir build
 	cd build
 
-	cmake -DOPENCV_EXTRA_MODULES=../../opencv_contrib/modules -DWITH_CUDA=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../customInstall ..
+	cmake -DOPENCV_EXTRA_MODULES_PATH="../../opencv_contrib/modules" -DWITH_CUDA=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../customInstall ..
 	make -j4
 	make install
 
@@ -35,7 +51,7 @@ if [ "$skipbgfx" = false ] ; then
 
 	cd bgfx
 	make linux-debug64
-	
+
 	cd ..
 fi
 

@@ -3,10 +3,8 @@ cmake_minimum_required(VERSION 3.1.0)
 #set cmake flags
 set(CMAKE_CXX_STANDARD 11)
 
-
 find_package(Boost 1.4.9 REQUIRED
         COMPONENTS thread date_time)
-find_package(OpenCV REQUIRED)
 
 if(WIN32)
     set(prefix "")
@@ -19,11 +17,23 @@ else()
     set(suffix ".so")
 endif()
 
-# set(OpenCV_LIBRARIES
-#         "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/lib/${prefix}opencv_core${suffix}"
-#         "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/lib/${prefix}opencv_videoio${suffix}")
-# set(OpenCV_INCLUDE_DIR
-#         "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/include")
+set(GLM_INCLUDE_DIR
+        "${CMAKE_CURRENT_SOURCE_DIR}/libs/glm/include")
+
+find_package(OpenCV 3.2.0 QUIET)
+if (OpenCV_FOUND)
+    #found a standard installation
+else()
+    #use the custom install
+    set(OpenCVInstDir "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/lib")
+    set(OpenCV_LIBRARIES
+            "${OpenCVInstDir}/${prefix}opencv_core${suffix}"
+            "${OpenCVInstDir}/${prefix}opencv_aruco${suffix}"
+            "${OpenCVInstDir}/${prefix}opencv_highgui${suffix}"
+            "${OpenCVInstDir}/${prefix}opencv_videoio${suffix}")
+    set(OpenCV_INCLUDE_DIR
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/include")
+endif()
 
 set(OGRE_LIBRARIES
         "${Boost_LIBRARIES}"
@@ -41,6 +51,5 @@ set(OGRE_PLUGIN_DIR
 #        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bgfx/include"
 #        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bimg/include"
 #        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bx/include")
-
 
 add_subdirectory(src)
