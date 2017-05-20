@@ -4,11 +4,25 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/core/core.hpp"
 
+#include "../../component/imageProcessing.h"
+
 namespace ape {
 
 }
 
 int main(int argc, char** argv) {
+  std::cout<<"Camera calibration"<<std::endl;
+
+  ape::imageProcessing::ImageProcessingController controller;
+  auto stream=controller.getCameraStream();
+
+  //FIXME refactor into separate class
+  /*auto frameTime=1.0f / 30.0f;
+  while (!controller.getTerminateRequest()) {
+    controller.update(frameTime);
+  }*/
+
+
   // start video capture
   // -1 gets any camera
   cv::VideoCapture cap(-1);
@@ -44,6 +58,6 @@ int main(int argc, char** argv) {
     }
   }
 
-
+  std::cout<<"Terminated"<<std::endl;
   return 0;
 }
