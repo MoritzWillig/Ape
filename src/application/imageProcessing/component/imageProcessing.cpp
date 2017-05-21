@@ -1,4 +1,3 @@
-#include <lzma.h>
 #include "imageProcessing.h"
 
 

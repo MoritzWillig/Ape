@@ -4,8 +4,7 @@
 //
 
 #include <OGRE/Ogre.h>
-#include <OGRE/OgreTextAreaOverlayElement.h>
-#include <OGRE/OgreFontManager.h>
+
 
 namespace ape {
   namespace visualization {
@@ -13,8 +12,13 @@ namespace ape {
     class AppWindow {
     private:
       bool createWindow();
-      void createFont();
       void createPanel();
+
+	  void createRessources();
+	  void createFont();
+	  void createMesh();
+
+	  void initScene();
 
       Ogre::Root* root;
       Ogre::RenderWindow* renderWindow;

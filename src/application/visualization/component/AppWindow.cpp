@@ -5,10 +5,15 @@
 #include "AppWindow.h"
 
 #include <OGRE/Ogre.h>
+#include <OGRE/OgreFontManager.h>
+#include <OGRE/OgreTextAreaOverlayElement.h>
+
 
 //FIXME include font (or make path system independent)
-#define FONT_FOLDER "/usr/share/fonts/opentype/freefont/"
+#define FONT_FOLDER "C:/dev/Uni/VRAR/Ape/assets/fonts"
+#define MESH_FOLDER "C:/dev/Uni/VRAR/Ape/assets/meshes"
 #define FONT_FILE_NAME "FreeSans.otf"
+#define MESH_FILE_NAME "athene.mesh"
 
 //FIXME remove
 class FrameListener : public Ogre::FrameListener {
@@ -38,13 +43,6 @@ namespace ape {
       root->setRenderSystem(renderSystems[0]);
       root->initialise(false);
 
-      // load the basic resource location(s)
-      //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource", "FileSystem", "General");
-      //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource/gui.lcd", "Zip", "GUI");
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(FONT_FOLDER, "FileSystem", "GUI");
-
-      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
-      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
 
       // setup main window; hardcode some defaults for the sake of presentation
       Ogre::NameValuePairList opts;
@@ -59,38 +57,60 @@ namespace ape {
       // add a camera
       mainCam = sceneMgr->createCamera("MainCam");
 
-      mainCam->setPosition(Ogre::Vector3(0.0f,0.0f,500.0f));
+      mainCam->setPosition(Ogre::Vector3(0.0f,0.0f,150.0f));
       mainCam->lookAt(Ogre::Vector3(0.0f,0.0f,0.0f));
-      mainCam->setNearClipDistance(0.05f);
+      mainCam->setNearClipDistance(0.5f);
       mainCam->setFarClipDistance(200.0f);
 
       // add viewport
       vp = renderWindow->addViewport(mainCam);
-      vp->setBackgroundColour(Ogre::ColourValue(0.2,0.3,0.7));
+      vp->setBackgroundColour(Ogre::ColourValue(0,0,1.0));
+
 
       return true;
     }
 
+	void AppWindow::createRessources() {
+		// load the basic resource location(s)
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(FONT_FOLDER, "FileSystem", "GUI");
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(MESH_FOLDER, "FileSystem", "General");
+
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
+		createFont();
+		//createMesh();
+	}
+
     void AppWindow::createFont() {
-      // get the resource manager
-      Ogre::ResourceGroupManager &resGroupMgr = Ogre::ResourceGroupManager::getSingleton();
-      // tell it to look at this location
-      resGroupMgr.addResourceLocation(FONT_FOLDER, "FileSystem");
-      // get the font manager
-      Ogre::FontManager &fontMgr = Ogre::FontManager::getSingleton();
-      // create a font resource
-      Ogre::ResourcePtr font = fontMgr.create("MyFont","General");
-      // set as truetype
-      font->setParameter("type","truetype");
-      // set the .ttf file name
-      font->setParameter("source",FONT_FILE_NAME);
-      // set the size
-      font->setParameter("size","26");
-      // set the dpi
-      font->setParameter("resolution","96");
-      // load the ttf
-      font->load();
+		// get the font manager
+		Ogre::FontManager &fontMgr = Ogre::FontManager::getSingleton();
+		// create a font resource
+		Ogre::ResourcePtr font = fontMgr.create("MyFont", "GUI");
+		// set as truetype
+		font->setParameter("type","truetype");
+		// set the .ttf file name
+		font->setParameter("source",FONT_FILE_NAME);
+		// set the size
+		font->setParameter("size","26");
+		// set the dpi
+		font->setParameter("resolution","96");
+		// load the ttf
+		font->load();
     }
+
+	void AppWindow::createMesh() {
+		// get the font manager
+		Ogre::MeshManager &meshMgr = Ogre::MeshManager::getSingleton();
+		meshMgr.load(MESH_FILE_NAME, "General");
+		// create a mesh resource
+		//Ogre::ResourcePtr mesh = meshMgr.create(MESH_FILE_NAME, "General");
+		// set as mesh
+		//mesh->setParameter("type", "mesh");
+		// set the .mesh file name
+		//mesh->setParameter("source", MESH_FILE_NAME);
+		// load the mesh
+		//mesh->load();
+	}
 
     void AppWindow::createPanel() {
       // get the overlay manager
@@ -113,7 +133,7 @@ namespace ape {
       // set the font name to the font resource that you just created.
       textArea->setFontName("MyFont");
       // say something
-      textArea->setCaption("Hello, World!");
+      textArea->setCaption("Moin Moin und Hallo");
 
       // Create an overlay, and add the panel
       Ogre::Overlay* overlay = overlayMgr.create("OverlayName");
@@ -126,10 +146,21 @@ namespace ape {
       overlay->show();
     }
 
+	void AppWindow::initScene() {
+		sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+		Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME, MESH_FILE_NAME);
+		Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+		ogreNode->setPosition(0, 0, 0);
+		ogreNode->attachObject(ogreEntity);
+		Ogre::Light* light = sceneMgr->createLight("MainLight");
+		light->setPosition(20, 80, 50);
+	}
+
     AppWindow::AppWindow() {
       createWindow();
-      createFont();
+      createRessources();
       createPanel();
+	  initScene();
     }
 
     AppWindow::~AppWindow() {

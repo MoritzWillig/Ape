@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
   auto frameTime=1.0f / 30.0f;
   while (!controller.getTerminateRequest()) {
     controller.update(frameTime);
-    usleep((unsigned int)frameTime*1000*1000);
+    //usleep((unsigned int)frameTime*1000*1000);
   }
 
   std::cout<<"Terminated"<<std::endl;

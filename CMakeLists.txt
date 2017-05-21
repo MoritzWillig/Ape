@@ -25,22 +25,15 @@ endif()
 # set(OpenCV_INCLUDE_DIR
 #         "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/include")
 
+
 set(OGRE_LIBRARIES
         "${Boost_LIBRARIES}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgreMain${suffix}")
+        "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/release/${prefix}OgreMain${suffix}")
 set(OGRE_INCLUDE_DIR
         "${Boost_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/include")
 set(OGRE_PLUGIN_DIR
-    "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/OGRE")
-
-#set(BGFX_LIBRARIES
-#        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bgfx/.build/${prefix}opencv_core${suffix}"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bgfx/.build/${prefix}opencv_videoio${suffix}")
-#set(BGFX_INCLUDE_DIR
-#        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bgfx/include"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bimg/include"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/libs/bx/include")
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/bin/release/")
 
 
 add_subdirectory(src)
