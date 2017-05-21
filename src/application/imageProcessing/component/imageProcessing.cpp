@@ -1,15 +1,28 @@
 #include "imageProcessing.h"
 
+#include "OpenCVCameraStream.h"
 
 namespace ape {
   namespace imageProcessing {
 
-    ImageProcessorController::ImageProcessorController() {
+    ImageProcessingController::ImageProcessingController():
+        cameraStream(nullptr) {
+      cameraStream=new OpenCVCameraStream();
+    }
+
+    void ImageProcessingController::update(float timeDelta) {
 
     }
 
-    ImageProcessor* ImageProcessorController::getImageProcessor() {
-      return nullptr;
+    CameraStream* ImageProcessingController::getCameraStream() {
+      return cameraStream;
     }
+
+    bool ImageProcessingController::getTerminateRequest() {
+      return false;
+
+      // !cap.isOpened()
+    }
+
   }
 }

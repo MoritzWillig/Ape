@@ -1,5 +1,6 @@
 #include "visualization.h"
 
+#include "AppWindow.h"
 
 namespace ape {
   namespace visualization {

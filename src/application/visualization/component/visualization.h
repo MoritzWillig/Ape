@@ -1,8 +1,8 @@
 
-#include "AppWindow.h"
-
 namespace ape {
   namespace visualization {
+
+    class AppWindow;
 
     class VisualizationController {
     private:
