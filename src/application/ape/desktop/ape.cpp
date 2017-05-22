@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 		cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250));
 
 
-	float markerLength = 0.026;
+	float markerLength = 0.15;
 	std::vector< int > ids;
 	std::vector< std::vector< cv::Point2f > > corners, rejected;
 	std::vector< cv::Vec3d > rvecs, tvecs;

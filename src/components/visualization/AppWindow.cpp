@@ -219,7 +219,7 @@ namespace ape {
 		sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
 		Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME, MESH_FILE_NAME);
 		Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-		ogreNode->setPosition(0, 0, 0);
+		ogreNode->setPosition(0, 0, 0.1);
 		ogreNode->setScale(0.001, 0.001, 0.001);
 		ogreNode->attachObject(ogreEntity);
 		//sceneMgr->getRootSceneNode()->attachObject(coordAxes);
