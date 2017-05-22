@@ -3,14 +3,14 @@
 // Created by moritz on 20.05.17.
 //
 
-#include "imageProcessing/CameraStream.h"
+//#include "imageProcessing/CameraStream.h"
 
 namespace ape {
   namespace imageProcessing {
 
     class ImageProcessingController {
     private:
-      CameraStream* cameraStream;
+ //     CameraStream* cameraStream;
     protected:
     public:
       //Default
@@ -35,7 +35,7 @@ namespace ape {
 
       void update(float timeDelta);
 
-      CameraStream* getCameraStream();
+ //     CameraStream* getCameraStream();
 
       bool getTerminateRequest();
 

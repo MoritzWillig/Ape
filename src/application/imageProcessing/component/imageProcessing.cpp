@@ -5,18 +5,18 @@
 namespace ape {
   namespace imageProcessing {
 
-    ImageProcessingController::ImageProcessingController():
-        cameraStream(nullptr) {
-      cameraStream=new OpenCVCameraStream();
+    ImageProcessingController::ImageProcessingController()//:
+/*        cameraStream(nullptr)*/ {
+ //     cameraStream=new OpenCVCameraStream();
     }
 
     void ImageProcessingController::update(float timeDelta) {
 
     }
 
-    CameraStream* ImageProcessingController::getCameraStream() {
-      return cameraStream;
-    }
+ //   CameraStream* ImageProcessingController::getCameraStream() {
+//      return cameraStream;
+ //   }
 
     bool ImageProcessingController::getTerminateRequest() {
       return false;

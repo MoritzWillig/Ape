@@ -18,7 +18,7 @@ namespace ape {
 
       void showScene();
 
-      void update(float timeStep);
+	  void update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix);
 
       bool getTerminateRequest();
     };
