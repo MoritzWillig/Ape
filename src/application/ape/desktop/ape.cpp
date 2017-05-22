@@ -41,6 +41,7 @@ static cv::Mat convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translat
 		}
 		viewMatrix.at<double>(row, 3) = cv::Mat(translation).at<double>(row, 0);
 	}
+	//viewMatrix.at<double>(2, 3) = -viewMatrix.at<double>(2, 3);
 	viewMatrix.at<double>(3, 3) = 1.0f;
 
 	cv::Mat cvToGl = cv::Mat::zeros(4, 4, CV_64F);
@@ -51,6 +52,10 @@ static cv::Mat convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translat
 	// invert the z axis 
 	cvToGl.at<double>(3, 3) = 1.0f;
 	viewMatrix = cvToGl * viewMatrix;
+
+	viewMatrix.at<double>(0, 3) = cv::Mat(translation).at<double>(0, 0);
+	viewMatrix.at<double>(1, 3) = -cv::Mat(translation).at<double>(1, 0);
+	viewMatrix.at<double>(2, 3) = -cv::Mat(translation).at<double>(2, 0);
 
 	printf("[%f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f]\n",
 		viewMatrix.at<double>(0), viewMatrix.at<double>(1), viewMatrix.at<double>(2), viewMatrix.at<double>(3),

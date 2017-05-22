@@ -16,6 +16,7 @@ namespace ape {
 
 	  void createRessources();
 	  void createFont();
+	  void createCoordinateAxes();
 	  void createBackgroundTexture();
 
 	  void updateBackgroundTexture(unsigned char* frameData, int width, int height);
@@ -29,7 +30,7 @@ namespace ape {
       Ogre::Viewport* vp;
 	  Ogre::Rectangle2D* rect;
 	  Ogre::TexturePtr backgroundTexture;
-
+	  Ogre::ManualObject* coordAxes;
 	  int textureWidth = 640;
 	  int textureHeight = 480;
     protected:
