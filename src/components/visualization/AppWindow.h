@@ -11,7 +11,7 @@ namespace ape {
 
     class AppWindow {
     private:
-      bool createWindow();
+      bool createWindow(double* projectionMatrix);
       void createPanel();
 
 	  void createRessources();
@@ -36,7 +36,7 @@ namespace ape {
     protected:
     public:
       //Default
-      AppWindow();
+      AppWindow(double* projectionMatrix);
 
       // Copy constructor
       AppWindow(const AppWindow&) = default;

@@ -33,9 +33,9 @@ static cv::Mat convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translat
 	cv::Rodrigues(rotation, rotMat);
 
 	//Complete matrix ready to use
-	for (unsigned int row = 0; row<3; ++row)
+	for (unsigned int row = 0; row < 3; ++row)
 	{
-		for (unsigned int col = 0; col<3; ++col)
+		for (unsigned int col = 0; col < 3; ++col)
 		{
 			viewMatrix.at<double>(row, col) = rotMat.at<double>(row, col);
 		}
@@ -57,16 +57,19 @@ static cv::Mat convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translat
 	viewMatrix.at<double>(1, 3) = -cv::Mat(translation).at<double>(1, 0);
 	viewMatrix.at<double>(2, 3) = -cv::Mat(translation).at<double>(2, 0);
 
-	printf("[%f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f]\n",
-		viewMatrix.at<double>(0), viewMatrix.at<double>(1), viewMatrix.at<double>(2), viewMatrix.at<double>(3),
-		viewMatrix.at<double>(4), viewMatrix.at<double>(5), viewMatrix.at<double>(6), viewMatrix.at<double>(7),
-		viewMatrix.at<double>(8), viewMatrix.at<double>(9), viewMatrix.at<double>(10), viewMatrix.at<double>(11),
-		viewMatrix.at<double>(12), viewMatrix.at<double>(13), viewMatrix.at<double>(14), viewMatrix.at<double>(15));
+//	printf("[%f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f]\n",
+//		viewMatrix.at<double>(0), viewMatrix.at<double>(1), viewMatrix.at<double>(2), viewMatrix.at<double>(3),
+///		viewMatrix.at<double>(4), viewMatrix.at<double>(5), viewMatrix.at<double>(6), viewMatrix.at<double>(7),
+//		viewMatrix.at<double>(8), viewMatrix.at<double>(9), viewMatrix.at<double>(10), viewMatrix.at<double>(11),
+//		viewMatrix.at<double>(12), viewMatrix.at<double>(13), viewMatrix.at<double>(14), viewMatrix.at<double>(15));
 	return viewMatrix;
 }
 
 int main(int argc, char** argv) {
 	std::cout << "Demo scene" << std::endl;
+
+	cv::Mat camMatrix, distCoeffs;
+	readCameraParameters("out", camMatrix, distCoeffs);
 
 	// start video capture
 	// -1 gets any camera
@@ -74,11 +77,10 @@ int main(int argc, char** argv) {
 	cv::Mat frame;
 
 	ape::visualization::VisualizationController visVontroller;
-	visVontroller.startDisplay();
+	visVontroller.startDisplay(&camMatrix.at<double>(0, 0));
 
 
-	cv::Mat camMatrix, distCoeffs;
-	readCameraParameters("out", camMatrix, distCoeffs);
+
 
 	//ape::imageProcessing::ImageProcessingController procController;
 	//auto stream = procController.getCameraStream();
@@ -87,7 +89,7 @@ int main(int argc, char** argv) {
 		cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250));
 
 
-	float markerLength = 0.15;
+	float markerLength = 0.026;
 	std::vector< int > ids;
 	std::vector< std::vector< cv::Point2f > > corners, rejected;
 	std::vector< cv::Vec3d > rvecs, tvecs;
@@ -108,7 +110,7 @@ int main(int argc, char** argv) {
 		// detect markers and estimate pose
 		cv::aruco::detectMarkers(frame, dictionary, corners, ids, detectorParams, rejected);
 		cv::aruco::estimatePoseSingleMarkers(corners, markerLength, camMatrix, distCoeffs, rvecs,
-				tvecs);
+			tvecs);
 
 
 		if (ids.size() > 0) {

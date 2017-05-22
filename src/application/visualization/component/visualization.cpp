@@ -9,12 +9,12 @@ namespace ape {
       scene(nullptr) {
     }
 
-    void VisualizationController::startDisplay() {
+    void VisualizationController::startDisplay(double* projectionMatrix) {
       if (scene != nullptr) {
         throw std::runtime_error("Display already initialized");
       }
 
-      scene=new AppWindow();
+      scene=new AppWindow(projectionMatrix);
     }
 
     void VisualizationController::showMenus() {

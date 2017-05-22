@@ -10,9 +10,9 @@
 
 
 //FIXME include font (or make path system independent)
-#define FONT_FOLDER "C:/Users/lpandiko/Code/Uni/ARVR/Ape/assets/fonts"
-#define MESH_FOLDER "C:/Users/lpandiko/Code/Uni/ARVR/Ape/assets/meshes"
-#define TEXTURE_FOLDER "C:/Users/lpandiko/Code/Uni/ARVR/Ape/assets/textures"
+#define FONT_FOLDER "C:/dev/Uni/VRAR/Ape/assets/fonts"
+#define MESH_FOLDER "C:/dev/Uni/VRAR/Ape/assets/meshes"
+#define TEXTURE_FOLDER "C:/dev/Uni/VRAR/Ape/assets/textures"
 #define FONT_FILE_NAME "FreeSans.otf"
 #define MESH_FILE_NAME "cube.mesh"
 
@@ -32,43 +32,71 @@ public:
 namespace ape {
   namespace visualization {
 
-    bool AppWindow::createWindow() {
-      root = new Ogre::Root("", "");
+	  bool AppWindow::createWindow(double* projectionMatrix) {
+		  root = new Ogre::Root("", "");
 
-      root->loadPlugin(std::string(OGRE_PLUGIN_DIR)+"/RenderSystem_GL");
-      root->loadPlugin(std::string(OGRE_PLUGIN_DIR)+"/Plugin_OctreeSceneManager");
+		  root->loadPlugin(std::string(OGRE_PLUGIN_DIR) + "/RenderSystem_GL");
+		  root->loadPlugin(std::string(OGRE_PLUGIN_DIR) + "/Plugin_OctreeSceneManager");
 
-      // we do this step just to get an iterator that we can use with setRenderSystem. In a future article
-      // we actually will iterate the list to display which renderers are available.
-      auto renderSystems = root->getAvailableRenderers();
-      root->setRenderSystem(renderSystems[0]);
-      root->initialise(false);
-
-
-      // setup main window; hardcode some defaults for the sake of presentation
-      Ogre::NameValuePairList opts;
-      opts["resolution"] = "1024x768";
-      opts["fullscreen"] = "false";
-      opts["vsync"] = "true";
-
-      renderWindow = root->createRenderWindow("Main", 1024, 768, false, &opts);
-
-      // create the scene
-      sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
-      // add a camera
-      mainCam = sceneMgr->createCamera("MainCam");
-
-      //mainCam->setPosition(Ogre::Vector3(0.0f,100.0f,125.0f));
-      //mainCam->lookAt(Ogre::Vector3(40.0f,0.0f,0.0f));
-      mainCam->setNearClipDistance(0.001f);
-      mainCam->setFarClipDistance(200.0f);
-
-      // add viewport
-      vp = renderWindow->addViewport(mainCam);
-      vp->setBackgroundColour(Ogre::ColourValue(0,0,1.0));
+		  // we do this step just to get an iterator that we can use with setRenderSystem. In a future article
+		  // we actually will iterate the list to display which renderers are available.
+		  auto renderSystems = root->getAvailableRenderers();
+		  root->setRenderSystem(renderSystems[0]);
+		  root->initialise(false);
 
 
-      return true;
+		  // setup main window; hardcode some defaults for the sake of presentation
+		  Ogre::NameValuePairList opts;
+		  opts["resolution"] = "1024x768";
+		  opts["fullscreen"] = "false";
+		  opts["vsync"] = "true";
+
+		  renderWindow = root->createRenderWindow("Main", 1024, 768, false, &opts);
+
+		  // create the scene
+		  sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
+		  // add a camera
+		  mainCam = sceneMgr->createCamera("MainCam");
+
+		  //mainCam->setPosition(Ogre::Vector3(0.0f,100.0f,125.0f));
+		  //mainCam->lookAt(Ogre::Vector3(40.0f,0.0f,0.0f));
+		  //mainCam->setNearClipDistance(0.001f);
+		  //mainCam->setFarClipDistance(5.0f);
+
+		  // Set CameraProjection Matrix based on calibration parameters
+		  // These parameters define the final viewport that is rendered into by
+		  // the camera.
+		  float znear = 0.001f;
+		  float zfar = 5.0f;
+		  int camWidth = 640;
+		  int camHeight = 480;
+
+		  double L = 0;
+		  double R = camWidth;
+		  double B = 0;
+		  double T = camHeight;
+
+		  double alpha = projectionMatrix[0];
+		  double beta = projectionMatrix[4];
+		  double u0 = projectionMatrix[2];
+		  double v0 = projectionMatrix[5];
+		  double skew = 0.0;
+
+
+		  Ogre::Matrix4 Projection
+			   = Ogre::Matrix4((Ogre::Real)(2.0*alpha / camWidth), 0, (Ogre::Real)(2.0*(u0 / camWidth) - 1.0), 0,
+				                0, (Ogre::Real)(2.0*beta / camHeight), (Ogre::Real)(2.0*(v0 / camHeight) - 1.0), 0,
+				                0, 0, (Ogre::Real)(-1.0*(zfar+znear) / (zfar-znear)), (Ogre::Real)(-2.0*zfar*znear / (zfar-znear)),
+				                0, 0, -1.0, 0);
+
+		  mainCam->setCustomProjectionMatrix(true, Projection);
+
+		  // add viewport
+		  vp = renderWindow->addViewport(mainCam);
+		  vp->setBackgroundColour(Ogre::ColourValue(0,0,1.0));
+
+
+		  return true;
     }
 
 	void AppWindow::createRessources() {
@@ -194,7 +222,7 @@ namespace ape {
 		ogreNode->setPosition(0, 0, 0);
 		ogreNode->setScale(0.001, 0.001, 0.001);
 		ogreNode->attachObject(ogreEntity);
-		sceneMgr->getRootSceneNode()->attachObject(coordAxes);
+		//sceneMgr->getRootSceneNode()->attachObject(coordAxes);
 		// Set Lighting
 		Ogre::Light* light = sceneMgr->createLight("MainLight");
 		light->setPosition(-20, 80, -50);
@@ -204,8 +232,8 @@ namespace ape {
 		node->attachObject(rect);
 	}
 
-    AppWindow::AppWindow() {
-      createWindow();
+    AppWindow::AppWindow(double* projectionMatrix) {
+      createWindow(projectionMatrix);
       createRessources();
       createPanel();
 	  initScene();
@@ -259,11 +287,6 @@ namespace ape {
 		//root->addFrameListener(&listener);
 		//root->startRendering(); //we implement our own loop
 
-		printf("Out[%f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f]\n",
-			viewMatrix[0], viewMatrix[1], viewMatrix[2], viewMatrix[3],
-			viewMatrix[4], viewMatrix[5], viewMatrix[6], viewMatrix[7],
-			viewMatrix[8], viewMatrix[9], viewMatrix[10], viewMatrix[11],
-			viewMatrix[12], viewMatrix[13], viewMatrix[14], viewMatrix[15]);
 		Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0], viewMatrix[1], viewMatrix[2], viewMatrix[3],
 											 viewMatrix[4], viewMatrix[5], viewMatrix[6], viewMatrix[7],
 											 viewMatrix[8], viewMatrix[9], viewMatrix[10], viewMatrix[11],

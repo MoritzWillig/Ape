@@ -12,7 +12,7 @@ namespace ape {
 
       VisualizationController();
 
-      void startDisplay();
+      void startDisplay(double* projectionMatrix);
 
       void showMenus();
 
