@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.1.0)
 
 #set cmake flags
 set(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_BUILD_TYPE Debug)
+
+# move executables to specific folder
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin/Debug")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin/Release")
 
 find_package(Boost 1.4.9 REQUIRED
         COMPONENTS thread date_time)
