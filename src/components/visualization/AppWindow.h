@@ -16,11 +16,24 @@ namespace ape {
       void createFont();
       void createPanel();
 
+	  void createRessources();
+	  void createFont();
+	  void createBackgroundTexture();
+
+	  void updateBackgroundTexture(unsigned char* frameData, int width, int height);
+
+	  void initScene();
+
       Ogre::Root* root;
       Ogre::RenderWindow* renderWindow;
       Ogre::SceneManager* sceneMgr;
       Ogre::Camera* mainCam;
       Ogre::Viewport* vp;
+	  Ogre::Rectangle2D* rect;
+	  Ogre::TexturePtr backgroundTexture;
+
+	  int textureWidth = 640;
+	  int textureHeight = 480;
     protected:
     public:
       //Default
@@ -41,7 +54,7 @@ namespace ape {
       // Destructor
       virtual ~AppWindow();
 
-      void update(float timeStep);
+      void update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix);
 
       bool isClosed();
     };

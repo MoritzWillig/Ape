@@ -5,10 +5,17 @@
 #include "AppWindow.h"
 
 #include <OGRE/Ogre.h>
+#include <OGRE/OgreFontManager.h>
+#include <OGRE/OgreTextAreaOverlayElement.h>
+
 
 //FIXME include font (or make path system independent)
-#define FONT_FOLDER "/usr/share/fonts/opentype/freefont/"
+//#define FONT_FOLDER "/usr/share/fonts/opentype/freefont/"
+#define FONT_FOLDER "C:/dev/Uni/VRAR/Ape/assets/fonts"
+#define MESH_FOLDER "C:/dev/Uni/VRAR/Ape/assets/meshes"
+#define TEXTURE_FOLDER "C:/dev/Uni/VRAR/Ape/assets/textures"
 #define FONT_FILE_NAME "FreeSans.otf"
+#define MESH_FILE_NAME "cube.mesh"
 
 //FIXME remove
 class FrameListener : public Ogre::FrameListener {
@@ -71,6 +78,18 @@ namespace ape {
       return true;
     }
 
+	void AppWindow::createRessources() {
+		// load the basic resource location(s)
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(FONT_FOLDER, "FileSystem", "GUI");
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(MESH_FOLDER, "FileSystem", "General");
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(TEXTURE_FOLDER, "FileSystem", "General");
+
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
+		createFont();
+		createBackgroundTexture();
+	}
+
     void AppWindow::createFont() {
       // get the resource manager
       Ogre::ResourceGroupManager &resGroupMgr = Ogre::ResourceGroupManager::getSingleton();
@@ -91,6 +110,42 @@ namespace ape {
       // load the ttf
       font->load();
     }
+
+	void AppWindow::createBackgroundTexture() {
+		backgroundTexture = Ogre::TextureManager::getSingleton().createManual(
+			"BackgroundTexture", // name
+			Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+			Ogre::TEX_TYPE_2D,      // type
+			textureWidth, textureHeight,         // width & height
+			0,                // number of mipmaps
+			Ogre::PF_BYTE_BGRA,     // pixel format
+			Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
+		);
+
+		Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("Background", "General");
+		material->getTechnique(0)->getPass(0)->createTextureUnitState("BackgroundTexture");
+		material->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+		material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+
+		// Create background rectangle covering the whole screen
+		rect = new Ogre::Rectangle2D(true);
+		rect->setCorners(-1.0, 1.0, 1.0, -1.0);
+		rect->setMaterial("Background");
+
+		// Render the background before everything else
+		rect->setRenderQueueGroup(Ogre::RENDER_QUEUE_BACKGROUND);
+
+		// Use infinite AAB to always stay visible
+		Ogre::AxisAlignedBox aabInf;
+		aabInf.setInfinite();
+		rect->setBoundingBox(aabInf);
+
+
+
+		// Example of background scrolling
+		//material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setScrollAnimation(-0.25, 0.0);
+	}
 
     void AppWindow::createPanel() {
       // get the overlay manager
@@ -126,10 +181,29 @@ namespace ape {
       overlay->show();
     }
 
+	void AppWindow::initScene() {
+		// Add Cube
+		sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+		Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME, MESH_FILE_NAME);
+		Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+		ogreNode->setPosition(0, 0, 0);
+		ogreNode->setScale(0.001, 0.001, 0.001);
+		ogreNode->attachObject(ogreEntity);
+
+		// Set Lighting
+		Ogre::Light* light = sceneMgr->createLight("MainLight");
+		light->setPosition(-20, 80, -50);
+
+		// Attach background to the scene
+		Ogre::SceneNode* node = sceneMgr->getRootSceneNode()->createChildSceneNode("Background");
+		node->attachObject(rect);
+	}
+
     AppWindow::AppWindow() {
       createWindow();
-      createFont();
+      createRessources();
       createPanel();
+	  initScene();
     }
 
     AppWindow::~AppWindow() {
@@ -137,20 +211,66 @@ namespace ape {
       sceneMgr->destroyCamera(mainCam);
       root->destroySceneManager(sceneMgr);
       renderWindow->destroy();
+	  delete rect;
       delete root;
     }
 
-    void AppWindow::update(float timeStep) {
-      //FrameListener listener(renderWindow); // Add the simple frame listener.
-      //root->addFrameListener(&listener);
-      //root->startRendering(); //we implement our own loop
+	void AppWindow::updateBackgroundTexture(unsigned char* frameData, int width, int height) {
+		if (textureWidth != width || textureHeight != height) {
+			textureWidth = width;
+			textureHeight = height;
+			createBackgroundTexture();
+		}
+		// Get the pixel buffer
+		Ogre::HardwarePixelBufferSharedPtr pixelBuffer = backgroundTexture->getBuffer();
 
-      root->renderOneFrame(timeStep);
-      renderWindow->update(true);
+		// Lock the pixel buffer and get a pixel box
+		pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL); // for best performance use HBL_DISCARD!
+		const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
-      //we need this ...
-      Ogre::WindowEventUtilities::messagePump();
-    }
+		unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
+
+
+		// Fill in some pixel data. This will give a semi-transparent blue,
+		// but this is of course dependent on the chosen pixel format.
+		for (size_t j = 0; j < height; j++)
+		{
+			for (size_t i = 0; i < width; i++)
+			{
+				*pDest++ = frameData[3 * (width*j + i) + 0]; // B
+				*pDest++ = frameData[3 * (width*j + i) + 1]; // G
+				*pDest++ = frameData[3 * (width*j + i) + 2]; // R
+				*pDest++ = 127; // A
+			}
+
+			pDest += pixelBox.getRowSkip() * Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+		}
+
+		// Unlock the pixel buffer
+		pixelBuffer->unlock();
+	}
+    void AppWindow::update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix) {
+		//FrameListener listener(renderWindow); // Add the simple frame listener.
+		//root->addFrameListener(&listener);
+		//root->startRendering(); //we implement our own loop
+
+		Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0], viewMatrix[1], viewMatrix[2], viewMatrix[3],
+											 viewMatrix[4], viewMatrix[5], viewMatrix[6], viewMatrix[7],
+											 viewMatrix[8], viewMatrix[9], viewMatrix[10], viewMatrix[11],
+											 viewMatrix[12], viewMatrix[13], viewMatrix[14], viewMatrix[15]);
+		mainCam->setCustomViewMatrix(true, matrix);
+		//mainCam->setDirection(Ogre::Vector3(rotation[0], rotation[1], rotation[2]));
+		//Ogre::Vector3 position = Ogre::Vector3(-translation[0], -translation[1], translation[2]);
+		//printf("Position: (%f, %f, %f)", position.x, position.y, position.z);
+		//mainCam->setPosition(position);
+
+		updateBackgroundTexture(frameData, width, height);
+		root->renderOneFrame(timeStep);
+		renderWindow->update(true);
+
+		//we need this ...
+		Ogre::WindowEventUtilities::messagePump();
+		}
 
     bool AppWindow::isClosed() {
       return renderWindow->isClosed();

@@ -29,8 +29,8 @@ namespace ape {
       return scene->isClosed();
     }
 
-    void VisualizationController::update(float timeStep) {
-      scene->update(timeStep);
+    void VisualizationController::update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix) {
+      scene->update(timeStep, frameData, width, height, viewMatrix);
     }
 
   }
