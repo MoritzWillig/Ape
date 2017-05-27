@@ -16,13 +16,12 @@ namespace ape {
       void createFont();
       void createPanel();
 
-	  void createRessources();
-	  void createFont();
-	  void createBackgroundTexture();
+  	  void createRessources();
+	    void createBackgroundTexture();
 
-	  void updateBackgroundTexture(unsigned char* frameData, int width, int height);
+	    void updateBackgroundTexture(unsigned char* frameData, int width, int height);
 
-	  void initScene();
+	    void initScene();
 
       Ogre::Root* root;
       Ogre::RenderWindow* renderWindow;

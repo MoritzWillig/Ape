@@ -1,215 +1,208 @@
-/*
-By downloading, copying, installing or using the software you agree to this
-license. If you do not agree to this license, do not download, install,
-copy or use the software.
-
-License Agreement
-For Open Source Computer Vision Library
-(3-clause BSD License)
-
-Copyright (C) 2013, OpenCV Foundation, all rights reserved.
-Third party copyrights are property of their respective owners.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
-
-* Neither the names of the copyright holders nor the names of the contributors
-may be used to endorse or promote products derived from this software
-without specific prior written permission.
-
-This software is provided by the copyright holders and contributors "as is" and
-any express or implied warranties, including, but not limited to, the implied
-warranties of merchantability and fitness for a particular purpose are
-disclaimed. In no event shall copyright holders or contributors be liable for
-any direct, indirect, incidental, special, exemplary, or consequential damages
-(including, but not limited to, procurement of substitute goods or services;
-loss of use, data, or profits; or business interruption) however caused
-and on any theory of liability, whether in contract, strict liability,
-or tort (including negligence or otherwise) arising in any way out of
-the use of this software, even if advised of the possibility of such damage.
-*/
-
-
-#include <opencv2/highgui.hpp>
-#include <opencv2/aruco.hpp>
 #include <iostream>
+#include <fstream>
 
-using namespace std;
-using namespace cv;
+#include "opencv2/aruco.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/aruco/charuco.hpp"
 
-namespace {
-	const char* about = "Basic marker detection";
-	const char* keys =
-		"{d        |       | dictionary: DICT_4X4_50=0, DICT_4X4_100=1, DICT_4X4_250=2,"
-		"DICT_4X4_1000=3, DICT_5X5_50=4, DICT_5X5_100=5, DICT_5X5_250=6, DICT_5X5_1000=7, "
-		"DICT_6X6_50=8, DICT_6X6_100=9, DICT_6X6_250=10, DICT_6X6_1000=11, DICT_7X7_50=12,"
-		"DICT_7X7_100=13, DICT_7X7_250=14, DICT_7X7_1000=15, DICT_ARUCO_ORIGINAL = 16}"
-		"{v        |       | Input from video file, if ommited, input comes from camera }"
-		"{ci       | 0     | Camera id if input doesnt come from video (-v) }"
-		"{c        |       | Camera intrinsic parameters. Needed for camera pose }"
-		"{l        | 0.1   | Marker side lenght (in meters). Needed for correct scale in camera pose }"
-		"{dp       |       | File of marker detector parameters }"
-		"{r        |       | show rejected candidates too }";
+#include "../../component/imageProcessing.h"
+
+namespace ape {
+
 }
 
-/**
-*/
-static bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeffs) {
-	FileStorage fs(filename, FileStorage::READ);
-	if (!fs.isOpened())
-		return false;
-	fs["camera_matrix"] >> camMatrix;
-	fs["distortion_coefficients"] >> distCoeffs;
-	return true;
-}
+int saveCameraIntrinsics(std::string filename, cv::Size imageSize,
+  cv::Mat const& cameraMatrix, cv::Mat const& distCoeffs, double totalAvgError)
+{
+  std::cout << "Saving camera intrinsics to " << filename << std::endl;
+  std::ofstream out(filename);
+  if (!out.is_open()) {
+    std::cerr << "Unable to open " << filename << std::endl;
+    return EXIT_FAILURE;
+  }
 
+  out << imageSize.width << " " << imageSize.height << "\n";
 
+  // write camera matrix (3x3)
+  for (std::size_t r = 0; r < cameraMatrix.rows; ++r)
+    for (std::size_t c = 0; c < cameraMatrix.cols; ++c)
+      out << cameraMatrix.at<double>(r,c) << " ";
+  out << "\n";
 
-/**
-*/
-static bool readDetectorParameters(string filename, Ptr<aruco::DetectorParameters> &params) {
-	FileStorage fs(filename, FileStorage::READ);
-	if (!fs.isOpened())
-		return false;
-	fs["adaptiveThreshWinSizeMin"] >> params->adaptiveThreshWinSizeMin;
-	fs["adaptiveThreshWinSizeMax"] >> params->adaptiveThreshWinSizeMax;
-	fs["adaptiveThreshWinSizeStep"] >> params->adaptiveThreshWinSizeStep;
-	fs["adaptiveThreshConstant"] >> params->adaptiveThreshConstant;
-	fs["minMarkerPerimeterRate"] >> params->minMarkerPerimeterRate;
-	fs["maxMarkerPerimeterRate"] >> params->maxMarkerPerimeterRate;
-	fs["polygonalApproxAccuracyRate"] >> params->polygonalApproxAccuracyRate;
-	fs["minCornerDistanceRate"] >> params->minCornerDistanceRate;
-	fs["minDistanceToBorder"] >> params->minDistanceToBorder;
-	fs["minMarkerDistanceRate"] >> params->minMarkerDistanceRate;
-	fs["doCornerRefinement"] >> params->doCornerRefinement;
-	fs["cornerRefinementWinSize"] >> params->cornerRefinementWinSize;
-	fs["cornerRefinementMaxIterations"] >> params->cornerRefinementMaxIterations;
-	fs["cornerRefinementMinAccuracy"] >> params->cornerRefinementMinAccuracy;
-	fs["markerBorderBits"] >> params->markerBorderBits;
-	fs["perspectiveRemovePixelPerCell"] >> params->perspectiveRemovePixelPerCell;
-	fs["perspectiveRemoveIgnoredMarginPerCell"] >> params->perspectiveRemoveIgnoredMarginPerCell;
-	fs["maxErroneousBitsInBorderRate"] >> params->maxErroneousBitsInBorderRate;
-	fs["minOtsuStdDev"] >> params->minOtsuStdDev;
-	fs["errorCorrectionRate"] >> params->errorCorrectionRate;
-	return true;
+  // write distortion 5 parameters
+  for (std::size_t r = 0; r < distCoeffs.rows; ++r)
+    for (std::size_t c = 0; c < distCoeffs.cols; ++c)
+      out << distCoeffs.at<double>(r,c) << " ";
+  out << "\n";
+
+  out << totalAvgError << "\n";
+
+  out.close();
+  return EXIT_SUCCESS;
 }
 
 
 
-/**
-*/
-int main(int argc, char *argv[]) {
-	CommandLineParser parser(argc, argv, keys);
-	parser.about(about);
+int main(int argc, char** argv) {
+  std::cout << "Camera calibration using Charuko marker board" << std::endl;
 
-	if (argc < 2) {
-		parser.printMessage();
-		return 0;
-	}
+  // create a charuko marker board
+  cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(
+    cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_50));
+  cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(
+    8, 5, 1.0f, 0.8f, dictionary);
 
-	int dictionaryId = parser.get<int>("d");
-	bool showRejected = parser.has("r");
-	bool estimatePose = parser.has("c");
-	float markerLength = parser.get<float>("l");
+#if 0
 
-	Ptr<aruco::DetectorParameters> detectorParams = aruco::DetectorParameters::create();
-	if (parser.has("dp")) {
-		bool readOk = readDetectorParameters(parser.get<string>("dp"), detectorParams);
-		if (!readOk) {
-			cerr << "Invalid detector parameters file" << endl;
-			return 0;
-		}
-	}
-	detectorParams->doCornerRefinement = true; // do corner refinement in markers
+  cv::Size boardSize(1920, 1080);
+  cv::Mat boardImage;
+  board->draw(boardSize, boardImage);
 
-	int camId = parser.get<int>("ci");
+  cv::imwrite("/tmp/board.jpg", boardImage);
+#endif
 
-	String video;
-	if (parser.has("v")) {
-		video = parser.get<String>("v");
-	}
 
-	if (!parser.check()) {
-		parser.printErrors();
-		return 0;
-	}
+  std::vector<std::vector<std::vector<cv::Point2f>>> allCorners;
+  std::vector<std::vector<int>> allIds;
+  std::vector<cv::Mat> allImgs;
 
-	Ptr<aruco::Dictionary> dictionary =
-		aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
+  cv::VideoCapture cap(-1);
+  while(cap.isOpened()) {
 
-	Mat camMatrix, distCoeffs;
-	if (estimatePose) {
-		bool readOk = readCameraParameters(parser.get<string>("c"), camMatrix, distCoeffs);
-		if (!readOk) {
-			cerr << "Invalid camera file" << endl;
-			return 0;
-		}
-	}
+    if (allImgs.size() > 3) break;
 
-	VideoCapture inputVideo;
-	int waitTime;
-	if (!video.empty()) {
-		inputVideo.open(video);
-		waitTime = 0;
-	}
-	else {
-		inputVideo.open(camId);
-		waitTime = 10;
-	}
 
-	double totalTime = 0;
-	int totalIterations = 0;
+    cv::Mat frame, frameCopy;
+    if (!cap.read(frame)) {
+      std::cerr << "Could not read frame from camera." << std::endl;
+      break;
+    }
 
-	while (inputVideo.grab()) {
-		Mat image, imageCopy;
-		inputVideo.retrieve(image);
+    std::vector<int> ids;
+    std::vector<std::vector<cv::Point2f>> corners, rejected;
+    cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::aruco::DetectorParameters::create();
 
-		double tick = (double)getTickCount();
+    // detect markers
+    cv::aruco::detectMarkers(frame, dictionary, corners, ids, detectorParams,
+      rejected);
 
-		vector< int > ids;
-		vector< vector< Point2f > > corners, rejected;
-		vector< Vec3d > rvecs, tvecs;
+    // interpolate charuco corners
+    cv::Mat currentCharucoCorners, currentCharucoIds;
+    if(ids.size() > 0) {
+      cv::aruco::interpolateCornersCharuco(corners, ids, frame, board,
+        currentCharucoCorners, currentCharucoIds);
+    }
 
-		// detect markers and estimate pose
-		aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
-		if (estimatePose && ids.size() > 0)
-			aruco::estimatePoseSingleMarkers(corners, markerLength, camMatrix, distCoeffs, rvecs,
-				tvecs);
+    frame.copyTo(frameCopy);
+    if (!ids.empty()) {
+      cv::aruco::drawDetectedMarkers(frameCopy, corners, ids);
+    }
 
-		double currentTime = ((double)getTickCount() - tick) / getTickFrequency();
-		totalTime += currentTime;
-		totalIterations++;
-		if (totalIterations % 30 == 0) {
-			cout << "Detection Time = " << currentTime * 1000 << " ms "
-				<< "(Mean = " << 1000 * totalTime / double(totalIterations) << " ms)" << endl;
-		}
+    if(currentCharucoCorners.total() > 0) {
+      cv::aruco::drawDetectedCornersCharuco(frameCopy, currentCharucoCorners,
+        currentCharucoIds);
+    }
 
-		// draw results
-		image.copyTo(imageCopy);
-		if (ids.size() > 0) {
-			aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
-			if (estimatePose) {
-				for (unsigned int i = 0; i < ids.size(); i++)
-					aruco::drawAxis(imageCopy, camMatrix, distCoeffs, rvecs[i], tvecs[i],
-						markerLength * 0.5f);
-			}
-		}
+    cv::imshow("Aruco test", frameCopy);
+    int k = cv::waitKey(33);
+    if (k==27) {
+      break;
+    }
+    else if (k == 'c' && !ids.empty()) {
+      std::cout << "Captured " << ids.size() << " ids and " << corners.size()
+        << " corners " << std::endl;
 
-		if (showRejected && rejected.size() > 0)
-			aruco::drawDetectedMarkers(imageCopy, rejected, noArray(), Scalar(100, 0, 255));
+      // capture this frame and detections
+      allCorners.push_back(corners);
+      allIds.push_back(ids);
+      allImgs.push_back(frame);
+    }
+  }
 
-		imshow("out", imageCopy);
-		char key = (char)waitKey(waitTime);
-		if (key == 27) break;
-	}
+  // capture one frame to retrieve image size
+  cv::Size cameraImageSize;
+  while(cap.isOpened()) {
+      cv::Mat frame;
+      if (!cap.read(frame)) {
+        std::cerr << "Could not read frame from camera." << std::endl;
+        break;
+      }
+      cameraImageSize = frame.size();
+      break;
+  }
 
-	return 0;
+
+  std::cout << "Total ids: " << allIds.size() << " total corners: "
+    << allCorners.size() << std::endl;
+
+  // prepare data for charuco calibration
+  cv::Mat cameraMatrix, distCoeffs;
+  std::vector<cv::Mat> rvecs, tvecs;
+  int nFrames = (int)allCorners.size();
+  std::vector<cv::Mat> allCharucoCorners;
+  std::vector<cv::Mat> allCharucoIds;
+  allCharucoCorners.reserve(nFrames);
+  allCharucoIds.reserve(nFrames);
+
+  for(std::size_t i = 0; i < nFrames; i++) {
+    // interpolate using camera parameters
+    cv::Mat currentCharucoCorners, currentCharucoIds;
+    cv::aruco::interpolateCornersCharuco(allCorners[i], allIds[i], allImgs[i],
+      board, currentCharucoCorners, currentCharucoIds, cameraMatrix,
+      distCoeffs);
+
+    allCharucoCorners.push_back(currentCharucoCorners);
+    allCharucoIds.push_back(currentCharucoIds);
+  }
+
+  if(allCharucoCorners.size() < 4) {
+    std::cerr << "Not enough corners for calibration" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // calibrate
+  int calibrationFlags = 0;
+  double repError = cv::aruco::calibrateCameraCharuco(allCharucoCorners,
+    allCharucoIds, board, cameraImageSize, cameraMatrix, distCoeffs, rvecs, tvecs,
+    calibrationFlags);
+
+
+  saveCameraIntrinsics("/tmp/intrinsics", cameraImageSize, cameraMatrix,
+    distCoeffs, repError);
+
+  std::cout << "Calibration reprojection errror: " << repError << std::endl;
+
+
+  while(cap.isOpened()) {
+    cv::Mat frame, frameCopy;
+    if (!cap.read(frame)) {
+      std::cerr << "Could not read frame from camera." << std::endl;
+      break;
+    }
+
+    std::vector<int> ids;
+    std::vector<std::vector<cv::Point2f>> corners, rejected;
+    cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::aruco::DetectorParameters::create();
+
+    // detect markers
+    cv::aruco::detectMarkers(frame, dictionary, corners, ids, detectorParams,
+      rejected);
+
+    frame.copyTo(frameCopy);
+    if (!ids.empty()) {
+      cv::aruco::drawDetectedMarkers(frameCopy, corners, ids);
+    }
+    cv::aruco::drawAxis(frameCopy, cameraMatrix, distCoeffs, rvecs, tvecs, 1.0f);
+
+    cv::imshow("Aruco test", frameCopy);
+    int k = cv::waitKey(33);
+    if (k==27) {
+      break;
+    }
+  }
+
+
+
+  return 0;
 }
