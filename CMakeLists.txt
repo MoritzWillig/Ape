@@ -30,7 +30,8 @@ else()
             "${OpenCVInstDir}/${prefix}opencv_core${suffix}"
             "${OpenCVInstDir}/${prefix}opencv_aruco${suffix}"
             "${OpenCVInstDir}/${prefix}opencv_highgui${suffix}"
-            "${OpenCVInstDir}/${prefix}opencv_videoio${suffix}")
+            "${OpenCVInstDir}/${prefix}opencv_videoio${suffix}"
+            "${OpenCVInstDir}/${prefix}opencv_calib3d${suffix}")
     set(OpenCV_INCLUDE_DIR
             "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/include")
 endif()

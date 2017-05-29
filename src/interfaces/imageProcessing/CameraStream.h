@@ -29,6 +29,10 @@ namespace ape {
       virtual ~CameraStream() = default;
 
       virtual void* getCurrentFrame() = 0;
+
+      virtual unsigned int getFrameWidth();
+
+      virtual unsigned int getFrameHeight();
     };
 
   }

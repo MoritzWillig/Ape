@@ -9,10 +9,8 @@
 #include <OGRE/OgreTextAreaOverlayElement.h>
 
 
-//FIXME include font (or make path system independent)
-//#define FONT_FOLDER "/usr/share/fonts/opentype/freefont/"
-#define FONT_FOLDER "C:/dev/Uni/VRAR/Ape/assets/fonts"
-#define MESH_FOLDER "C:/dev/Uni/VRAR/Ape/assets/meshes"
+#define FONT_FOLDER "data/assets/fonts"
+#define MESH_FOLDER "data/assets/meshes"
 #define TEXTURE_FOLDER "C:/dev/Uni/VRAR/Ape/assets/textures"
 #define FONT_FILE_NAME "FreeSans.otf"
 #define MESH_FILE_NAME "cube.mesh"
@@ -249,15 +247,23 @@ namespace ape {
 		// Unlock the pixel buffer
 		pixelBuffer->unlock();
 	}
-    void AppWindow::update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix) {
+    void AppWindow::update(
+				float timeStep, unsigned char* frameData, int width, int height,
+        const glm::mat4& viewMatrix) {
 		//FrameListener listener(renderWindow); // Add the simple frame listener.
 		//root->addFrameListener(&listener);
 		//root->startRendering(); //we implement our own loop
 
-		Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0], viewMatrix[1], viewMatrix[2], viewMatrix[3],
-											 viewMatrix[4], viewMatrix[5], viewMatrix[6], viewMatrix[7],
-											 viewMatrix[8], viewMatrix[9], viewMatrix[10], viewMatrix[11],
-											 viewMatrix[12], viewMatrix[13], viewMatrix[14], viewMatrix[15]);
+
+		Ogre::Matrix4 matrix;
+      //FIXME the other constructor is only available in newer OGRE
+      //FIXME update OGRE
+/*
+      Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0], viewMatrix[1], viewMatrix[2], viewMatrix[3],
+                                           viewMatrix[4], viewMatrix[5], viewMatrix[6], viewMatrix[7],
+                                           viewMatrix[8], viewMatrix[9], viewMatrix[10], viewMatrix[11],
+                                           viewMatrix[12], viewMatrix[13], viewMatrix[14], viewMatrix[15]);
+    */
 		mainCam->setCustomViewMatrix(true, matrix);
 		//mainCam->setDirection(Ogre::Vector3(rotation[0], rotation[1], rotation[2]));
 		//Ogre::Vector3 position = Ogre::Vector3(-translation[0], -translation[1], translation[2]);

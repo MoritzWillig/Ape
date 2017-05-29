@@ -1,4 +1,6 @@
 
+#include "glm/glm.hpp"
+
 namespace ape {
   namespace visualization {
 
@@ -18,7 +20,8 @@ namespace ape {
 
       void showScene();
 
-	  void update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix);
+	    void update(float timeStep, unsigned char* frameData, int width, int height,
+                  const glm::mat4& viewMatrix);
 
       bool getTerminateRequest();
     };

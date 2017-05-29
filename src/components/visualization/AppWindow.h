@@ -6,6 +6,7 @@
 #include <OGRE/Ogre.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <OGRE/OgreFontManager.h>
+#include <glm/mat4x4.hpp>
 
 namespace ape {
   namespace visualization {
@@ -53,7 +54,8 @@ namespace ape {
       // Destructor
       virtual ~AppWindow();
 
-      void update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix);
+      void update(float timeStep, unsigned char* frameData, int width, int height,
+                  const glm::mat4& viewMatrix);
 
       bool isClosed();
     };

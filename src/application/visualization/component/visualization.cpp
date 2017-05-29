@@ -29,7 +29,9 @@ namespace ape {
       return scene->isClosed();
     }
 
-    void VisualizationController::update(float timeStep, unsigned char* frameData, int width, int height, double* viewMatrix) {
+    void VisualizationController::update(
+        float timeStep, unsigned char* frameData, int width, int height,
+        const glm::mat4& viewMatrix) {
       scene->update(timeStep, frameData, width, height, viewMatrix);
     }
 

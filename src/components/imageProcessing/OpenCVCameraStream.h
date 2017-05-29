@@ -3,14 +3,20 @@
 // Created by moritz on 20.05.17.
 //
 
-#include "imageProcessing/CameraStream.h"
+#include <imageProcessing/CameraStream.h>
+
+#include "opencv2/videoio.hpp"
 
 namespace ape {
   namespace imageProcessing {
 
     class OpenCVCameraStream: public CameraStream {
     private:
+      unsigned int frameWidth;
+      unsigned int frameHeight;
     protected:
+      cv::VideoCapture cap;
+      cv::Mat frame;
     public:
       //Default
       OpenCVCameraStream();
@@ -31,6 +37,10 @@ namespace ape {
       virtual ~OpenCVCameraStream() = default;
 
       virtual void* getCurrentFrame() override;
+
+      virtual unsigned int getFrameWidth() override;
+
+      virtual unsigned int getFrameHeight() override;
     };
 
   }

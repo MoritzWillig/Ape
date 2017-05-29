@@ -14,6 +14,7 @@ add_executable(apeDesktop
 
 include_directories(${OpenCV_INCLUDE_DIR})
 include_directories(${OGRE_INCLUDE_DIR})
+include_directories(${GLM_INCLUDE_DIR})
 
 #FIXME needed?
 include_directories(${APE_COMPONENTS_INCLUDE_DIR})
