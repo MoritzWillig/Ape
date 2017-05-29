@@ -20,5 +20,13 @@ namespace ape {
       return frame;
     }
 
+    unsigned int LazyCameraStream::getFrameWidth() {
+      return stream->getFrameWidth();
+    }
+
+    unsigned int LazyCameraStream::getFrameHeight() {
+      return stream->getFrameWidth();
+    }
+
   }
 }

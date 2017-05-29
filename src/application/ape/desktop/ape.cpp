@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
   //FIXME as glm::mat4 and float[]
   cv::Mat camMatrix_, distCoeffs_; //FIXME remove this
   glm::mat4 camMatrix; //FIXME read into this
-  float distCoeffs[4]; //FIXME and this
+  float distCoeffs[5]; //FIXME and this
   readCameraParameters("out", camMatrix_, distCoeffs_);
 
   ape::imageProcessing::ImageProcessingController ipController(

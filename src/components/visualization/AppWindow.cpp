@@ -7,6 +7,7 @@
 #include <OGRE/Ogre.h>
 #include <OGRE/OgreFontManager.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
+#include <glm/gtc/type_ptr.hpp>
 
 
 #define FONT_FOLDER "data/assets/fonts"
@@ -255,15 +256,11 @@ namespace ape {
 		//root->startRendering(); //we implement our own loop
 
 
-		Ogre::Matrix4 matrix;
-      //FIXME the other constructor is only available in newer OGRE
-      //FIXME update OGRE
-/*
-      Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0], viewMatrix[1], viewMatrix[2], viewMatrix[3],
-                                           viewMatrix[4], viewMatrix[5], viewMatrix[6], viewMatrix[7],
-                                           viewMatrix[8], viewMatrix[9], viewMatrix[10], viewMatrix[11],
-                                           viewMatrix[12], viewMatrix[13], viewMatrix[14], viewMatrix[15]);
-    */
+		  const float* vmPtr = glm::value_ptr(viewMatrix);
+      Ogre::Matrix4 matrix = Ogre::Matrix4(vmPtr[0], vmPtr[1], vmPtr[2], vmPtr[3],
+                                           vmPtr[4], vmPtr[5], vmPtr[6], vmPtr[7],
+                                           vmPtr[8], vmPtr[9], vmPtr[10], vmPtr[11],
+                                           vmPtr[12], vmPtr[13], vmPtr[14], vmPtr[15]);
 		mainCam->setCustomViewMatrix(true, matrix);
 		//mainCam->setDirection(Ogre::Vector3(rotation[0], rotation[1], rotation[2]));
 		//Ogre::Vector3 position = Ogre::Vector3(-translation[0], -translation[1], translation[2]);

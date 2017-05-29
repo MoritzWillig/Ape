@@ -10,29 +10,11 @@ namespace ape {
     private:
     protected:
     public:
-      //Default
-      CameraStream() = default;
-
-      // Copy constructor
-      CameraStream(const CameraStream&) = default;
-
-      // Move constructor
-      CameraStream(CameraStream&&) = default;
-
-      // Copy assignment operator
-      CameraStream& operator=(const CameraStream&)& = default;
-
-      // Move assignment operator
-      CameraStream& operator=(CameraStream&&)& = default;
-
-      // Destructor
-      virtual ~CameraStream() = default;
-
       virtual void* getCurrentFrame() = 0;
 
-      virtual unsigned int getFrameWidth();
+      virtual unsigned int getFrameWidth() = 0;
 
-      virtual unsigned int getFrameHeight();
+      virtual unsigned int getFrameHeight() = 0;
     };
 
   }

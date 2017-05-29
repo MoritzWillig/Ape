@@ -37,6 +37,10 @@ namespace ape {
       void pullFrame();
 
       virtual void* getCurrentFrame();
+
+      virtual unsigned int getFrameWidth();
+
+      virtual unsigned int getFrameHeight();
     };
 
   }
