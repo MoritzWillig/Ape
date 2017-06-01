@@ -12,7 +12,7 @@ add_executable(apeDesktop
         #$<TARGET_OBJECTS:worldState>
         )
 
-include_directories(${OpenCV_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${OGRE_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIR})
 

@@ -32,7 +32,7 @@ else()
             "${OpenCVInstDir}/${prefix}opencv_highgui${suffix}"
             "${OpenCVInstDir}/${prefix}opencv_videoio${suffix}"
             "${OpenCVInstDir}/${prefix}opencv_calib3d${suffix}")
-    set(OpenCV_INCLUDE_DIR
+    set(OpenCV_INCLUDE_DIRS
             "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/include")
 endif()
 
