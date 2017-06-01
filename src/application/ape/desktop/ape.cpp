@@ -27,9 +27,8 @@ static void readCameraParameters(
 		std::string filename, glm::mat3x3& camMatrix, DistCoeffs& distCoeffs) {
 	std::ifstream fs(filename);
 	if (!fs) {
-		throw new std::runtime_error("Could not read camera parameters");
+		throw std::runtime_error("Could not read camera parameters");
 	}
-
 
   std::string line;
 
