@@ -12,4 +12,6 @@ add_executable(DemoScene
 include_directories(${OGRE_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIR})
 
+include_directories(${APE_COMPONENTS_INCLUDE_DIR})
+
 target_link_libraries(DemoScene ${OGRE_LIBRARIES})
