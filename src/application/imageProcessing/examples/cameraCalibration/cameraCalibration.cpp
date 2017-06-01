@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
 
   // prepare data for charuco calibration
   cv::Mat cameraMatrix, distCoeffs;
-  std::vector<cv::Mat> rvecs, tvecs;
+  std::vector<cv::Vec3d> rvecs, tvecs;
   int nFrames = (int)allCorners.size();
   std::vector<cv::Mat> allCharucoCorners;
   std::vector<cv::Mat> allCharucoIds;
@@ -177,18 +177,26 @@ int main(int argc, char** argv) {
 
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners, rejected;
+    std::vector<cv::Vec3d> rvecs, tvecs;
     cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::aruco::DetectorParameters::create();
 
     // detect markers
     cv::aruco::detectMarkers(frame, dictionary, corners, ids, detectorParams,
       rejected);
 
+    cv::aruco::estimatePoseSingleMarkers(corners, 0.026f, cameraMatrix,
+      distCoeffs, rvecs, tvecs);
+
     cv::Mat frameCopy;
     frame.copyTo(frameCopy);
     if (!ids.empty()) {
       cv::aruco::drawDetectedMarkers(frameCopy, corners, ids);
     }
-    cv::aruco::drawAxis(frameCopy, cameraMatrix, distCoeffs, rvecs, tvecs, 1.0f);
+
+    for (std::size_t i = 0; i < ids.size(); ++i) {
+      cv::aruco::drawAxis(frameCopy, cameraMatrix, distCoeffs, rvecs.at(i),
+        tvecs.at(i), 0.026f);
+    }
 
     cv::imshow("Aruco test", frameCopy);
     int k = cv::waitKey(33);
@@ -196,7 +204,6 @@ int main(int argc, char** argv) {
       break;
     }
   }
-
 
 
   return 0;
