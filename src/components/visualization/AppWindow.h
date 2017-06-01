@@ -7,6 +7,7 @@
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <OGRE/OgreFontManager.h>
 #include <glm/mat4x4.hpp>
+#include <imageProcessing/CameraStream.h>
 
 namespace ape {
   namespace visualization {
@@ -20,7 +21,8 @@ namespace ape {
   	  void createRessources();
 	    void createBackgroundTexture();
 
-	    void updateBackgroundTexture(unsigned char* frameData, int width, int height);
+	    void updateBackgroundTexture(
+          unsigned char* frameData, unsigned int width, unsigned int height);
 
 	    void initScene();
 
@@ -32,6 +34,7 @@ namespace ape {
 	  Ogre::Rectangle2D* rect;
 	  Ogre::TexturePtr backgroundTexture;
 
+      //FIXME magic numbers
 	  int textureWidth = 640;
 	  int textureHeight = 480;
     protected:
@@ -54,8 +57,9 @@ namespace ape {
       // Destructor
       virtual ~AppWindow();
 
-      void update(float timeStep, unsigned char* frameData, int width, int height,
-                  const glm::mat4& viewMatrix);
+      void update(
+          float timeStep, imageProcessing::CameraStream* stream,
+          const glm::mat4& viewMatrix);
 
       bool isClosed();
     };

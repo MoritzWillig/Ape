@@ -17,32 +17,56 @@ namespace ape {
 
 }
 
-static bool readCameraParameters(std::string filename, cv::Mat &camMatrix, cv::Mat &distCoeffs) {
-	cv::FileStorage fs(filename, cv::FileStorage::READ);
-	if (!fs.isOpened())
-		return false;
-	fs["camera_matrix"] >> camMatrix;
-	fs["distortion_coefficients"] >> distCoeffs;
-	return true;
+struct DistCoeffs {
+	float coeffs[5];
+};
+
+//FIXME move to helper class
+static void readCameraParameters(
+		std::string filename, glm::mat4x4& camMatrix, DistCoeffs& distCoeffs) {
+	std::stringstream ss(filename, std::ios_base::in);
+
+	if (!ss) {
+		throw new std::runtime_error("Could not read camera parameters");
+	}
+
+  //fixme use external format parser
+	for (auto i=0; i<16; i++) {
+		float* f;
+		ss>>f;
+		camMatrix[i]=f;
+
+    //read space
+    ss.read();
+	}
+
+  for (auto i=0; i<5; i++) {
+    float* f;
+    ss>>f;
+    distCoeffs.coeffs[i]=f;
+
+    //read space
+    ss.read();
+  }
 }
 
 int main(int argc, char** argv) {
 	std::cout << "Demo scene" << std::endl;
 
-  //setup visualization
-	ape::visualization::VisualizationController visController;
-	visController.startDisplay();
-
   //setup image processing
-  //FIXME as glm::mat4 and float[]
-  cv::Mat camMatrix_, distCoeffs_; //FIXME remove this
-  glm::mat4 camMatrix; //FIXME read into this
-  float distCoeffs[5]; //FIXME and this
-  readCameraParameters("out", camMatrix_, distCoeffs_);
+  glm::mat4 camMatrix;
+  DistCoeffs distCoeffs;
+  //FIXME magic string
+  readCameraParameters("out", camMatrix, distCoeffs);
 
   ape::imageProcessing::ImageProcessingController ipController(
-      camMatrix, distCoeffs);
+      camMatrix, &distCoeffs.coeffs[0]);
   auto camStream = ipController.getCameraStream();
+
+  //setup visualization
+  ape::visualization::VisualizationController visController(camStream);
+  visController.startDisplay();
+
 
   //application loop
 	//FIXME refactor into separate class
@@ -57,10 +81,9 @@ int main(int argc, char** argv) {
     //FIXME we need to set a type, width & height?
     cv::Mat frame(1,1,CV_8UC3,camStream->getCurrentFrame());
 
+    //FIXME if worldVisible display world. See #5 for filter description
 
-		visController.update(
-        frameTime, frame.data, frame.size().width,frame.size().height,
-        viewTransform);
+    visController.update(frameTime, viewTransform);
 		std::this_thread::sleep_for(std::chrono::microseconds((int)frameTime * 1000));
 	}
 

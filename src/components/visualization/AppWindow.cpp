@@ -8,6 +8,7 @@
 #include <OGRE/OgreFontManager.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <imageProcessing/CameraStream.h>
 
 
 #define FONT_FOLDER "data/assets/fonts"
@@ -117,7 +118,7 @@ namespace ape {
 			Ogre::TEX_TYPE_2D,      // type
 			textureWidth, textureHeight,         // width & height
 			0,                // number of mipmaps
-			Ogre::PF_BYTE_BGRA,     // pixel format
+			Ogre::PF_BYTE_RGB,     // pixel format //FIXME use camera format
 			Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
 		);
 
@@ -214,7 +215,9 @@ namespace ape {
       delete root;
     }
 
-	void AppWindow::updateBackgroundTexture(unsigned char* frameData, int width, int height) {
+
+	void AppWindow::updateBackgroundTexture(
+      unsigned char* frameData, unsigned int width, unsigned int height) {
 		if (textureWidth != width || textureHeight != height) {
 			textureWidth = width;
 			textureHeight = height;
@@ -227,10 +230,14 @@ namespace ape {
 		pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL); // for best performance use HBL_DISCARD!
 		const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
+    //FIXME do we have to copy the buffer - find another way ...
+    pixelBuffer.getPointer()->writeData(0, width*height, frameData);
+
+    /*
+     * FIXME check functionality of above and remove this
 		unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
 
-
-		// Fill in some pixel data. This will give a semi-transparent blue,
+    // Fill in some pixel data. This will give a semi-transparent blue,
 		// but this is of course dependent on the chosen pixel format.
 		for (size_t j = 0; j < height; j++)
 		{
@@ -243,13 +250,13 @@ namespace ape {
 			}
 
 			pDest += pixelBox.getRowSkip() * Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
-		}
+		}*/
 
 		// Unlock the pixel buffer
 		pixelBuffer->unlock();
 	}
     void AppWindow::update(
-				float timeStep, unsigned char* frameData, int width, int height,
+        float timeStep, imageProcessing::CameraStream* stream,
         const glm::mat4& viewMatrix) {
 		//FrameListener listener(renderWindow); // Add the simple frame listener.
 		//root->addFrameListener(&listener);
@@ -267,7 +274,9 @@ namespace ape {
 		//printf("Position: (%f, %f, %f)", position.x, position.y, position.z);
 		//mainCam->setPosition(position);
 
-		updateBackgroundTexture(frameData, width, height);
+		updateBackgroundTexture(
+        (unsigned char*)stream->getCurrentFrame(),
+        stream->getFrameWidth(), stream->getFrameHeight());
 		root->renderOneFrame(timeStep);
 		renderWindow->update(true);
 

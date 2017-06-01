@@ -100,7 +100,7 @@ namespace ape {
       ((double*)cameraIntrinsics_.data)[14]=cameraIntrinsics[3][2];
       ((double*)cameraIntrinsics_.data)[15]=cameraIntrinsics[3][3];
 
-      cv::Mat distCoeffs_(4, 1, CV_64F); //FIXME right type & dimensions?
+      cv::Mat distCoeffs_(5, 1, CV_64F); //FIXME right type?
       ((double*)distCoeffs_.data)[0]=distCoeffs[0];
       ((double*)distCoeffs_.data)[1]=distCoeffs[1];
       ((double*)distCoeffs_.data)[2]=distCoeffs[2];

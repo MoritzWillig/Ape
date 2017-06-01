@@ -1,4 +1,5 @@
 
+#include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
 
 namespace ape {
@@ -8,11 +9,13 @@ namespace ape {
 
     class VisualizationController {
     private:
+      imageProcessing::CameraStream* stream;
       AppWindow* scene;
     protected:
     public:
+      VisualizationController(imageProcessing::CameraStream* pStream);
 
-      VisualizationController();
+      VisualizationController() = delete;
 
       void startDisplay();
 
@@ -20,8 +23,7 @@ namespace ape {
 
       void showScene();
 
-	    void update(float timeStep, unsigned char* frameData, int width, int height,
-                  const glm::mat4& viewMatrix);
+	    void update(float timeStep, const glm::mat4& viewMatrix);
 
       bool getTerminateRequest();
     };
