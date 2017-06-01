@@ -5,7 +5,7 @@
 
 #include "imageProcessing/CameraStream.h"
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 #include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/aruco.hpp>
 
