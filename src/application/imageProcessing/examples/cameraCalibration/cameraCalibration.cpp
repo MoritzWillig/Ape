@@ -7,10 +7,15 @@
 
 #include "../../component/imageProcessing.h"
 
+#include "imageProcessing/CameraStream.h"
+
 namespace ape {
 
 }
 
+
+// FIXME: Refactor this to be in the same file as the function which reads
+// in the parameters
 int saveCameraIntrinsics(std::string filename, cv::Size imageSize,
   cv::Mat const& cameraMatrix, cv::Mat const& distCoeffs, double totalAvgError)
 {
@@ -66,17 +71,16 @@ int main(int argc, char** argv) {
   std::vector<std::vector<int>> allIds;
   std::vector<cv::Mat> allImgs;
 
-  cv::VideoCapture cap(-1);
-  while(cap.isOpened()) {
+  ape::imageProcessing::ImageProcessingController controller(glm::mat3(), nullptr);
+  ape::imageProcessing::CameraStream * camera = controller.getCameraStream();
 
+   while (true) {
     if (allImgs.size() > 3) break;
 
 
-    cv::Mat frame, frameCopy;
-    if (!cap.read(frame)) {
-      std::cerr << "Could not read frame from camera." << std::endl;
-      break;
-    }
+    cv::Mat frame(camera->getFrameHeight(), camera->getFrameWidth(), CV_8UC3);
+    controller.update(0);
+    frame.data = (uchar*) camera->getCurrentFrame();
 
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners, rejected;
@@ -93,6 +97,7 @@ int main(int argc, char** argv) {
         currentCharucoCorners, currentCharucoIds);
     }
 
+    cv::Mat frameCopy;
     frame.copyTo(frameCopy);
     if (!ids.empty()) {
       cv::aruco::drawDetectedMarkers(frameCopy, corners, ids);
@@ -120,17 +125,8 @@ int main(int argc, char** argv) {
     }
   }
 
-  // capture one frame to retrieve image size
-  cv::Size cameraImageSize;
-  while(cap.isOpened()) {
-      cv::Mat frame;
-      if (!cap.read(frame)) {
-        std::cerr << "Could not read frame from camera." << std::endl;
-        break;
-      }
-      cameraImageSize = frame.size();
-      break;
-  }
+  cv::Size cameraImageSize(camera->getFrameWidth(),
+    camera->getFrameHeight());
 
 
   std::cout << "Total ids: " << allIds.size() << " total corners: "
@@ -173,13 +169,11 @@ int main(int argc, char** argv) {
 
   std::cout << "Calibration reprojection errror: " << repError << std::endl;
 
-
-  while(cap.isOpened()) {
-    cv::Mat frame, frameCopy;
-    if (!cap.read(frame)) {
-      std::cerr << "Could not read frame from camera." << std::endl;
-      break;
-    }
+  while (true) {
+    cv::Mat frame(camera->getFrameHeight(),
+      camera->getFrameWidth(), CV_8UC3);
+    controller.update(0);
+    frame.data = (uchar*) camera->getCurrentFrame();
 
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners, rejected;
@@ -189,6 +183,7 @@ int main(int argc, char** argv) {
     cv::aruco::detectMarkers(frame, dictionary, corners, ids, detectorParams,
       rejected);
 
+    cv::Mat frameCopy;
     frame.copyTo(frameCopy);
     if (!ids.empty()) {
       cv::aruco::drawDetectedMarkers(frameCopy, corners, ids);

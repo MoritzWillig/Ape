@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
   auto frameTime=1.0f / 30.0f;
   while (!controller.getTerminateRequest()) {
 
-    controller.update(frameTime, NULL);
+//    controller.update(frameTime, NULL);
     std::this_thread::sleep_for(std::chrono::microseconds((int)frameTime*1000));
   }
 
