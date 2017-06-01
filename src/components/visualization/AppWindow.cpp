@@ -11,8 +11,8 @@
 #include <imageProcessing/CameraStream.h>
 
 
-#define FONT_FOLDER "data/assets/fonts"
-#define MESH_FOLDER "data/assets/meshes"
+#define FONT_FOLDER "../../../data/assets/fonts"
+#define MESH_FOLDER "../../../data/assets/meshes"
 #define TEXTURE_FOLDER "C:/dev/Uni/VRAR/Ape/assets/textures"
 #define FONT_FILE_NAME "FreeSans.otf"
 #define MESH_FILE_NAME "cube.mesh"
@@ -231,10 +231,9 @@ namespace ape {
 		const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
     //FIXME do we have to copy the buffer - find another way ...
-    pixelBuffer.getPointer()->writeData(0, width*height, frameData);
+    //pixelBuffer.getPointer()->writeData(0, width*height, frameData);
 
-    /*
-     * FIXME check functionality of above and remove this
+    //* FIXME check functionality of above and remove this
 		unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
 
     // Fill in some pixel data. This will give a semi-transparent blue,
@@ -250,7 +249,7 @@ namespace ape {
 			}
 
 			pDest += pixelBox.getRowSkip() * Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
-		}*/
+		}//*/
 
 		// Unlock the pixel buffer
 		pixelBuffer->unlock();
