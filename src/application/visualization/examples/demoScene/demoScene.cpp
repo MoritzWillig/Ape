@@ -11,7 +11,7 @@ namespace ape {
 int main(int argc, char** argv) {
   std::cout<<"Demo scene"<<std::endl;
 
-  ape::visualization::VisualizationController controller;
+  ape::visualization::VisualizationController controller(nullptr);
   controller.startDisplay();
 
 
