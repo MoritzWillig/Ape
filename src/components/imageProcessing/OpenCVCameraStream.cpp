@@ -17,7 +17,7 @@ namespace ape {
       if (!cap.isOpened())
         throw std::runtime_error("Error opening a camera stream");
 
-      cap.set(CV_CAP_PROP_CONVERT_RGB, 1);
+      cap.set(CV_CAP_PROP_CONVERT_RGB,1);
 
       frameWidth=(unsigned int)cap.get(CV_CAP_PROP_FRAME_WIDTH);
       frameHeight=(unsigned int)cap.get(CV_CAP_PROP_FRAME_HEIGHT);
