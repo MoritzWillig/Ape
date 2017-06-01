@@ -94,7 +94,7 @@ namespace ape {
 
       void updateTransformation();
 
-      glm::mat4x4 cameraIntrinsics;
+      glm::mat3x3 cameraIntrinsics;
       float* distCoeffs;
 
       //aruco
@@ -111,7 +111,7 @@ namespace ape {
       ImageProcessingController() = delete;
 
       ImageProcessingController(
-          glm::mat4x4 cameraIntrinsics,
+          glm::mat3x3 cameraIntrinsics,
           float* distCoeffs);
 
       // Copy constructor

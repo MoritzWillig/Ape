@@ -7,6 +7,8 @@
 
 #include "../../component/imageProcessing.h"
 
+#include "imageProcessing/OpenCVCameraStream.h"
+
 namespace ape {
 
 }

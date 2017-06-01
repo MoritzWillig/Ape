@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "../../visualization/component/visualization.h"
 #include "../../imageProcessing/component/imageProcessing.h"
@@ -23,30 +24,42 @@ struct DistCoeffs {
 
 //FIXME move to helper class
 static void readCameraParameters(
-		std::string filename, glm::mat4x4& camMatrix, DistCoeffs& distCoeffs) {
-	std::stringstream ss(filename, std::ios_base::in);
-
-	if (!ss) {
+		std::string filename, glm::mat3x3& camMatrix, DistCoeffs& distCoeffs) {
+	std::ifstream fs(filename);
+	if (!fs) {
 		throw new std::runtime_error("Could not read camera parameters");
 	}
 
-  //fixme use external format parser
-	for (auto i=0; i<16; i++) {
-		float* f;
-		ss>>f;
-		camMatrix[i]=f;
 
-    //read space
-    ss.read();
-	}
+  std::string line;
 
-  for (auto i=0; i<5; i++) {
-    float* f;
-    ss>>f;
-    distCoeffs.coeffs[i]=f;
+  //read and discard image dimensions
+  std::getline(fs, line);
 
-    //read space
-    ss.read();
+  //read whitespace separated matrix values
+  if (std::getline(fs, line)) {
+    std::istringstream in(line);
+
+    for (auto i = 0; i < 9; i++) {
+      float f;
+      in >> f;
+      camMatrix[i / 3][i % 3] = f;
+    }
+  } else {
+    throw std::runtime_error("invalid file format - A");
+  }
+
+  //read 5 whitespace separated distortion coefficients
+  if (std::getline(fs, line)) {
+    std::istringstream in(line);
+
+    for (auto i = 0; i < 5; i++) {
+      float f;
+      in >> f;
+      distCoeffs.coeffs[i] = f;
+    }
+  } else {
+    throw std::runtime_error("invalid file format - B");
   }
 }
 
@@ -54,7 +67,7 @@ int main(int argc, char** argv) {
 	std::cout << "Demo scene" << std::endl;
 
   //setup image processing
-  glm::mat4 camMatrix;
+  glm::mat3x3 camMatrix;
   DistCoeffs distCoeffs;
   //FIXME magic string
   readCameraParameters("out", camMatrix, distCoeffs);

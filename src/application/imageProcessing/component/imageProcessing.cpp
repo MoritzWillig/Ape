@@ -15,7 +15,7 @@ namespace ape {
   namespace imageProcessing {
 
     ImageProcessingController::ImageProcessingController(
-          glm::mat4x4 cameraIntrinsics,
+          glm::mat3x3 cameraIntrinsics,
           float* distCoeffs) :
         cvCameraStream(nullptr), lazyCameraStream(nullptr),
         searchedMarkerSignal(), marker(&searchedMarkerSignal),
@@ -72,39 +72,34 @@ namespace ape {
       searchedMarkerSignal.set();
 
       auto camStream = getCameraStream();
-      //FIXME C-cast ...
-      //FIXME we need to set a type, width & height?
-      cv::Mat frame(1,1,CV_8UC3,camStream->getCurrentFrame());
+      cv::Mat frame(
+          camStream->getFrameWidth(),
+          camStream->getFrameHeight(),
+          CV_8UC3, camStream->getCurrentFrame());
 
       // detect markers and estimate pose
       cv::aruco::detectMarkers(
           frame, dictionary, corners, ids, detectorParams, rejected);
 
-      cv::Mat cameraIntrinsics_(4,4,CV_64F); //FIXME right type
+      cv::Mat cameraIntrinsics_(3,3,CV_64F);
 
       //FIXME uhm......
       ((double*)cameraIntrinsics_.data)[0]=cameraIntrinsics[0][0];
       ((double*)cameraIntrinsics_.data)[1]=cameraIntrinsics[0][1];
       ((double*)cameraIntrinsics_.data)[2]=cameraIntrinsics[0][2];
-      ((double*)cameraIntrinsics_.data)[3]=cameraIntrinsics[0][3];
-      ((double*)cameraIntrinsics_.data)[4]=cameraIntrinsics[1][0];
-      ((double*)cameraIntrinsics_.data)[5]=cameraIntrinsics[1][1];
-      ((double*)cameraIntrinsics_.data)[6]=cameraIntrinsics[1][2];
-      ((double*)cameraIntrinsics_.data)[7]=cameraIntrinsics[1][3];
-      ((double*)cameraIntrinsics_.data)[8]=cameraIntrinsics[2][0];
-      ((double*)cameraIntrinsics_.data)[9]=cameraIntrinsics[2][1];
-      ((double*)cameraIntrinsics_.data)[10]=cameraIntrinsics[2][2];
-      ((double*)cameraIntrinsics_.data)[11]=cameraIntrinsics[2][3];
-      ((double*)cameraIntrinsics_.data)[12]=cameraIntrinsics[3][0];
-      ((double*)cameraIntrinsics_.data)[13]=cameraIntrinsics[3][1];
-      ((double*)cameraIntrinsics_.data)[14]=cameraIntrinsics[3][2];
-      ((double*)cameraIntrinsics_.data)[15]=cameraIntrinsics[3][3];
+      ((double*)cameraIntrinsics_.data)[3]=cameraIntrinsics[1][0];
+      ((double*)cameraIntrinsics_.data)[4]=cameraIntrinsics[1][1];
+      ((double*)cameraIntrinsics_.data)[5]=cameraIntrinsics[1][2];
+      ((double*)cameraIntrinsics_.data)[6]=cameraIntrinsics[2][0];
+      ((double*)cameraIntrinsics_.data)[7]=cameraIntrinsics[2][1];
+      ((double*)cameraIntrinsics_.data)[8]=cameraIntrinsics[2][2];
 
-      cv::Mat distCoeffs_(5, 1, CV_64F); //FIXME right type?
+      cv::Mat distCoeffs_(5, 1, CV_64F);
       ((double*)distCoeffs_.data)[0]=distCoeffs[0];
       ((double*)distCoeffs_.data)[1]=distCoeffs[1];
       ((double*)distCoeffs_.data)[2]=distCoeffs[2];
       ((double*)distCoeffs_.data)[3]=distCoeffs[3];
+      ((double*)distCoeffs_.data)[4]=distCoeffs[4];
 
       cv::aruco::estimatePoseSingleMarkers(
           corners, markerLength, cameraIntrinsics_, distCoeffs_, rvecs, tvecs);
