@@ -25,7 +25,7 @@ namespace ape {
     }
 
     unsigned int LazyCameraStream::getFrameHeight() {
-      return stream->getFrameWidth();
+      return stream->getFrameHeight();
     }
 
   }
