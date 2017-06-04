@@ -92,6 +92,12 @@ int main(int argc, char** argv) {
 	//FIXME refactor into separate class
 	auto frameTime = 1.0f / 30.0f;
 	while (!visController.getTerminateRequest()) {
+    appStateController.update(frameTime);
+
+    //FIXME only the appStateController should recive an update
+    //all this other stuff has to be moved into the corresponding states
+    //->currently all of this has to be put into WorldScreenState.update()
+
     ipController.update(frameTime);
 
     auto worldVisible = ipController.hasMarker();

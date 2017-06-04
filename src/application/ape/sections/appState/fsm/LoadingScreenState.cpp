@@ -19,6 +19,10 @@ namespace ape {
 
             }
 
+            void LoadingScreenState::update(float delta) {
+
+            }
+
           }
         }
       }

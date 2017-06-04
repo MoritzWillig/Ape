@@ -35,6 +35,8 @@ namespace ape {
 
               // Destructor
               virtual ~WorldScreenState() = default;
+
+              void update(float delta) override;
             };
 
           }

@@ -19,6 +19,10 @@ namespace ape {
 
             }
 
+            void MainMenuState::update(float delta) {
+
+            }
+
           }
         }
       }

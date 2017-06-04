@@ -35,6 +35,8 @@ namespace ape {
 
               // Destructor
               virtual ~MainMenuState() = default;
+
+              void update(float delta) override;
             };
 
           }

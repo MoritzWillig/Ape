@@ -19,6 +19,10 @@ namespace ape {
 
             }
 
+            void WorldScreenState::update(float delta) {
+
+            }
+
           }
         }
       }

@@ -36,6 +36,8 @@ namespace ape {
 
               // Destructor
               virtual ~LoadingScreenState() = default;
+
+              void update(float delta) override;
             };
 
           }

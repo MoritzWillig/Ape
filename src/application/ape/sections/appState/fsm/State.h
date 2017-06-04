@@ -43,6 +43,8 @@ namespace ape {
               void setActive(bool active);
 
               bool isActive();
+
+              virtual void update(float delta) = 0;
             };
 
           }
