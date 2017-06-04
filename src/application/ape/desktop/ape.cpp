@@ -3,6 +3,8 @@
 #include <thread>
 #include <fstream>
 
+#include "../sections/appState/AppStateController.h"
+
 #include "../../visualization/component/visualization.h"
 #include "../../imageProcessing/component/imageProcessing.h"
 
@@ -79,6 +81,12 @@ int main(int argc, char** argv) {
   ape::visualization::VisualizationController visController(camStream);
   visController.startDisplay();
 
+  ape::app::desktop::section::appState::AppStateController appStateController;
+
+  //FIXME remove this - only states should request a transition
+  appStateController.requestTransition(
+      ape::app::desktop::section::appState::AppStateController::State::WorldScreen
+  );
 
   //application loop
 	//FIXME refactor into separate class

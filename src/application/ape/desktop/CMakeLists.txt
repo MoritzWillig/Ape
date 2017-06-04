@@ -1,11 +1,22 @@
 project(ApeDesktop CXX)
 
+#get section sources
+get_directory_property(
+        APE_SECTION_APPSTATE_SOURCES DIRECTORY ../sections
+        DEFINITION APE_SECTION_APPSTATE_SOURCES)
+
+#sources for the application
 set(APE_SOURCES
         ape.cpp
         )
 
+#all required sources - including sections and components
 add_executable(apeDesktop
+        #application sources
         ${APE_SOURCES}
+        #sections
+        ${APE_SECTION_APPSTATE_SOURCES}
+        #components
         $<TARGET_OBJECTS:apeImageProcessing>
         #$<TARGET_OBJECTS:textureGen>
         $<TARGET_OBJECTS:apeVisualization>

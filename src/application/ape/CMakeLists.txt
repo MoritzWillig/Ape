@@ -1,1 +1,2 @@
+add_subdirectory(sections)
 add_subdirectory(desktop)
