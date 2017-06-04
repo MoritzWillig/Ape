@@ -11,9 +11,11 @@ namespace ape {
       namespace section {
         namespace appState {
 
-          AppStateController::AppStateController():
-              lsState(), mmState(), wsState(), activeState(lsState),
-              requestedState(lsState) {
+          AppStateController::AppStateController(
+              ape::imageProcessing::ImageProcessingController ipController,
+              ape::visualization::VisualizationController visController):
+              lsState(), mmState(), wsState(ipController,visController),
+              activeState(lsState), requestedState(lsState) {
             lsState.setActive(true);
           };
 

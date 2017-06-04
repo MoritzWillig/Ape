@@ -1,3 +1,4 @@
+#pragma once
 
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
@@ -11,6 +12,8 @@ namespace ape {
     private:
       imageProcessing::CameraStream* stream;
       AppWindow* scene;
+
+      glm::mat4x4 viewMatrix;
     protected:
     public:
       VisualizationController(imageProcessing::CameraStream* pStream);
@@ -23,9 +26,11 @@ namespace ape {
 
       void showScene();
 
-	    void update(float timeStep, const glm::mat4& viewMatrix);
+	    void update(float timeStep);
 
       bool getTerminateRequest();
+
+      void setViewTransform(const glm::mat4x4 viewMatrix);
     };
   }
 }

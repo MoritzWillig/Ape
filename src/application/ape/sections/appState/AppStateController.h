@@ -7,6 +7,8 @@
 #include "fsm/LoadingScreenState.h"
 #include "fsm/MainMenuState.h"
 #include "fsm/WorldScreenState.h"
+#include "../../../imageProcessing/component/imageProcessing.h"
+#include "../../../visualization/component/visualization.h"
 
 namespace ape {
   namespace app {
@@ -27,7 +29,11 @@ namespace ape {
             void transition(fsm::State& newState);
           public:
             //Default
-            AppStateController();
+            AppStateController()=delete;
+
+            AppStateController(
+                ape::imageProcessing::ImageProcessingController ipController,
+                ape::visualization::VisualizationController visController);
 
             // Copy constructor
             AppStateController(const AppStateController&) = default;

@@ -11,6 +11,12 @@ namespace ape {
         namespace appState {
           namespace fsm {
 
+            WorldScreenState::WorldScreenState(
+                ape::imageProcessing::ImageProcessingController ipController,
+                ape::visualization::VisualizationController visController):
+                ipController(ipController), visController(visController) {
+            }
+
             void WorldScreenState::onActivation() {
 
             }
@@ -20,7 +26,7 @@ namespace ape {
             }
 
             void WorldScreenState::update(float delta) {
-
+              visController.setViewTransform(ipController.getTransformation());
             }
 
           }

@@ -31,8 +31,12 @@ namespace ape {
     }
 
     void VisualizationController::update(
-        float timeStep, const glm::mat4& viewMatrix) {
+        float timeStep) {
       scene->update(timeStep, stream, viewMatrix);
+    }
+
+    void VisualizationController::setViewTransform(const glm::mat4x4 viewMatrix) {
+      this->viewMatrix=viewMatrix;
     }
 
   }

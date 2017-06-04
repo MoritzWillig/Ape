@@ -81,7 +81,10 @@ int main(int argc, char** argv) {
   ape::visualization::VisualizationController visController(camStream);
   visController.startDisplay();
 
-  ape::app::desktop::section::appState::AppStateController appStateController;
+  ape::app::desktop::section::appState::AppStateController appStateController(
+      ipController,
+      visController
+  );
 
   //FIXME remove this - only states should request a transition
   appStateController.requestTransition(
@@ -92,24 +95,15 @@ int main(int argc, char** argv) {
 	//FIXME refactor into separate class
 	auto frameTime = 1.0f / 30.0f;
 	while (!visController.getTerminateRequest()) {
-    appStateController.update(frameTime);
-
-    //FIXME only the appStateController should recive an update
-    //all this other stuff has to be moved into the corresponding states
-    //->currently all of this has to be put into WorldScreenState.update()
-
+    //update controllers handling incoming data
     ipController.update(frameTime);
 
-    auto worldVisible = ipController.hasMarker();
-    auto viewTransform = ipController.getTransformation();
+    //update internal app state
+    appStateController.update(frameTime);
 
-    //FIXME C-cast ...
-    //FIXME we need to set a type, width & height?
-    cv::Mat frame(1,1,CV_8UC3,camStream->getCurrentFrame());
+    //update visualization
+    visController.update(frameTime);
 
-    //FIXME if worldVisible display world. See #5 for filter description
-
-    visController.update(frameTime, viewTransform);
 		std::this_thread::sleep_for(std::chrono::microseconds((int)frameTime * 1000));
 	}
 
