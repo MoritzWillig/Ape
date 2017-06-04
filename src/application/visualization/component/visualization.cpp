@@ -18,11 +18,7 @@ namespace ape {
       scene=new AppWindow();
     }
 
-    void VisualizationController::showMenus() {
-
-    }
-
-    void VisualizationController::showScene() {
+    void VisualizationController::setOverlay(Overlay overlay) {
 
     }
 

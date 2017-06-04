@@ -18,7 +18,9 @@ namespace ape {
             }
 
             void WorldScreenState::onActivation() {
-
+              visController.setOverlay(
+                  ape::visualization::VisualizationController::Overlay::WorldScreen
+              );
             }
 
             void WorldScreenState::onDeactivation() {

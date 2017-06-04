@@ -22,9 +22,13 @@ namespace ape {
 
       void startDisplay();
 
-      void showMenus();
+      enum class Overlay {
+        Loading,
+        Menu,
+        WorldScreen
+      };
 
-      void showScene();
+      void setOverlay(Overlay overlay);
 
 	    void update(float timeStep);
 

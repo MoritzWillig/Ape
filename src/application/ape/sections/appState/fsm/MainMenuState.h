@@ -4,6 +4,8 @@
 //
 
 #include "State.h"
+#include "../../../../imageProcessing/component/imageProcessing.h"
+#include "../../../../visualization/component/visualization.h"
 
 namespace ape {
   namespace app {
@@ -14,12 +16,19 @@ namespace ape {
 
             class MainMenuState : public State {
             private:
+              ape::imageProcessing::ImageProcessingController ipController;
+              ape::visualization::VisualizationController visController;
             protected:
               virtual void onActivation() override;
               virtual void onDeactivation() override;
             public:
               //Default
-              MainMenuState() = default;
+              MainMenuState() = delete;
+
+              MainMenuState(
+                  ape::imageProcessing::ImageProcessingController ipController,
+                  ape::visualization::VisualizationController visController
+              );
 
               // Copy constructor
               MainMenuState(const MainMenuState&) = default;

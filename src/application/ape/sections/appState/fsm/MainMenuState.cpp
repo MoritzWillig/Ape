@@ -11,8 +11,17 @@ namespace ape {
         namespace appState {
           namespace fsm {
 
-            void MainMenuState::onActivation() {
+            MainMenuState::MainMenuState(
+                ape::imageProcessing::ImageProcessingController ipController,
+                ape::visualization::VisualizationController visController):
+                ipController(ipController), visController(visController) {
 
+            }
+
+            void MainMenuState::onActivation() {
+              visController.setOverlay(
+                  ape::visualization::VisualizationController::Overlay::Menu
+              );
             }
 
             void MainMenuState::onDeactivation() {

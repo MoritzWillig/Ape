@@ -4,6 +4,8 @@
 //
 
 #include "State.h"
+#include "../../../../visualization/component/visualization.h"
+#include "../../../../imageProcessing/component/imageProcessing.h"
 
 namespace ape {
   namespace app {
@@ -14,12 +16,19 @@ namespace ape {
 
             class LoadingScreenState : public State {
             private:
+              ape::imageProcessing::ImageProcessingController ipController;
+              ape::visualization::VisualizationController visController;
             protected:
               virtual void onActivation() override;
               virtual void onDeactivation() override;
             public:
               //Default
-              LoadingScreenState() = default;
+              LoadingScreenState() = delete;
+
+              LoadingScreenState(
+                  ape::imageProcessing::ImageProcessingController ipController,
+                  ape::visualization::VisualizationController visController
+              );
 
               // Copy constructor
               LoadingScreenState(const LoadingScreenState&) = default;

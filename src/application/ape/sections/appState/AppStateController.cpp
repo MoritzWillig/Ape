@@ -14,7 +14,9 @@ namespace ape {
           AppStateController::AppStateController(
               ape::imageProcessing::ImageProcessingController ipController,
               ape::visualization::VisualizationController visController):
-              lsState(), mmState(), wsState(ipController,visController),
+              lsState(ipController,visController),
+              mmState(ipController,visController),
+              wsState(ipController,visController),
               activeState(lsState), requestedState(lsState) {
             lsState.setActive(true);
           };

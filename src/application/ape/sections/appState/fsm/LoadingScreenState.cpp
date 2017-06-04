@@ -11,8 +11,17 @@ namespace ape {
         namespace appState {
           namespace fsm {
 
-            void LoadingScreenState::onActivation() {
+            LoadingScreenState::LoadingScreenState(
+                ape::imageProcessing::ImageProcessingController ipController,
+                ape::visualization::VisualizationController visController):
+                ipController(ipController), visController(visController) {
 
+            }
+
+            void LoadingScreenState::onActivation() {
+              visController.setOverlay(
+                  ape::visualization::VisualizationController::Overlay::Loading
+              );
             }
 
             void LoadingScreenState::onDeactivation() {
