@@ -95,6 +95,10 @@ int main(int argc, char** argv) {
 	//FIXME refactor into separate class
 	auto frameTime = 1.0f / 30.0f;
 	while (!visController.getTerminateRequest()) {
+    auto frameStart = std::chrono::time_point_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now()
+    );
+
     //update controllers handling incoming data
     ipController.update(frameTime);
 
@@ -104,7 +108,18 @@ int main(int argc, char** argv) {
     //update visualization
     visController.update(frameTime);
 
-		std::this_thread::sleep_for(std::chrono::microseconds((int)frameTime * 1000));
+
+    auto frameEnd = std::chrono::time_point_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now()
+    );
+    auto duration=(frameEnd-frameStart).count() / 1000.0;
+
+    if (duration<frameTime) {
+      auto remainingFrameTime=frameTime-duration;
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(
+          (int)(remainingFrameTime * 1000)));
+    }
 	}
 
 	std::cout << "Terminated" << std::endl;
