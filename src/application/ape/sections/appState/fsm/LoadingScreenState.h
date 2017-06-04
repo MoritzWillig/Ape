@@ -18,6 +18,8 @@ namespace ape {
             private:
               ape::imageProcessing::ImageProcessingController ipController;
               ape::visualization::VisualizationController visController;
+
+              Signal* onLoadingComplete;
             protected:
               virtual void onActivation() override;
               virtual void onDeactivation() override;
@@ -27,7 +29,8 @@ namespace ape {
 
               LoadingScreenState(
                   ape::imageProcessing::ImageProcessingController ipController,
-                  ape::visualization::VisualizationController visController
+                  ape::visualization::VisualizationController visController,
+                  Signal* onLoadingComplete
               );
 
               // Copy constructor

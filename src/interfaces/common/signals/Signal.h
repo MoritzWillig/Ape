@@ -17,10 +17,10 @@ public:
   }
 
   void set() {
-    signal=true;
+    set(true);
   }
 
-  void set(bool signal) {
+  virtual void set(bool signal) {
     this->signal=signal;
   }
 

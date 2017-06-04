@@ -13,8 +13,10 @@ namespace ape {
 
             LoadingScreenState::LoadingScreenState(
                 ape::imageProcessing::ImageProcessingController ipController,
-                ape::visualization::VisualizationController visController):
-                ipController(ipController), visController(visController) {
+                ape::visualization::VisualizationController visController,
+                Signal* onLoadingComplete):
+                ipController(ipController), visController(visController),
+                onLoadingComplete(onLoadingComplete) {
 
             }
 
@@ -29,7 +31,9 @@ namespace ape {
             }
 
             void LoadingScreenState::update(float delta) {
-
+              //if (isLoadingComplete) {
+                onLoadingComplete->set(true);
+              //}
             }
 
           }

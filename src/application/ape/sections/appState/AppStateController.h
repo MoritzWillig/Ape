@@ -18,6 +18,20 @@ namespace ape {
 
           class AppStateController {
           private:
+            class OnLoadingCompleteSignal : public Signal {
+            private:
+              AppStateController* asController;
+            public:
+              OnLoadingCompleteSignal(AppStateController* asController):
+                  asController(asController) {
+              }
+
+              void set(bool signal) {
+                Signal::set(signal);
+                asController->requestTransition(State::WorldScreen);
+              }
+            } onLoadingCompleteSignal;
+
           protected:
             fsm::LoadingScreenState lsState;
             fsm::MainMenuState mmState;

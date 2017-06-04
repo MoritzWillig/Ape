@@ -86,11 +86,6 @@ int main(int argc, char** argv) {
       visController
   );
 
-  //FIXME remove this - only states should request a transition
-  appStateController.requestTransition(
-      ape::app::desktop::section::appState::AppStateController::State::WorldScreen
-  );
-
   //application loop
 	//FIXME refactor into separate class
 	auto frameTime = 1.0f / 30.0f;
