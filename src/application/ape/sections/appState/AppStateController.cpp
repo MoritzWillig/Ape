@@ -12,8 +12,8 @@ namespace ape {
         namespace appState {
 
           AppStateController::AppStateController(
-              ape::imageProcessing::ImageProcessingController ipController,
-              ape::visualization::VisualizationController visController):
+              ape::imageProcessing::ImageProcessingController* ipController,
+              ape::visualization::IVisualizationController* visController):
               onLoadingCompleteSignal(this),
               lsState(ipController,visController, &onLoadingCompleteSignal),
               mmState(ipController,visController),

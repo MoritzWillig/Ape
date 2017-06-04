@@ -1,26 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
 
 namespace ape {
   namespace visualization {
 
-    class AppWindow;
-
-    class VisualizationController {
+    class IVisualizationController {
     private:
-      imageProcessing::CameraStream* stream;
-      AppWindow* scene;
-
-      glm::mat4x4 viewMatrix;
     protected:
     public:
-      VisualizationController(imageProcessing::CameraStream* pStream);
-
-      VisualizationController() = delete;
-
-      void startDisplay();
+      virtual void startDisplay() = 0;
 
       enum class Overlay {
         Loading,
@@ -28,13 +20,20 @@ namespace ape {
         WorldScreen
       };
 
-      void setOverlay(Overlay overlay);
+      virtual void setOverlay(Overlay overlay) = 0;
 
-	    void update(float timeStep);
+      virtual void update(float timeStep) = 0;
 
-      bool getTerminateRequest();
+      virtual bool getTerminateRequest() = 0;
 
-      void setViewTransform(const glm::mat4x4 viewMatrix);
+      virtual void setViewTransform(const glm::mat4x4 viewMatrix) = 0;
+
+      virtual void setProgress(float d) = 0;
+
+
+      static std::shared_ptr<IVisualizationController> createInstance(
+          imageProcessing::CameraStream* stream
+      );
     };
   }
 }

@@ -78,18 +78,19 @@ int main(int argc, char** argv) {
   auto camStream = ipController.getCameraStream();
 
   //setup visualization
-  ape::visualization::VisualizationController visController(camStream);
-  visController.startDisplay();
+  auto visController=
+      ape::visualization::IVisualizationController::createInstance(camStream);
+  visController->startDisplay();
 
   ape::app::desktop::section::appState::AppStateController appStateController(
-      ipController,
-      visController
+      &ipController,
+      visController.get()
   );
 
   //application loop
 	//FIXME refactor into separate class
 	auto frameTime = 1.0f / 30.0f;
-	while (!visController.getTerminateRequest()) {
+	while (!visController->getTerminateRequest()) {
     auto frameStart = std::chrono::time_point_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now()
     );
@@ -101,7 +102,7 @@ int main(int argc, char** argv) {
     appStateController.update(frameTime);
 
     //update visualization
-    visController.update(frameTime);
+    visController->update(frameTime);
 
 
     auto frameEnd = std::chrono::time_point_cast<std::chrono::milliseconds>(

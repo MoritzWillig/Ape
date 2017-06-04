@@ -12,14 +12,14 @@ namespace ape {
           namespace fsm {
 
             WorldScreenState::WorldScreenState(
-                ape::imageProcessing::ImageProcessingController ipController,
-                ape::visualization::VisualizationController visController):
+                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::visualization::IVisualizationController* visController):
                 ipController(ipController), visController(visController) {
             }
 
             void WorldScreenState::onActivation() {
-              visController.setOverlay(
-                  ape::visualization::VisualizationController::Overlay::WorldScreen
+              visController->setOverlay(
+                  ape::visualization::IVisualizationController::Overlay::WorldScreen
               );
             }
 
@@ -28,7 +28,7 @@ namespace ape {
             }
 
             void WorldScreenState::update(float delta) {
-              visController.setViewTransform(ipController.getTransformation());
+              visController->setViewTransform(ipController->getTransformation());
             }
 
           }

@@ -46,8 +46,8 @@ namespace ape {
             AppStateController()=delete;
 
             AppStateController(
-                ape::imageProcessing::ImageProcessingController ipController,
-                ape::visualization::VisualizationController visController);
+                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::visualization::IVisualizationController* visController);
 
             // Copy constructor
             AppStateController(const AppStateController&) = default;

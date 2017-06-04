@@ -12,15 +12,15 @@ namespace ape {
           namespace fsm {
 
             MainMenuState::MainMenuState(
-                ape::imageProcessing::ImageProcessingController ipController,
-                ape::visualization::VisualizationController visController):
+                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::visualization::IVisualizationController* visController):
                 ipController(ipController), visController(visController) {
 
             }
 
             void MainMenuState::onActivation() {
-              visController.setOverlay(
-                  ape::visualization::VisualizationController::Overlay::Menu
+              visController->setOverlay(
+                  ape::visualization::IVisualizationController::Overlay::Menu
               );
             }
 

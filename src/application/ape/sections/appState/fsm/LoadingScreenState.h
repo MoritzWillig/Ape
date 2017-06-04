@@ -16,10 +16,17 @@ namespace ape {
 
             class LoadingScreenState : public State {
             private:
-              ape::imageProcessing::ImageProcessingController ipController;
-              ape::visualization::VisualizationController visController;
+              const float animationTime = 3.0;
+            private:
+              ape::imageProcessing::ImageProcessingController* ipController;
+              ape::visualization::IVisualizationController* visController;
 
               Signal* onLoadingComplete;
+
+              float animationProgress;
+              float loadingProgress;
+              bool isLoadingCompleted();
+
             protected:
               virtual void onActivation() override;
               virtual void onDeactivation() override;
@@ -28,8 +35,8 @@ namespace ape {
               LoadingScreenState() = delete;
 
               LoadingScreenState(
-                  ape::imageProcessing::ImageProcessingController ipController,
-                  ape::visualization::VisualizationController visController,
+                  ape::imageProcessing::ImageProcessingController* ipController,
+                  ape::visualization::IVisualizationController* visController,
                   Signal* onLoadingComplete
               );
 
