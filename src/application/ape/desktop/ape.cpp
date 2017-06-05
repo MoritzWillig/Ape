@@ -2,11 +2,14 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <vector>
+#include <string>
 
 #include "../sections/appState/AppStateController.h"
 
 #include "../../visualization/component/visualization.h"
 #include "../../imageProcessing/component/imageProcessing.h"
+#include "../3rdparty/args.h"
 
 #include "opencv2/aruco.hpp"
 #include "opencv2/highgui.hpp"
@@ -19,6 +22,25 @@
 namespace ape {
 
 }
+
+// Command line options
+// for complete reference example, see
+// https://github.com/magcks/hotools/blob/master/args.example.cc
+struct Conf {
+  std::string intrinsics;
+
+  inline Conf(int argc, char **argv) : intrinsics("out")
+  {
+    args::parser args(argc, argv, "Ape desktop demo scene.");
+    const int ARG_INTR  = args.add_opt("intrinsics",  "Camera intrinics file");
+
+    for (int arg = args.next(); arg != args::parser::end; arg = args.next())
+    {
+      if (arg == ARG_INTR) intrinsics = args.val<std::string>();
+      // else if (arg == ...
+    }
+  }
+};
 
 struct DistCoeffs {
 	float coeffs[5];
@@ -64,14 +86,16 @@ static void readCameraParameters(
   }
 }
 
+
 int main(int argc, char** argv) {
-	std::cout << "Demo scene" << std::endl;
+  Conf conf(argc, argv);
+  std::cout << "Camera intrinsics file:  " << conf.intrinsics << std::endl;
 
   //setup image processing
   glm::mat3x3 camMatrix;
   DistCoeffs distCoeffs;
   //FIXME magic string
-  readCameraParameters("out", camMatrix, distCoeffs);
+  readCameraParameters(conf.intrinsics, camMatrix, distCoeffs);
 
   ape::imageProcessing::ImageProcessingController ipController(
       camMatrix, &distCoeffs.coeffs[0]);
