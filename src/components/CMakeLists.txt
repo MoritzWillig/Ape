@@ -1,4 +1,3 @@
 add_subdirectory(imageProcessing)
-add_subdirectory(textureGen)
 add_subdirectory(visualization)
 add_subdirectory(worldState)
