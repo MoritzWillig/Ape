@@ -5,14 +5,17 @@
 
 
 #include <cmath>
-#include <visualization/overlay/Shapes.h>
+#include <overlay/Shapes.h>
 #include <OGRE/OgrePolygon.h>
+#include <AppWindow.h>
 
 namespace ape {
   namespace visualization {
 
     class LoadingControllerStage {
     private:
+      AppWindow* appWindow;
+
       bool active;
 
       enum class AnimationStage {
@@ -29,11 +32,14 @@ namespace ape {
       float percent;
       float stageProgress;
 
+
       shapes::Container face;
     protected:
     public:
       //Default
-      LoadingControllerStage();
+      LoadingControllerStage() = delete;
+
+      LoadingControllerStage(AppWindow* appWindow);
 
       // Copy constructor
       LoadingControllerStage(const LoadingControllerStage&) = default;

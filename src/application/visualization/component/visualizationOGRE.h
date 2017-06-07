@@ -12,11 +12,12 @@ namespace ape {
 
     class OGREVisualizationController: public IVisualizationController {
     private:
+      AppWindow* appWindow;
+
       float percent;
       LoadingControllerStage ldcStage;
 
       imageProcessing::CameraStream* stream;
-      AppWindow* scene;
 
       glm::mat4x4 viewMatrix;
     protected:
@@ -24,8 +25,6 @@ namespace ape {
       OGREVisualizationController() = delete;
 
       OGREVisualizationController(imageProcessing::CameraStream* stream);
-
-      virtual void startDisplay() override;
 
       virtual void setOverlay(Overlay overlay) override;
 

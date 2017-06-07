@@ -22,12 +22,15 @@ class FrameListener : public Ogre::FrameListener {
 private:
   Ogre::RenderWindow* renderWindow;
 public:
-  FrameListener(Ogre::RenderWindow* renderWindow): renderWindow(renderWindow) {}
+  FrameListener(Ogre::RenderWindow* renderWindow) : renderWindow(
+      renderWindow) {}
+
   bool frameStarted(const Ogre::FrameEvent& evt) {
     // Stop render if main window is closed.
     return !renderWindow->isClosed();
   }
-  bool frameEnded(const Ogre::FrameEvent &evt) { return true; }
+
+  bool frameEnded(const Ogre::FrameEvent& evt) { return true; }
 };  // End of FrameListener class
 
 namespace ape {
@@ -36,8 +39,9 @@ namespace ape {
     bool AppWindow::createWindow() {
       root = new Ogre::Root("", "");
 
-      root->loadPlugin(std::string(OGRE_PLUGIN_DIR)+"/RenderSystem_GL");
-      root->loadPlugin(std::string(OGRE_PLUGIN_DIR)+"/Plugin_OctreeSceneManager");
+      root->loadPlugin(std::string(OGRE_PLUGIN_DIR) + "/RenderSystem_GL");
+      root->loadPlugin(
+          std::string(OGRE_PLUGIN_DIR) + "/Plugin_OctreeSceneManager");
 
       // we do this step just to get an iterator that we can use with setRenderSystem. In a future article
       // we actually will iterate the list to display which renderers are available.
@@ -48,9 +52,11 @@ namespace ape {
       // load the basic resource location(s)
       //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource", "FileSystem", "General");
       //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource/gui.lcd", "Zip", "GUI");
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(FONT_FOLDER, "FileSystem", "GUI");
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          FONT_FOLDER, "FileSystem", "GUI");
 
-      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
+      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
+          "General");
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
 
       // setup main window; hardcode some defaults for the sake of presentation
@@ -66,86 +72,92 @@ namespace ape {
       // add a camera
       mainCam = sceneMgr->createCamera("MainCam");
 
-      mainCam->setPosition(Ogre::Vector3(0.0f,0.0f,500.0f));
-      mainCam->lookAt(Ogre::Vector3(0.0f,0.0f,0.0f));
+      mainCam->setPosition(Ogre::Vector3(0.0f, 0.0f, 500.0f));
+      mainCam->lookAt(Ogre::Vector3(0.0f, 0.0f, 0.0f));
       mainCam->setNearClipDistance(0.05f);
       mainCam->setFarClipDistance(200.0f);
 
       // add viewport
       vp = renderWindow->addViewport(mainCam);
-      vp->setBackgroundColour(Ogre::ColourValue(0.2,0.3,0.7));
+      vp->setBackgroundColour(Ogre::ColourValue(0.2, 0.3, 0.7));
 
       return true;
     }
 
-	void AppWindow::createRessources() {
-		// load the basic resource location(s)
-		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(FONT_FOLDER, "FileSystem", "GUI");
-		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(MESH_FOLDER, "FileSystem", "General");
-		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(TEXTURE_FOLDER, "FileSystem", "General");
+    void AppWindow::createRessources() {
+      // load the basic resource location(s)
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          FONT_FOLDER, "FileSystem", "GUI");
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          MESH_FOLDER, "FileSystem", "General");
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          TEXTURE_FOLDER, "FileSystem", "General");
 
-		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
-		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
-		createFont();
-		createBackgroundTexture();
-	}
+      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
+          "General");
+      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
+      createFont();
+      createBackgroundTexture();
+    }
 
     void AppWindow::createFont() {
       // get the resource manager
-      Ogre::ResourceGroupManager &resGroupMgr = Ogre::ResourceGroupManager::getSingleton();
+      Ogre::ResourceGroupManager& resGroupMgr = Ogre::ResourceGroupManager::getSingleton();
       // tell it to look at this location
       resGroupMgr.addResourceLocation(FONT_FOLDER, "FileSystem");
       // get the font manager
-      Ogre::FontManager &fontMgr = Ogre::FontManager::getSingleton();
+      Ogre::FontManager& fontMgr = Ogre::FontManager::getSingleton();
       // create a font resource
-      Ogre::ResourcePtr font = fontMgr.create("MyFont","General");
+      Ogre::ResourcePtr font = fontMgr.create("MyFont", "General");
       // set as truetype
-      font->setParameter("type","truetype");
+      font->setParameter("type", "truetype");
       // set the .ttf file name
-      font->setParameter("source",FONT_FILE_NAME);
+      font->setParameter("source", FONT_FILE_NAME);
       // set the size
-      font->setParameter("size","26");
+      font->setParameter("size", "26");
       // set the dpi
-      font->setParameter("resolution","96");
+      font->setParameter("resolution", "96");
       // load the ttf
       font->load();
     }
 
-	void AppWindow::createBackgroundTexture() {
-		backgroundTexture = Ogre::TextureManager::getSingleton().createManual(
-			"BackgroundTexture", // name
-			Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-			Ogre::TEX_TYPE_2D,      // type
-			textureWidth, textureHeight,         // width & height
-			0,                // number of mipmaps
-			Ogre::PF_BYTE_RGB,     // pixel format //FIXME use camera format
-			Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
-		);
+    void AppWindow::createBackgroundTexture() {
+      backgroundTexture = Ogre::TextureManager::getSingleton().createManual(
+          "BackgroundTexture", // name
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+          Ogre::TEX_TYPE_2D,      // type
+          textureWidth, textureHeight,         // width & height
+          0,                // number of mipmaps
+          Ogre::PF_BYTE_RGB,     // pixel format //FIXME use camera format
+          Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
+      );
 
-		Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("Background", "General");
-		material->getTechnique(0)->getPass(0)->createTextureUnitState("BackgroundTexture");
-		material->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
-		material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-		material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+      Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
+          "Background", "General");
+      material->getTechnique(0)->getPass(0)->createTextureUnitState(
+          "BackgroundTexture");
+      material->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+      material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+      material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
 
-		// Create background rectangle covering the whole screen
-		rect = new Ogre::Rectangle2D(true);
-		rect->setCorners(-1.0, 1.0, 1.0, -1.0);
-		rect->setMaterial("Background");
+      // Create background rectangle covering the whole screen
+      rect = new Ogre::Rectangle2D(true);
+      rect->setCorners(-1.0, 1.0, 1.0, -1.0);
+      rect->setMaterial("Background");
 
-		// Render the background before everything else
-		rect->setRenderQueueGroup(Ogre::RENDER_QUEUE_BACKGROUND);
+      // Render the background before everything else
+      rect->setRenderQueueGroup(Ogre::RENDER_QUEUE_BACKGROUND);
 
-		// Use infinite AAB to always stay visible
-		Ogre::AxisAlignedBox aabInf;
-		aabInf.setInfinite();
-		rect->setBoundingBox(aabInf);
+      // Use infinite AAB to always stay visible
+      Ogre::AxisAlignedBox aabInf;
+      aabInf.setInfinite();
+      rect->setBoundingBox(aabInf);
 
 
 
-		// Example of background scrolling
-		//material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setScrollAnimation(-0.25, 0.0);
-	}
+      // Example of background scrolling
+      //material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setScrollAnimation(-0.25, 0.0);
+    }
 
     void AppWindow::createPanel() {
       // get the overlay manager
@@ -181,29 +193,33 @@ namespace ape {
       overlay->show();
     }
 
-	void AppWindow::initScene() {
-		// Add Cube
-		sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-		Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME, MESH_FILE_NAME);
-		Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-		ogreNode->setPosition(0, 0, 0);
-		ogreNode->setScale(0.001, 0.001, 0.001);
-		ogreNode->attachObject(ogreEntity);
+    void AppWindow::initScene() {
+      // Add Cube
+      sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+      Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME,
+                                                        MESH_FILE_NAME);
+      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      ogreNode->setPosition(0, 0, 0);
+      ogreNode->setScale(0.001, 0.001, 0.001);
+      ogreNode->attachObject(ogreEntity);
 
-		// Set Lighting
-		Ogre::Light* light = sceneMgr->createLight("MainLight");
-		light->setPosition(-20, 80, -50);
+      // Set Lighting
+      Ogre::Light* light = sceneMgr->createLight("MainLight");
+      light->setPosition(-20, 80, -50);
 
-		// Attach background to the scene
-		Ogre::SceneNode* node = sceneMgr->getRootSceneNode()->createChildSceneNode("Background");
-		node->attachObject(rect);
-	}
+      // Attach background to the scene
+      Ogre::SceneNode* node = sceneMgr->getRootSceneNode()->createChildSceneNode(
+          "Background");
+      node->attachObject(rect);
+    }
 
-    AppWindow::AppWindow() {
+    AppWindow::AppWindow():
+    //fixme magic string
+        nameGenerator("ape") {
       createWindow();
       createRessources();
       createPanel();
-	  initScene();
+      initScene();
     }
 
     AppWindow::~AppWindow() {
@@ -211,80 +227,93 @@ namespace ape {
       sceneMgr->destroyCamera(mainCam);
       root->destroySceneManager(sceneMgr);
       renderWindow->destroy();
-	  delete rect;
+      delete rect;
       delete root;
     }
 
 
-	void AppWindow::updateBackgroundTexture(
-      unsigned char* frameData, unsigned int width, unsigned int height) {
-		if (textureWidth != width || textureHeight != height) {
-			textureWidth = width;
-			textureHeight = height;
-			createBackgroundTexture();
-		}
-		// Get the pixel buffer
-		Ogre::HardwarePixelBufferSharedPtr pixelBuffer = backgroundTexture->getBuffer();
+    void AppWindow::updateBackgroundTexture(
+        unsigned char* frameData, unsigned int width, unsigned int height) {
+      if (textureWidth != width || textureHeight != height) {
+        textureWidth = width;
+        textureHeight = height;
+        createBackgroundTexture();
+      }
+      // Get the pixel buffer
+      Ogre::HardwarePixelBufferSharedPtr pixelBuffer = backgroundTexture->getBuffer();
 
-		// Lock the pixel buffer and get a pixel box
-		pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL); // for best performance use HBL_DISCARD!
-		const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
+      // Lock the pixel buffer and get a pixel box
+      pixelBuffer->lock(
+          Ogre::HardwareBuffer::HBL_NORMAL); // for best performance use HBL_DISCARD!
+      const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
-    //FIXME do we have to copy the buffer - find another way ...
-    //pixelBuffer.getPointer()->writeData(0, width*height, frameData);
+      //FIXME do we have to copy the buffer - find another way ...
+      //pixelBuffer.getPointer()->writeData(0, width*height, frameData);
 
-    //* FIXME check functionality of above and remove this
-		unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
+      //* FIXME check functionality of above and remove this
+      unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
 
-    // Fill in some pixel data. This will give a semi-transparent blue,
-		// but this is of course dependent on the chosen pixel format.
-		for (size_t j = 0; j < height; j++)
-		{
-			for (size_t i = 0; i < width; i++)
-			{
-				*pDest++ = frameData[3 * (width*j + i) + 0]; // B
-				*pDest++ = frameData[3 * (width*j + i) + 1]; // G
-				*pDest++ = frameData[3 * (width*j + i) + 2]; // R
-				*pDest++ = 127; // A
-			}
+      // Fill in some pixel data. This will give a semi-transparent blue,
+      // but this is of course dependent on the chosen pixel format.
+      for (size_t j = 0; j < height; j++) {
+        for (size_t i = 0; i < width; i++) {
+          *pDest++ = frameData[3 * (width * j + i) + 0]; // B
+          *pDest++ = frameData[3 * (width * j + i) + 1]; // G
+          *pDest++ = frameData[3 * (width * j + i) + 2]; // R
+          *pDest++ = 127; // A
+        }
 
-			pDest += pixelBox.getRowSkip() * Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
-		}//*/
+        pDest += pixelBox.getRowSkip() *
+                 Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+      }//*/
 
-		// Unlock the pixel buffer
-		pixelBuffer->unlock();
-	}
+      // Unlock the pixel buffer
+      pixelBuffer->unlock();
+    }
+
     void AppWindow::update(
         float timeStep, imageProcessing::CameraStream* stream,
         const glm::mat4& viewMatrix) {
-		//FrameListener listener(renderWindow); // Add the simple frame listener.
-		//root->addFrameListener(&listener);
-		//root->startRendering(); //we implement our own loop
+      //FrameListener listener(renderWindow); // Add the simple frame listener.
+      //root->addFrameListener(&listener);
+      //root->startRendering(); //we implement our own loop
 
 
-		  const float* vmPtr = glm::value_ptr(viewMatrix);
-      Ogre::Matrix4 matrix = Ogre::Matrix4(vmPtr[0], vmPtr[1], vmPtr[2], vmPtr[3],
-                                           vmPtr[4], vmPtr[5], vmPtr[6], vmPtr[7],
-                                           vmPtr[8], vmPtr[9], vmPtr[10], vmPtr[11],
-                                           vmPtr[12], vmPtr[13], vmPtr[14], vmPtr[15]);
-		mainCam->setCustomViewMatrix(true, matrix);
-		//mainCam->setDirection(Ogre::Vector3(rotation[0], rotation[1], rotation[2]));
-		//Ogre::Vector3 position = Ogre::Vector3(-translation[0], -translation[1], translation[2]);
-		//printf("Position: (%f, %f, %f)", position.x, position.y, position.z);
-		//mainCam->setPosition(position);
+      const float* vmPtr = glm::value_ptr(viewMatrix);
+      Ogre::Matrix4 matrix = Ogre::Matrix4(vmPtr[0], vmPtr[1], vmPtr[2],
+                                           vmPtr[3],
+                                           vmPtr[4], vmPtr[5], vmPtr[6],
+                                           vmPtr[7],
+                                           vmPtr[8], vmPtr[9], vmPtr[10],
+                                           vmPtr[11],
+                                           vmPtr[12], vmPtr[13], vmPtr[14],
+                                           vmPtr[15]);
+      mainCam->setCustomViewMatrix(true, matrix);
+      //mainCam->setDirection(Ogre::Vector3(rotation[0], rotation[1], rotation[2]));
+      //Ogre::Vector3 position = Ogre::Vector3(-translation[0], -translation[1], translation[2]);
+      //printf("Position: (%f, %f, %f)", position.x, position.y, position.z);
+      //mainCam->setPosition(position);
 
-		updateBackgroundTexture(
-        (unsigned char*)stream->getCurrentFrame(),
-        stream->getFrameWidth(), stream->getFrameHeight());
-		root->renderOneFrame(timeStep);
-		renderWindow->update(true);
+      updateBackgroundTexture(
+          (unsigned char*) stream->getCurrentFrame(),
+          stream->getFrameWidth(), stream->getFrameHeight());
+      root->renderOneFrame(timeStep);
+      renderWindow->update(true);
 
-		//we need this ...
-		Ogre::WindowEventUtilities::messagePump();
-		}
+      //we need this ...
+      Ogre::WindowEventUtilities::messagePump();
+    }
 
     bool AppWindow::isClosed() {
       return renderWindow->isClosed();
+    }
+
+    Ogre::SceneManager* AppWindow::getSceneMgr() {
+      return sceneMgr;
+    }
+
+    std::string AppWindow::createName() {
+      nameGenerator.generate();
     }
 
   }

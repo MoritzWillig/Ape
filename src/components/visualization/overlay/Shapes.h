@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <OGRE/OgreMovableObject.h>
 
 namespace ape {
   namespace visualization {
@@ -12,9 +13,11 @@ namespace ape {
       private:
       protected:
       public:
+        virtual ~Shape() = default;
+
         virtual void setVisible(bool visible) = 0;
 
-        virtual ~Shape() = default;
+        virtual Ogre::MovableObject* getOgreObject() = 0;
       };
 
       class Container : public Shape {
@@ -23,9 +26,11 @@ namespace ape {
       public:
         std::vector<std::shared_ptr<Shape>> childs;
 
+        virtual ~Container() = default;
+
         virtual void setVisible(bool visible) override;
 
-        virtual ~Container() = default;
+        virtual Ogre::MovableObject* getOgreObject() override;
       };
 
     }

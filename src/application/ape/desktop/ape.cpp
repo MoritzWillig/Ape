@@ -104,7 +104,6 @@ int main(int argc, char** argv) {
   //setup visualization
   auto visController=
       ape::visualization::IVisualizationController::createInstance(camStream);
-  visController->startDisplay();
 
   ape::app::desktop::section::appState::AppStateController appStateController(
       &ipController,

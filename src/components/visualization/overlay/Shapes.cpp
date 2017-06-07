@@ -12,6 +12,10 @@ namespace ape {
         }
       }
 
+      Ogre::MovableObject* Container::getOgreObject() {
+        return nullptr;
+      }
+
     }
   }
 }

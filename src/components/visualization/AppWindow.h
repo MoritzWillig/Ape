@@ -37,6 +37,8 @@ namespace ape {
       //FIXME magic numbers
 	  int textureWidth = 640;
 	  int textureHeight = 480;
+
+      Ogre::NameGenerator nameGenerator;
     protected:
     public:
       //Default
@@ -62,6 +64,11 @@ namespace ape {
           const glm::mat4& viewMatrix);
 
       bool isClosed();
+
+      Ogre::SceneManager* getSceneMgr();
+
+      std::string createName();
+
     };
 
   }

@@ -12,8 +12,6 @@ namespace ape {
     private:
     protected:
     public:
-      virtual void startDisplay() = 0;
-
       enum class Overlay {
         Loading,
         Menu,

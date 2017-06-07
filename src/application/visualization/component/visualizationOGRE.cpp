@@ -8,15 +8,7 @@ namespace ape {
 
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
-        percent(0.0), ldcStage(), stream(stream), scene(nullptr) {
-    }
-
-    void OGREVisualizationController::startDisplay() {
-      if (scene != nullptr) {
-        throw std::runtime_error("Display already initialized");
-      }
-
-      scene=new AppWindow();
+        appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow), stream(stream) {
     }
 
     void OGREVisualizationController::setOverlay(Overlay overlay) {
@@ -34,12 +26,12 @@ namespace ape {
     }
 
     bool OGREVisualizationController::getTerminateRequest() {
-      return scene->isClosed();
+      return appWindow->isClosed();
     }
 
     void OGREVisualizationController::update(
         float timeStep) {
-      scene->update(timeStep, stream, viewMatrix);
+      appWindow->update(timeStep, stream, viewMatrix);
     }
 
     void OGREVisualizationController::setViewTransform(const glm::mat4x4 viewMatrix) {

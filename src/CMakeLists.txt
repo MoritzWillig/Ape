@@ -3,7 +3,6 @@ set(APE_COMPONENTS_INCLUDE_DIR
         )
 
 set(APE_INTERFACE_SOURCES
-        ${APE_COMPONENTS_INCLUDE_DIR}/visualization/overlay/Shapes.cpp
         )
 
 add_subdirectory(components)

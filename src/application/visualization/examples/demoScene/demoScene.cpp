@@ -13,8 +13,6 @@ int main(int argc, char** argv) {
 
   auto controller=
       ape::visualization::IVisualizationController::createInstance(nullptr);
-  controller->startDisplay();
-
 
   //FIXME refactor into separate class
   auto frameTime=1.0f / 30.0f;

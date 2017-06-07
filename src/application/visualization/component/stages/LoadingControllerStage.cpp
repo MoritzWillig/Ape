@@ -3,25 +3,22 @@
 //
 
 #include <glm/vec2.hpp>
+#include <overlay/OgreShapes.h>
 #include "LoadingControllerStage.h"
 
 
 namespace ape {
   namespace visualization {
 
-    LoadingControllerStage::LoadingControllerStage():
-        active(false), stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY},
-        percent(0.0f), stageProgress(0.0f), face() {
-
-      //FIXME static array
-      /*shapes::Polygon2D stat(3, {
+    LoadingControllerStage::LoadingControllerStage(AppWindow* appWindow):
+        appWindow(appWindow), active(false),
+        stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY}, percent(0.0f),
+        stageProgress(0.0f), face() {
+      face.childs.emplace_back(std::make_shared<shapes::OgrePolygon2D>(
+          appWindow,std::vector<glm::vec2>({
           glm::vec2(-0.3, -1.0),
           glm::vec2(+0.3, -1.0),
-          glm::vec2(+0.0, +0.0)
-      });*/
-
-      //FIXME ...
-
+          glm::vec2(+0.0, +0.0)})));
     }
 
     void LoadingControllerStage::setActive(bool active) {
