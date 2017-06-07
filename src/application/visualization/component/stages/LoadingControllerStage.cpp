@@ -10,8 +10,8 @@ namespace ape {
   namespace visualization {
 
     LoadingControllerStage::LoadingControllerStage():
-        active(false), stageLength{0.7, 0.7, 0.4, 1.5, INFINITY},
-        percent(0.0), stageProgress(0.0), face() {
+        active(false), stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY},
+        percent(0.0f), stageProgress(0.0f), face() {
 
       //FIXME static array
       /*shapes::Polygon2D stat(3, {
