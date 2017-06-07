@@ -48,11 +48,11 @@ struct DistCoeffs {
 
 //FIXME move to helper class
 static void readCameraParameters(
-		std::string filename, glm::mat3x3& camMatrix, DistCoeffs& distCoeffs) {
-	std::ifstream fs(filename);
-	if (!fs) {
-		throw std::runtime_error("Could not read camera parameters");
-	}
+  std::string filename, glm::mat3x3& camMatrix, DistCoeffs& distCoeffs) {
+  std::ifstream fs(filename);
+  if (!fs) {
+    throw std::runtime_error("Could not read camera parameters");
+  }
 
   std::string line;
 
@@ -112,9 +112,9 @@ int main(int argc, char** argv) {
   );
 
   //application loop
-	//FIXME refactor into separate class
-	auto frameTime = 1.0f / 30.0f;
-	while (!visController->getTerminateRequest()) {
+  //FIXME refactor into separate class
+  auto frameTime = 1.0f / 30.0f;
+  while (!visController->getTerminateRequest()) {
     auto frameStart = std::chrono::time_point_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now()
     );
@@ -136,13 +136,11 @@ int main(int argc, char** argv) {
 
     if (duration<frameTime) {
       auto remainingFrameTime=frameTime-duration;
-
       std::this_thread::sleep_for(std::chrono::milliseconds(
           (int)(remainingFrameTime * 1000)));
     }
-	}
+  }
 
-	std::cout << "Terminated" << std::endl;
-
-	return 0;
+  std::cout << "Terminated" << std::endl;
+  return 0;
 }
