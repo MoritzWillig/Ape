@@ -17,6 +17,7 @@ add_executable(apeDesktop
         #sections
         ${APE_SECTION_APPSTATE_SOURCES}
         #components
+        ${APE_INTERFACE_SOURCES}
         $<TARGET_OBJECTS:apeImageProcessing>
         #$<TARGET_OBJECTS:textureGen>
         $<TARGET_OBJECTS:apeVisualization>

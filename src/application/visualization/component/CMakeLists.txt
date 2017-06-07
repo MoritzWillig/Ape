@@ -24,6 +24,7 @@ set(APE_VISUALIZATION_COMPONENT_SOURCES
         ${APE_VISUALIZATION_SOURCES}
         visualization.cpp
         visualizationOGRE.cpp
+        stages/LoadingControllerStage.cpp
         )
 
 #FIXME this is needed by the model. A variable should be defined there

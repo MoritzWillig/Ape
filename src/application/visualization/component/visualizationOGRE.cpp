@@ -8,7 +8,7 @@ namespace ape {
 
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
-        stream(stream), scene(nullptr) {
+        percent(0.0), ldcStage(), stream(stream), scene(nullptr) {
     }
 
     void OGREVisualizationController::startDisplay() {
@@ -20,7 +20,17 @@ namespace ape {
     }
 
     void OGREVisualizationController::setOverlay(Overlay overlay) {
-
+      switch (overlay) {
+        case Overlay::Loading:
+          ldcStage.setActive(true);
+          break;
+        case Overlay::Menu:
+          ldcStage.setActive(false);
+          break;
+        case Overlay::WorldScreen:
+          ldcStage.setActive(false);
+          break;
+      }
     }
 
     bool OGREVisualizationController::getTerminateRequest() {
@@ -37,7 +47,10 @@ namespace ape {
     }
 
     void OGREVisualizationController::setProgress(float percent) {
-      //TODO
+      auto diff=this->percent-percent;
+      ldcStage.update(diff);
+
+      this->percent=percent;
     }
 
   }

@@ -6,6 +6,7 @@ set(DEMO_SCENE_SOURCES
 
 add_executable(DemoScene
         ${DEMO_SCENE_SOURCES}
+        ${APE_INTERFACE_SOURCES}
         $<TARGET_OBJECTS:apeVisualization>
         )
 

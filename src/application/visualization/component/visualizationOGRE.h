@@ -5,11 +5,16 @@
 
 #include "AppWindow.h"
 
+#include "stages/LoadingControllerStage.h"
+
 namespace ape {
   namespace visualization {
 
     class OGREVisualizationController: public IVisualizationController {
     private:
+      float percent;
+      LoadingControllerStage ldcStage;
+
       imageProcessing::CameraStream* stream;
       AppWindow* scene;
 

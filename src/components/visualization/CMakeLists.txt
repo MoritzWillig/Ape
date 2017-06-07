@@ -3,6 +3,5 @@ set(APE_VISUALIZATION_COMPONENT_DIR
         )
 
 set(APE_VISUALIZATION_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/SceneController.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AppWindow.cpp
         )
