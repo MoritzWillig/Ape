@@ -14,11 +14,12 @@ namespace ape {
         appWindow(appWindow), active(false),
         stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY}, percent(0.0f),
         stageProgress(0.0f), face() {
+
       face.childs.emplace_back(std::make_shared<shapes::OgrePolygon2D>(
           appWindow,std::vector<glm::vec2>({
-          glm::vec2(-0.3, -1.0),
-          glm::vec2(+0.3, -1.0),
-          glm::vec2(+0.0, +0.0)})));
+          glm::vec2(+0.95, +0.95),
+          glm::vec2(+0.95, +0.7),
+          glm::vec2(+0.7, +0.95)})));
     }
 
     void LoadingControllerStage::setActive(bool active) {

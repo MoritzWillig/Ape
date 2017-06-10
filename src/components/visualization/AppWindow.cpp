@@ -132,6 +132,13 @@ namespace ape {
           Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
       );
 
+      Ogre::MaterialPtr ovMaterial = Ogre::MaterialManager::getSingleton().create(
+          "OverlayButton", "General");
+      ovMaterial->setDiffuse(1.0, 1.0, 1.0, 1.0);
+      ovMaterial->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+      ovMaterial->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+      ovMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+
       Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
           "Background", "General");
       material->getTechnique(0)->getPass(0)->createTextureUnitState(
