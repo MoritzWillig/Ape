@@ -163,6 +163,9 @@ namespace ape {
       // get the overlay manager
       Ogre::OverlayManager& overlayMgr = Ogre::OverlayManager::getSingleton();
 
+      Ogre::Overlay* GUIoverlay=overlayMgr.create("GUI");
+      GUIoverlay->show();
+
       // Create a panel
       Ogre::OverlayContainer* panel = static_cast<Ogre::OverlayContainer*>(
           overlayMgr.createOverlayElement("Panel", "PanelName"));

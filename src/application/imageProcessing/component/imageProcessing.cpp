@@ -5,6 +5,7 @@
 #include "imageProcessing.h"
 
 #include "OpenCVCameraStream.h"
+#include "FileCameraStream.h"
 #include "LazyCameraStream.h"
 
 #include <opencv2/calib3d.hpp>
@@ -29,6 +30,10 @@ namespace ape {
         viewMatrix() {
       //these can throw ...
       cvCameraStream = new OpenCVCameraStream();
+      //auto stream= new FileCameraStream(
+      //    "../../../data/dummy/cameraStream/marker01.avi");
+      //stream->setSize(640,480);
+      //cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
     }
 
