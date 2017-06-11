@@ -16,7 +16,9 @@ namespace ape {
 
             class LoadingScreenState : public State {
             private:
-              const float animationTime = 3.0;
+              //FIXME arbitrary value - we should get the
+              // actual animation time from the visualization controller
+              const float animationTime = 0.1;
             private:
               ape::imageProcessing::ImageProcessingController* ipController;
               ape::visualization::IVisualizationController* visController;

@@ -138,6 +138,7 @@ namespace ape {
       ovMaterial->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
       ovMaterial->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
       ovMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+      ovMaterial->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
 
       Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
           "Background", "General");

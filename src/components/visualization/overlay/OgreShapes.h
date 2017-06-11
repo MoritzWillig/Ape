@@ -22,13 +22,15 @@ namespace ape {
 
         void updateOgreObject();
       public:
-
         OgrePolygon2D(AppWindow* appWindow,
-                      std::vector<glm::vec2> shape);
+                      std::vector<glm::vec2> shape,
+                      Ogre::ColourValue colour);
 
         virtual void setVisible(bool visible) override;
 
         virtual Ogre::MovableObject* getOgreObject() override;
+
+        Ogre::ColourValue colour;
       };
 
     }

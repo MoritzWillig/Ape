@@ -2,6 +2,7 @@
 // Created by moritz on 03.06.17.
 //
 
+#include <iostream>
 #include "LoadingScreenState.h"
 
 namespace ape {

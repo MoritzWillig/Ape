@@ -7,9 +7,11 @@ namespace ape {
     namespace shapes {
 
       OgrePolygon2D::OgrePolygon2D(AppWindow* appWindow,
-                                   std::vector<glm::vec2> shape) :
+                                   std::vector<glm::vec2> shape,
+                                   Ogre::ColourValue colour) :
           appWindow(appWindow), shape(shape),
-          ogreObject(appWindow->getSceneMgr()->createManualObject()) {
+          ogreObject(appWindow->getSceneMgr()->createManualObject()),
+          colour(colour) {
         ogreObject->setUseIdentityProjection(true);
         ogreObject->setUseIdentityView(true);
         updateOgreObject();
@@ -25,9 +27,8 @@ namespace ape {
 
       void OgrePolygon2D::updateOgreObject() {
         ogreObject->begin("OverlayButton",
-                          Ogre::RenderOperation::OT_TRIANGLE_STRIP);
-
-        ogreObject->colour(1.0f,0.6f,0.0f);
+                          Ogre::RenderOperation::OT_TRIANGLE_FAN);
+        ogreObject->colour(colour);
 
         for (auto vertex: shape) {
           ogreObject->position(vertex.x, vertex.y, 0.0f);
@@ -37,7 +38,7 @@ namespace ape {
         for(unsigned int i=0; i<shape.size(); i++) {
           ogreObject->index(i);
         }
-        ogreObject->index(0);
+        //ogreObject->index(0);
 
         ogreObject->end();
 
@@ -51,7 +52,6 @@ namespace ape {
         ogreObject->setBoundingBox(aabInf);
 
         ogreObject->setVisible(true);
-
 
         appWindow->getSceneMgr()->getRootSceneNode()->createChildSceneNode()
             ->attachObject(ogreObject);

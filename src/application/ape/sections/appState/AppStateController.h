@@ -37,10 +37,10 @@ namespace ape {
             fsm::MainMenuState mmState;
             fsm::WorldScreenState wsState;
 
-            fsm::State& activeState;
-            fsm::State& requestedState;
+            fsm::State* activeState;
+            fsm::State* requestedState;
 
-            void transition(fsm::State& newState);
+            void transition(fsm::State* newState);
           public:
             //Default
             AppStateController()=delete;
