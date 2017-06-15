@@ -49,7 +49,7 @@ namespace ape {
       // Destructor
       ~TextureSynthesis() = default;
 
-      cv::Mat generateTexture(int windowSize);
+      void generateTexture(int windowSize, cv::Mat &texture);
     };
 
   }

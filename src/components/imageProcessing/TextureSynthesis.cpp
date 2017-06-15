@@ -3,8 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <opencv2/core.hpp>
-#include <opencv/cv.h>
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui.hpp"
 
 #include "TextureSynthesis.h"
 
@@ -14,6 +14,7 @@ namespace ape {
     // initialize the texture to size w x h
     TextureSynthesis::TextureSynthesis(cv::Mat const& image,
       std::size_t texture_w, std::size_t texture_h)
+      : texture_w(texture_w), texture_h(texture_h)
     {
       texture_red = new unsigned char* [texture_w];
       texture_green = new unsigned char* [texture_w];
@@ -46,20 +47,20 @@ namespace ape {
         sample_blue[i] = new unsigned char[sample_h];
       }
 
-      for (std::size_t j=0; j<sample_h; j++)
+      for (std::size_t j = 0; j < sample_h; j++)
       {
-        for(std::size_t i=0; i<sample_w; i++)
+        for(std::size_t i = 0; i < sample_w; i++)
         {
-          cv::Vec3b intensity = image.at<unsigned char>(j, i);
-          sample_red[i][j] = intensity.val[0];
-          sample_green[i][j] = intensity.val[1];
-          sample_blue[i][j] = intensity.val[2];
+          cv::Vec3b const& bgr = image.at<cv::Vec3b>(j, i);
+          sample_blue[i][j] = bgr.val[0];
+          sample_green[i][j] = bgr.val[1];
+          sample_red[i][j] = bgr.val[2];
         }
       }
     }
 
     // generate the texture from the sample using a search window of size x size
-    cv::Mat TextureSynthesis::generateTexture(int windowSize)
+    void TextureSynthesis::generateTexture(int windowSize, cv::Mat& texture)
     {
       int i, j, a=0;
 
@@ -91,32 +92,17 @@ namespace ape {
       std::cout<<"100% done" << std::endl;
       std::cout<<"Texture generation complete" << std::endl;
 
-
-      // return the texture
-//      unsigned char pixels[texture_h*texture_w*3];
-//      for (std::size_t j=0; j < texture_h; j++)
-//      {
-//        for(std::size_t i=0; i < texture_w; i++)
-//        {
-//        // red
-//          std::size_t idx = texture_w * j + i;
-//          pixels[idx] = texture_red[i][j];
-
-//          // green
-//          idx = texture_w*texture_h + texture_w * j + i;
-//          pixels[idx] = texture_green[i][j];
-
-//          // blue
-//          idx = 2 * texture_w*texture_h + texture_w * j + i;
-//          pixels[idx] = texture_blue[i][j];
-//        }
-//      }
-
-      //CImg<unsigned char> img((unsigned char*)pixels, texture_w, texture_h, 1, 3);
-      //img.save(filename);
-      cv::Mat texture;
-      return texture;
-
+      // write image in BGR format
+      for (std::size_t j=0; j < texture_h; j++)
+      {
+        for(std::size_t i=0; i < texture_w; i++)
+        {
+          cv::Vec3b& bgr = texture.at<cv::Vec3b>(j, i);
+          bgr[0] = texture_blue[i][j];
+          bgr[1] = texture_green[i][j];
+          bgr[2] = texture_red[i][j];
+        }
+      }
     }
 
     // initialize output texture with random pixels from the sample
@@ -131,9 +117,9 @@ namespace ape {
 
       srand(time(NULL));
 
-      for (std::size_t j=0; j<texture_h; j++)
+      for (std::size_t j=0; j < texture_h; j++)
       {
-        for(std::size_t i=0; i<texture_w; i++)
+        for(std::size_t i=0; i < texture_w; i++)
         {
           w = rand() % valid_w_length + dw;
           h = rand() % valid_h_length + dh;
