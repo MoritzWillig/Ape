@@ -18,6 +18,7 @@ include_directories(${APE_VISUALIZATION_COMPONENT_DIR})
 #should be defined there
 include_directories(${OGRE_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIR})
+include_directories(${glfw3_INCLUDE_DIRS})
 
 #merge model and controller to component target
 set(APE_VISUALIZATION_COMPONENT_SOURCES

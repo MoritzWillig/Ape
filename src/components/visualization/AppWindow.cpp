@@ -36,7 +36,29 @@ public:
 namespace ape {
   namespace visualization {
 
+    void glfw_error_callback(int error, const char* description)
+    {
+      fprintf(stderr, "Error: %s\n", description);
+    }
+
     bool AppWindow::createWindow() {
+      glfwSetErrorCallback(glfw_error_callback);
+      if (glfwInit()!=GLFW_TRUE)
+      {
+        throw std::runtime_error("Could not initialize glfw");
+      }
+
+      glfwWindow = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+      if (!glfwWindow)
+      {
+        //FIXME this needs to be called because createWindow is called from
+        //the constructor ...
+        glfwTerminate();
+        throw std::runtime_error("Window or OpenGL context creation failed");
+      }
+
+      glfwMakeContextCurrent(glfwWindow);
+
       root = new Ogre::Root("", "");
 
       root->loadPlugin(std::string(OGRE_PLUGIN_DIR) + "/RenderSystem_GL");
@@ -64,8 +86,12 @@ namespace ape {
       opts["resolution"] = "1024x768";
       opts["fullscreen"] = "false";
       opts["vsync"] = "true";
+      opts["externalWindowHandle"]=
+          Ogre::StringConverter::toString(glfwGetX11Window(glfwWindow));
 
-      renderWindow = root->createRenderWindow("Main", 1024, 768, false, &opts);
+      renderWindow = root->createRenderWindow("Ape!", 1024, 768, false, &opts);
+
+      glfwSetWindowTitle(glfwWindow, "My Window");
 
       // create the scene
       sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
@@ -236,7 +262,8 @@ namespace ape {
     }*/
 
     AppWindow::AppWindow():
-    //fixme magic string
+        glfwWindow(nullptr),
+        //fixme magic string
         nameGenerator("ape") {
       createWindow();
       createRessources();
@@ -251,6 +278,9 @@ namespace ape {
       renderWindow->destroy();
       delete rect;
       delete root;
+
+      glfwDestroyWindow(glfwWindow);
+      glfwTerminate();
     }
 
 
@@ -296,6 +326,8 @@ namespace ape {
     void AppWindow::update(
         float timeStep, imageProcessing::CameraStream* stream,
         const glm::mat4& viewMatrix) {
+      glfwPollEvents();
+
       //FrameListener listener(renderWindow); // Add the simple frame listener.
       //root->addFrameListener(&listener);
       //root->startRendering(); //we implement our own loop
@@ -327,7 +359,8 @@ namespace ape {
     }
 
     bool AppWindow::isClosed() {
-      return renderWindow->isClosed();
+      return (glfwWindowShouldClose(glfwWindow)==GLFW_TRUE);
+      //return renderWindow->isClosed();
     }
 
     Ogre::SceneManager* AppWindow::getSceneMgr() {

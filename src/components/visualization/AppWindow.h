@@ -8,9 +8,11 @@
 #include <OGRE/OgreFontManager.h>
 #include <glm/mat4x4.hpp>
 #include <imageProcessing/CameraStream.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
-//#include "OGRE/CEGUI/CEGUI.h"
-//#include "OGRE/OgreCEGUIRenderer.h"
+#define GLFW_EXPOSE_NATIVE_X11
+#include <GLFW/glfw3native.h>
 
 namespace ape {
   namespace visualization {
@@ -31,6 +33,7 @@ namespace ape {
 
       Ogre::Root* root;
       Ogre::RenderWindow* renderWindow;
+      GLFWwindow* glfwWindow;
       Ogre::SceneManager* sceneMgr;
       Ogre::Camera* mainCam;
       Ogre::Viewport* vp;

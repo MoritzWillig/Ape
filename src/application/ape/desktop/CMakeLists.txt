@@ -26,6 +26,7 @@ add_executable(apeDesktop
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${OGRE_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIR})
 
 include_directories(${APE_COMPONENTS_INCLUDE_DIR})
@@ -37,4 +38,5 @@ target_link_libraries(apeDesktop Threads::Threads)
 
 target_link_libraries(apeDesktop ${OpenCV_LIBRARIES})
 target_link_libraries(apeDesktop ${OGRE_LIBRARIES})
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+include_directories(apeDesktop ${glfw3_LIBRARIES})
+target_link_libraries(apeDesktop glfw)
