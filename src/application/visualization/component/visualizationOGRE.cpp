@@ -8,19 +8,24 @@ namespace ape {
 
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
-        appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow), stream(stream) {
+        appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
+        tssStage(appWindow), wsStage(appWindow), stream(stream) {
     }
 
-    void OGREVisualizationController::setOverlay(Overlay overlay) {
+    void OGREVisualizationController::setOverlay(Overlay overlay, bool enable) {
       switch (overlay) {
         case Overlay::Loading:
-          ldcStage.setActive(true);
+          ldcStage.setActive(enable);
           break;
         case Overlay::Menu:
-          ldcStage.setActive(false);
+          //FIXME
+          //xyzStage.setActive(enable);
           break;
         case Overlay::WorldScreen:
-          ldcStage.setActive(false);
+          wsStage.setActive(enable);
+          break;
+        case Overlay::TextureSynthesisSelection:
+          tssStage.setActive(enable);
           break;
       }
     }
@@ -32,6 +37,10 @@ namespace ape {
     void OGREVisualizationController::update(
         float timeStep) {
       appWindow->update(timeStep, stream, viewMatrix);
+
+      //FIXME all stages should contain an update method ...
+      wsStage.update(timeStep);
+      tssStage.update(timeStep);
     }
 
     void OGREVisualizationController::setViewTransform(const glm::mat4x4 viewMatrix) {

@@ -25,6 +25,8 @@ set(APE_VISUALIZATION_COMPONENT_SOURCES
         visualization.cpp
         visualizationOGRE.cpp
         stages/LoadingControllerStage.cpp
+        stages/TextureSynthesisSelectionStage.cpp
+        stages/WorldScreenStage.cpp
         )
 
 #FIXME this is needed by the model. A variable should be defined there

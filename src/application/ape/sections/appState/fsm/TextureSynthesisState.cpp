@@ -2,7 +2,7 @@
 // Created by moritz on 03.06.17.
 //
 
-#include "WorldScreenState.h"
+#include "TextureSynthesisState.h"
 
 namespace ape {
   namespace app {
@@ -11,28 +11,28 @@ namespace ape {
         namespace appState {
           namespace fsm {
 
-            WorldScreenState::WorldScreenState(
+            TextureSynthesis::TextureSynthesis(
                 ape::imageProcessing::ImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController):
                 ipController(ipController), visController(visController) {
             }
 
-            void WorldScreenState::onActivation() {
+            void TextureSynthesis::onActivation() {
               visController->setOverlay(
-                  ape::visualization::IVisualizationController::Overlay::WorldScreen,
+                  ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection,
                   true
               );
             }
 
-            void WorldScreenState::onDeactivation() {
+            void TextureSynthesis::onDeactivation() {
               visController->setOverlay(
-                  ape::visualization::IVisualizationController::Overlay::WorldScreen,
+                  ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection,
                   false
               );
             }
 
-            void WorldScreenState::update(float delta) {
-              visController->setViewTransform(ipController->getTransformation());
+            void TextureSynthesis::update(float delta) {
+
             }
 
           }

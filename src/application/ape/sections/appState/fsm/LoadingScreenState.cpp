@@ -33,12 +33,16 @@ namespace ape {
               loadingProgress=0.0;
 
               visController->setOverlay(
-                  ape::visualization::IVisualizationController::Overlay::Loading
+                  ape::visualization::IVisualizationController::Overlay::Loading,
+                  true
               );
             }
 
             void LoadingScreenState::onDeactivation() {
-
+              visController->setOverlay(
+                  ape::visualization::IVisualizationController::Overlay::Loading,
+                  false
+              );
             }
 
             void LoadingScreenState::update(float delta) {

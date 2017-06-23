@@ -15,10 +15,11 @@ namespace ape {
       enum class Overlay {
         Loading,
         Menu,
-        WorldScreen
+        WorldScreen,
+        TextureSynthesisSelection
       };
 
-      virtual void setOverlay(Overlay overlay) = 0;
+      virtual void setOverlay(Overlay overlay, bool enable) = 0;
 
       virtual void update(float timeStep) = 0;
 

@@ -6,6 +6,8 @@
 #include "AppWindow.h"
 
 #include "stages/LoadingControllerStage.h"
+#include "stages/TextureSynthesisSelectionStage.h"
+#include "stages/WorldScreenStage.h"
 
 namespace ape {
   namespace visualization {
@@ -16,6 +18,9 @@ namespace ape {
 
       float percent;
       LoadingControllerStage ldcStage;
+      TextureSynthesisSelectionStage tssStage;
+      WorldScreenStage wsStage;
+
 
       imageProcessing::CameraStream* stream;
 
@@ -26,7 +31,7 @@ namespace ape {
 
       OGREVisualizationController(imageProcessing::CameraStream* stream);
 
-      virtual void setOverlay(Overlay overlay) override;
+      virtual void setOverlay(Overlay overlay, bool enable) override;
 
       virtual void update(float timeStep) override;
 
