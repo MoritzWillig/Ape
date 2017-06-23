@@ -4,7 +4,6 @@ skipGLM=true
 skipOpenCV=true
 skipbgfx=true
 skipOGRE=true
-skipOIS=false
 
 if [ "$skipGLM" = false ] ; then
     git clone git@github.com:g-truc/glm.git glm
@@ -54,19 +53,6 @@ if [ "$skipbgfx" = false ] ; then
 	make linux-debug64
 
 	cd ..
-fi
-
-if [ "$skipOIS" = false ] ; then
-    clone git@github.com:wgois/OIS.git ois
-    cd ois
-
-    #Steps to build on Linux:
-    ./bootstrap
-    ./configure --prefix ../customInstall/
-    ./make
-    ./make install
-
-    cd ..
 fi
 
 if [ "$skipOGRE" = false ] ; then
