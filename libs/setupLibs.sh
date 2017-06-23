@@ -1,13 +1,14 @@
 #!/bin/bash
 
-skipGLM=false
-skipOpenCV=false
+skipGLM=true
+skipOpenCV=true
 skipbgfx=true
-skipOGRE=false
+skipOGRE=true
+skipOIS=false
 
 if [ "$skipGLM" = false ] ; then
     git clone git@github.com:g-truc/glm.git glm
-    
+
     cd glm
     git fetch --tags
     git checkout tags/0.9.8.4
@@ -16,7 +17,7 @@ if [ "$skipGLM" = false ] ; then
     #files
     mkdir include
     mv glm include/glm
-    
+
     cd ..
 fi
 
@@ -53,6 +54,19 @@ if [ "$skipbgfx" = false ] ; then
 	make linux-debug64
 
 	cd ..
+fi
+
+if [ "$skipOIS" = false ] ; then
+    clone git@github.com:wgois/OIS.git ois
+    cd ois
+
+    #Steps to build on Linux:
+    ./bootstrap
+    ./configure --prefix ../customInstall/
+    ./make
+    ./make install
+
+    cd ..
 fi
 
 if [ "$skipOGRE" = false ] ; then

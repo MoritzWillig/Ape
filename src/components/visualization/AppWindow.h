@@ -9,6 +9,9 @@
 #include <glm/mat4x4.hpp>
 #include <imageProcessing/CameraStream.h>
 
+//#include "OGRE/CEGUI/CEGUI.h"
+//#include "OGRE/OgreCEGUIRenderer.h"
+
 namespace ape {
   namespace visualization {
 

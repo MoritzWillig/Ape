@@ -7,8 +7,8 @@
 #include "opencv2/aruco/charuco.hpp"
 
 // this didn't work for some reason...
-//#include "imageProcessing/TextureSynthesis.h"
-#include "../../../../components/imageProcessing/TextureSynthesis.h"
+//#include "imageProcessing/textureSynthesis.h"
+#include "../../../../components/imageProcessing/textureSynthesis/TextureSynthesis.h"
 #include "../3rdparty/args.h"
 
 

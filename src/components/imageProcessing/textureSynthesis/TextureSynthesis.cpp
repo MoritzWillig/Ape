@@ -247,7 +247,7 @@ namespace ape {
 // Save the exhaustive search in case we need it later...
 //
 //    // find the best match for the texture image at pixel (i, j) using a window of size x size
-//    void TextureSynthesis::findBestMatchExhaustive(int i, int j, int size)
+//    void textureSynthesis::findBestMatchExhaustive(int i, int j, int size)
 //    {
 //            int endw = sample_w-size/2;
 //            int endh = sample_h;

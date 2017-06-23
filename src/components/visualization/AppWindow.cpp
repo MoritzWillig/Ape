@@ -224,6 +224,17 @@ namespace ape {
       node->attachObject(rect);
     }
 
+/*    void AppWindow::initInputHandler() {
+      Ogre::OIS
+      OIS::ParamList pl;
+      size_t windowHnd = 0;
+      std::ostringstream windowHndStr;
+      m_win->getCustomAttribute("WINDOW", &windowHnd);
+      windowHndStr << windowHnd;
+      pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+      m_InputManager = OIS::InputManager::createInputSystem( pl );
+    }*/
+
     AppWindow::AppWindow():
     //fixme magic string
         nameGenerator("ape") {
