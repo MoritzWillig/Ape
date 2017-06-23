@@ -3,13 +3,14 @@
 //
 
 #include "AppWindow.h"
+#include "../../../libs/opencv/customInstall/include/opencv2/core/mat.hpp"
 
 #include <OGRE/Ogre.h>
 #include <OGRE/OgreFontManager.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <imageProcessing/CameraStream.h>
-
+#include <opencv2/imgcodecs.hpp>
 
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
@@ -89,9 +90,8 @@ namespace ape {
       opts["externalWindowHandle"]=
           Ogre::StringConverter::toString(glfwGetX11Window(glfwWindow));
 
-      renderWindow = root->createRenderWindow("Ape!", 1024, 768, false, &opts);
-
-      glfwSetWindowTitle(glfwWindow, "My Window");
+      renderWindow = root->createRenderWindow("title", 1024, 768, false, &opts);
+      glfwSetWindowTitle(glfwWindow,"Ape!");
 
       // create the scene
       sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
