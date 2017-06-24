@@ -41,7 +41,13 @@ namespace ape {
         }
       }
 
-      return src;
+      if ((src.rows==frameHeight) && (src.cols==frameWidth)) {
+        return src;
+      } else {
+        cv::Mat srcResized;
+        cv::resize(src,srcResized,cv::Size(frameWidth,frameHeight));
+        return srcResized;
+      }
     }
 
     unsigned int FileCameraStream::getFrameWidth() {
@@ -53,8 +59,11 @@ namespace ape {
     }
 
     void FileCameraStream::setSize(unsigned int width, unsigned int height) {
+      //does only sometimes work - if it does it is ok
+      //if not, we resize the image in getCurrentFrame manually
       cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
       cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
+
       frameWidth=width;
       frameHeight=height;
     }

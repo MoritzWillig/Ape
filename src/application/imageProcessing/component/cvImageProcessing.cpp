@@ -39,6 +39,11 @@ namespace ape {
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
     }
 
+    CvImageProcessingController::~CvImageProcessingController() {
+      delete lazyCameraStream;
+      delete cvCameraStream;
+    }
+
     // Source: http://stackoverflow.com/questions/3712049/how-to-use-an-opencv-rotation-and-translation-vector-with-opengl-es-in-android
     //FIXME move to helper class
     static glm::mat4x4 convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translation) {

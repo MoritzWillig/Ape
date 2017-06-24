@@ -353,8 +353,9 @@ namespace ape {
           *pDest++=127;*/
         }
 
-        //pDest += pixelBox.getRowSkip() *
-        //         Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+        pDest += pixelBox.getRowSkip() *
+                 Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+
       }//*/
 
       // Unlock the pixel buffer

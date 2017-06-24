@@ -67,7 +67,7 @@ namespace ape {
       operator=(CvImageProcessingController&&)& = default;
 
       // Destructor
-      virtual ~CvImageProcessingController() = default;
+      virtual ~CvImageProcessingController();
 
       virtual void update(float timeDelta) override;
 
