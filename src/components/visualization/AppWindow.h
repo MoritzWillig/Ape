@@ -30,6 +30,7 @@ namespace ape {
 
   	  void createRessources();
 	    void createBackgroundTexture();
+      void createCoordinateAxes();
 
 	    void updateBackgroundTexture(
           cv::Mat frame, unsigned int width, unsigned int height);
@@ -44,10 +45,12 @@ namespace ape {
       Ogre::Viewport* vp;
 	    Ogre::Rectangle2D* rect;
 	    Ogre::TexturePtr backgroundTexture;
+      Ogre::ManualObject* coordAxes;
 
       //FIXME magic numbers
 	    int textureWidth = 640;
 	    int textureHeight = 480;
+      float coordAxesLength = 0.05;
 
       Ogre::NameGenerator nameGenerator;
     protected:

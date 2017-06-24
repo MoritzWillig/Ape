@@ -155,6 +155,7 @@ namespace ape {
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
       createFont();
       createBackgroundTexture();
+      createCoordinateAxes();
     }
 
     void AppWindow::createFont() {
@@ -224,6 +225,21 @@ namespace ape {
       //material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setScrollAnimation(-0.25, 0.0);
     }
 
+    void AppWindow::createCoordinateAxes() {
+      coordAxes = sceneMgr->createManualObject("MyAxis");
+      coordAxes->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_LIST);
+      coordAxes->position(0, 0, 0);
+      coordAxes->colour(1, 0, 0);
+      coordAxes->position(coordAxesLength, 0, 0);
+      coordAxes->position(0, 0, 0);
+      coordAxes->colour(0, 1, 0);
+      coordAxes->position(0, coordAxesLength, 0);
+      coordAxes->position(0, 0, 0);
+      coordAxes->colour(0, 0, 1);
+      coordAxes->position(0, 0, coordAxesLength);
+      coordAxes->end();
+    }
+
     void AppWindow::createPanel() {
       // get the overlay manager
       Ogre::OverlayManager& overlayMgr = Ogre::OverlayManager::getSingleton();
@@ -267,9 +283,15 @@ namespace ape {
       Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME,
                                                         MESH_FILE_NAME);
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->setPosition(0, 0, 0);
+      ogreNode->setPosition(0, 0, 0.05);
       ogreNode->setScale(0.001, 0.001, 0.001);
       ogreNode->attachObject(ogreEntity);
+
+      Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
+          createChildSceneNode("debug");
+      debugNode->setPosition(0, 0, 0);
+      debugNode->setScale(1.0, 1.0, 1.0);
+      debugNode->attachObject(coordAxes);
 
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
