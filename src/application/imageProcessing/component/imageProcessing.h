@@ -1,9 +1,8 @@
 #pragma once
-//
-// Created by moritz on 20.05.17.
-//
 
 #include "imageProcessing/CameraStream.h"
+
+#include <memory>
 
 #include "glm/glm.hpp"
 #include <opencv2/aruco/dictionary.hpp>
@@ -14,66 +13,49 @@
 namespace ape {
   namespace imageProcessing {
 
-    class ImageProcessingController {
+    class IImageProcessingController {
     private:
-      //FIXME we dont want to show OpenCV- / LazyCameraStream to the public
-      //but it would be nice to state the actual types here
-      //(without using pointers)
-      CameraStream* cvCameraStream;
-      CameraStream* lazyCameraStream;
-
-      Signal searchedMarkerSignal;
-      SignalOrDefault<bool> marker;
-      SignalOrDefault<glm::mat4x4> transformation;
-
-      void updateTransformation();
-
-      glm::mat3x3 cameraIntrinsics;
-      float* distCoeffs;
-
-      //aruco
-      cv::Ptr<cv::aruco::Dictionary> dictionary;
-      float markerLength;
-      std::vector<int> ids;
-      std::vector<std::vector< cv::Point2f > > corners, rejected;
-      std::vector<cv::Vec3d> rvecs, tvecs;
-      cv::Ptr<cv::aruco::DetectorParameters> detectorParams;
-      glm::mat4x4 viewMatrix;
     protected:
     public:
       //Default
-      ImageProcessingController() = delete;
-
-      ImageProcessingController(
-          glm::mat3x3 cameraIntrinsics,
-          float* distCoeffs);
+      IImageProcessingController() = default;
 
       // Copy constructor
-      ImageProcessingController(const ImageProcessingController&) = default;
+      IImageProcessingController(const IImageProcessingController&) = default;
 
       // Move constructor
-      ImageProcessingController(ImageProcessingController&&) = default;
+      IImageProcessingController(IImageProcessingController&&) = default;
 
       // Copy assignment operator
-      ImageProcessingController&
-      operator=(const ImageProcessingController&)& = default;
+      IImageProcessingController&
+      operator=(const IImageProcessingController&)& = default;
 
       // Move assignment operator
-      ImageProcessingController&
-      operator=(ImageProcessingController&&)& = default;
+      IImageProcessingController&
+      operator=(IImageProcessingController&&)& = default;
 
       // Destructor
-      virtual ~ImageProcessingController() = default;
+      virtual ~IImageProcessingController() = default;
 
-      void update(float timeDelta);
+      virtual void update(float timeDelta)=0;
 
-      CameraStream* getCameraStream();
+      virtual CameraStream* getCameraStream() = 0;
 
-      bool getTerminateRequest();
+      virtual bool getTerminateRequest() = 0;
 
-      bool hasMarker();
+      //AR tracking
+      virtual bool hasMarker() = 0;
 
-      glm::mat4x4 getTransformation();
+      virtual glm::mat4x4 getTransformation() = 0;
+
+      //texture synthesis
+      virtual cv::Mat extractTextureFromStream(const cv::Rect regionOfInterest)
+        = 0;
+
+      static std::shared_ptr<IImageProcessingController> createInstance(
+          glm::mat3x3 cameraIntrinsics,
+          float* distCoeffs
+      );
 
     };
 

@@ -97,16 +97,17 @@ int main(int argc, char** argv) {
   //FIXME magic string
   readCameraParameters(conf.intrinsics, camMatrix, distCoeffs);
 
-  ape::imageProcessing::ImageProcessingController ipController(
-      camMatrix, &distCoeffs.coeffs[0]);
-  auto camStream = ipController.getCameraStream();
+  auto  ipController=
+      ape::imageProcessing::IImageProcessingController::createInstance(
+          camMatrix, &distCoeffs.coeffs[0]);
+  auto camStream = ipController->getCameraStream();
 
   //setup visualization
   auto visController=
       ape::visualization::IVisualizationController::createInstance(camStream);
 
   ape::app::desktop::section::appState::AppStateController appStateController(
-      &ipController,
+      ipController.get(),
       visController.get()
   );
 
@@ -146,7 +147,7 @@ int main(int argc, char** argv) {
     );
 
     //update controllers handling incoming data
-    ipController.update(frameTime);
+    ipController->update(frameTime);
 
     //update internal app state
     appStateController.update(frameTime);

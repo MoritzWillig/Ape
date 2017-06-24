@@ -12,7 +12,7 @@ namespace ape {
           namespace fsm {
 
             MainMenuState::MainMenuState(
-                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController):
                 ipController(ipController), visController(visController) {
 

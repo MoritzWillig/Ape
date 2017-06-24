@@ -20,7 +20,7 @@ namespace ape {
               // actual animation time from the visualization controller
               const float animationTime = 0.1;
             private:
-              ape::imageProcessing::ImageProcessingController* ipController;
+              ape::imageProcessing::IImageProcessingController* ipController;
               ape::visualization::IVisualizationController* visController;
 
               Signal* onLoadingComplete;
@@ -37,7 +37,7 @@ namespace ape {
               LoadingScreenState() = delete;
 
               LoadingScreenState(
-                  ape::imageProcessing::ImageProcessingController* ipController,
+                  ape::imageProcessing::IImageProcessingController* ipController,
                   ape::visualization::IVisualizationController* visController,
                   Signal* onLoadingComplete
               );

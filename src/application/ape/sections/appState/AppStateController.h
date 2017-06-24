@@ -46,7 +46,7 @@ namespace ape {
             AppStateController()=delete;
 
             AppStateController(
-                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController);
 
             // Copy constructor

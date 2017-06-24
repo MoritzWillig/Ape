@@ -12,7 +12,7 @@ namespace ape {
           namespace fsm {
 
             TextureSynthesis::TextureSynthesis(
-                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController):
                 ipController(ipController), visController(visController) {
             }

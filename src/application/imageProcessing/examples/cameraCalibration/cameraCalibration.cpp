@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
   std::vector<std::vector<int>> allIds;
   std::vector<cv::Mat> allImgs;
 
-  ape::imageProcessing::ImageProcessingController controller(glm::mat3(), nullptr);
+  ape::imageProcessing::IImageProcessingController controller(glm::mat3(), nullptr);
   ape::imageProcessing::CameraStream * camera = controller.getCameraStream();
 
    while (true) {

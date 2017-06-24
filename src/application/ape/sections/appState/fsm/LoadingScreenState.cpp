@@ -13,7 +13,7 @@ namespace ape {
           namespace fsm {
 
             LoadingScreenState::LoadingScreenState(
-                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController,
                 Signal* onLoadingComplete):
                 ipController(ipController), visController(visController),

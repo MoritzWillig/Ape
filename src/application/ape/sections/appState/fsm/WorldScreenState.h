@@ -16,7 +16,7 @@ namespace ape {
 
             class WorldScreenState : public State {
             private:
-              ape::imageProcessing::ImageProcessingController* ipController;
+              ape::imageProcessing::IImageProcessingController* ipController;
               ape::visualization::IVisualizationController* visController;
             protected:
               virtual void onActivation() override;
@@ -26,7 +26,7 @@ namespace ape {
               WorldScreenState() = delete;
 
               WorldScreenState(
-                  ape::imageProcessing::ImageProcessingController* ipController,
+                  ape::imageProcessing::IImageProcessingController* ipController,
                   ape::visualization::IVisualizationController* visController
               );
 
