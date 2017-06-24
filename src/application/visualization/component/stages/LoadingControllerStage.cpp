@@ -11,9 +11,8 @@ namespace ape {
   namespace visualization {
 
     LoadingControllerStage::LoadingControllerStage(AppWindow* appWindow):
-        appWindow(appWindow), active(false),
-        stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY}, percent(0.0f),
-        stageProgress(0.0f), face() {
+        Stage(appWindow), stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY},
+        percent(0.0f), stageProgress(0.0f), face() {
 
       /*auto p1=std::make_shared<shapes::OgrePolygon2D>(
           appWindow,std::vector<glm::vec2>({

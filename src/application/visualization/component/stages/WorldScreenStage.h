@@ -9,15 +9,13 @@
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
 
+#include "Stage.h"
+
 namespace ape {
   namespace visualization {
 
-    class WorldScreenStage {
+    class WorldScreenStage: public Stage {
     private:
-      AppWindow* appWindow;
-
-      bool active;
-
       shapes::Container overlay;
     protected:
     public:

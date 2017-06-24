@@ -4,6 +4,7 @@
 
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
+#include <common/callbacks/CustomValueCallback.h>
 
 namespace ape {
   namespace visualization {
@@ -12,6 +13,8 @@ namespace ape {
     private:
     protected:
     public:
+      IVisualizationController();
+
       enum class Overlay {
         Loading,
         Menu,
@@ -29,6 +32,11 @@ namespace ape {
 
       virtual void setProgress(float d) = 0;
 
+      typedef void (*OverlayChangeRequestHandler)(void* custom, Overlay overlay);
+
+      CustomValueCallback<
+          IVisualizationController::OverlayChangeRequestHandler,
+          void*> overlayChangeRequestHandler;
 
       static std::shared_ptr<IVisualizationController> createInstance(
           imageProcessing::CameraStream* stream

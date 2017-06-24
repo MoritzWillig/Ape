@@ -9,7 +9,7 @@ namespace ape {
   namespace visualization {
 
     TextureSynthesisSelectionStage::TextureSynthesisSelectionStage(AppWindow* appWindow):
-        active(false), appWindow(appWindow), overlay() {
+        Stage(appWindow), overlay() {
       setActive(false);
     }
 

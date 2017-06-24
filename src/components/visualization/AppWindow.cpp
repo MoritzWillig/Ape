@@ -3,7 +3,6 @@
 //
 
 #include "AppWindow.h"
-#include "../../../libs/opencv/customInstall/include/opencv2/core/mat.hpp"
 
 #include <OGRE/Ogre.h>
 #include <OGRE/OgreFontManager.h>
@@ -39,8 +38,34 @@ namespace ape {
 
     void glfw_error_callback(int error, const char* description)
     {
-      fprintf(stderr, "Error: %s\n", description);
+      fprintf(stderr, "GLFW Error: %s\n", description);
     }
+
+    void glfw_key_callback(GLFWwindow* window, int key, int scancode,
+                           int action, int mods)
+    {
+      AppWindow* that=(AppWindow*)glfwGetWindowUserPointer(window);
+
+      that->processKeyEvent(key,scancode,action,mods);
+    }
+
+    void glfw_cursor_pos_callback(GLFWwindow* window,
+                                       double xpos, double ypos)
+    {
+      AppWindow* that=(AppWindow*)glfwGetWindowUserPointer(window);
+
+      that->processMousePositionEvent(xpos, ypos);
+    }
+
+    void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+    {
+      AppWindow* that=(AppWindow*)glfwGetWindowUserPointer(window);
+
+      that->processMouseButtonEvent(button, action, mods);
+    }
+
+
+
 
     bool AppWindow::createWindow() {
       glfwSetErrorCallback(glfw_error_callback);
@@ -49,7 +74,7 @@ namespace ape {
         throw std::runtime_error("Could not initialize glfw");
       }
 
-      glfwWindow = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+      glfwWindow = glfwCreateWindow(1024, 768, "My Title", NULL, NULL);
       if (!glfwWindow)
       {
         //FIXME this needs to be called because createWindow is called from
@@ -57,6 +82,9 @@ namespace ape {
         glfwTerminate();
         throw std::runtime_error("Window or OpenGL context creation failed");
       }
+      //set our AppWindow as a user pointer to recover
+      //this* in the glfw callbacks
+      glfwSetWindowUserPointer(glfwWindow,this);
 
       glfwMakeContextCurrent(glfwWindow);
 
@@ -92,6 +120,10 @@ namespace ape {
 
       renderWindow = root->createRenderWindow("title", 1024, 768, false, &opts);
       glfwSetWindowTitle(glfwWindow,"Ape!");
+
+      glfwSetKeyCallback(glfwWindow, glfw_key_callback);
+      glfwSetCursorPosCallback(glfwWindow, glfw_cursor_pos_callback);
+      glfwSetMouseButtonCallback(glfwWindow, glfw_mouse_button_callback);
 
       // create the scene
       sceneMgr = root->createSceneManager(Ogre::ST_GENERIC);
@@ -264,7 +296,10 @@ namespace ape {
     AppWindow::AppWindow():
         glfwWindow(nullptr),
         //fixme magic string
-        nameGenerator("ape") {
+        nameGenerator("ape"),
+        keyEventHandler(nullptr, nullptr),
+        mousePositionEventHandler(nullptr, nullptr),
+        mouseButtonEventHandler(nullptr, nullptr) {
       createWindow();
       createRessources();
       createPanel();
@@ -368,7 +403,20 @@ namespace ape {
     }
 
     std::string AppWindow::createName() {
-      nameGenerator.generate();
+      return nameGenerator.generate();
+    }
+
+    void
+    AppWindow::processKeyEvent(int key, int scancode, int action, int mods) {
+      keyEventHandler.callExceptIfNotSet(key,scancode,action,mods);
+    }
+
+    void AppWindow::processMousePositionEvent(double x, double y) {
+      mousePositionEventHandler.callExceptIfNotSet(x, y);
+    }
+
+    void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
+      mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
     }
 
   }

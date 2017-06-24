@@ -9,15 +9,13 @@
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
 
+#include "Stage.h"
+
 namespace ape {
   namespace visualization {
 
-    class TextureSynthesisSelectionStage {
+    class TextureSynthesisSelectionStage: public Stage {
     private:
-      bool active;
-
-      AppWindow* appWindow;
-
       shapes::Container overlay;
     protected:
     public:

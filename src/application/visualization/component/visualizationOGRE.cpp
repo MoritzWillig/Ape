@@ -10,6 +10,21 @@ namespace ape {
         imageProcessing::CameraStream* stream):
         appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
         tssStage(appWindow), wsStage(appWindow), stream(stream) {
+      overlayChangeRequestHandler.setCallback(nullptr,nullptr);
+
+      appWindow->keyEventHandler.setCallback([](
+          void* selfPtr, int key, int scancode, int action, int mods
+      ) -> void {
+        auto self=(OGREVisualizationController*)selfPtr;
+        switch (key) {
+          case 32:
+            self->overlayChangeRequestHandler.callExceptIfNotSet(
+                Overlay::WorldScreen);
+            break;
+          default:
+            break;
+        }
+      }, this);
     }
 
     void OGREVisualizationController::setOverlay(Overlay overlay, bool enable) {

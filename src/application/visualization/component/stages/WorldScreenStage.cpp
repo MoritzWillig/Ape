@@ -11,7 +11,7 @@ namespace ape {
   namespace visualization {
 
     WorldScreenStage::WorldScreenStage(AppWindow* appWindow):
-        appWindow(appWindow), active(false), overlay() {
+        Stage(appWindow), overlay() {
       //texture synthesis button
       auto texSynth=std::make_shared<shapes::OgrePolygon2D>(
           appWindow,std::vector<glm::vec2>({

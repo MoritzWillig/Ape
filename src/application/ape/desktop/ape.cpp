@@ -110,6 +110,33 @@ int main(int argc, char** argv) {
       visController.get()
   );
 
+  visController->overlayChangeRequestHandler.setCallback([](
+      void* appStateController,
+      ape::visualization::IVisualizationController::Overlay overlay) -> void {
+    auto asc=(ape::app::desktop::section::appState::AppStateController*)appStateController;
+    switch (overlay) {
+      case ape::visualization::IVisualizationController::Overlay::Loading:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::LoadingScreen
+        );
+        break;
+      case ape::visualization::IVisualizationController::Overlay::Menu:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::MainMenu
+        );
+        break;
+      case ape::visualization::IVisualizationController::Overlay::WorldScreen:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::MainMenu
+        );
+        break;
+      case ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection:
+        //FIXME
+        throw std::runtime_error("not implemented");
+        break;
+    }
+  },&appStateController);
+
   //application loop
   //FIXME refactor into separate class
   auto frameTime = 1.0f / 30.0f;

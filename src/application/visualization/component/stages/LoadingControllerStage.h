@@ -9,15 +9,13 @@
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
 
+#include "Stage.h"
+
 namespace ape {
   namespace visualization {
 
-    class LoadingControllerStage {
+    class LoadingControllerStage: public Stage {
     private:
-      AppWindow* appWindow;
-
-      bool active;
-
       enum class AnimationStage {
         MidUp,
         TDown,

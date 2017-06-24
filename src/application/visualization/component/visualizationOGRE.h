@@ -21,7 +21,6 @@ namespace ape {
       TextureSynthesisSelectionStage tssStage;
       WorldScreenStage wsStage;
 
-
       imageProcessing::CameraStream* stream;
 
       glm::mat4x4 viewMatrix;

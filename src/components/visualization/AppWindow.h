@@ -11,8 +11,10 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+//FIXME :( ...
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3native.h>
+#include <common/callbacks/CustomValueCallback.h>
 
 namespace ape {
   namespace visualization {
@@ -37,12 +39,12 @@ namespace ape {
       Ogre::SceneManager* sceneMgr;
       Ogre::Camera* mainCam;
       Ogre::Viewport* vp;
-	  Ogre::Rectangle2D* rect;
-	  Ogre::TexturePtr backgroundTexture;
+	    Ogre::Rectangle2D* rect;
+	    Ogre::TexturePtr backgroundTexture;
 
       //FIXME magic numbers
-	  int textureWidth = 640;
-	  int textureHeight = 480;
+	    int textureWidth = 640;
+	    int textureHeight = 480;
 
       Ogre::NameGenerator nameGenerator;
     protected:
@@ -75,6 +77,19 @@ namespace ape {
 
       std::string createName();
 
+      void processKeyEvent(int key, int scancode, int action, int mods);
+
+      void processMousePositionEvent(double x, double y);
+
+      void processMouseButtonEvent(int button, int action, int mods);
+
+      typedef void (*KeyEventHandler)(void* custom, int key, int scancode, int action, int mods);
+      typedef void (*MousePositionEventHandler)(void* custom, double x, double y);
+      typedef void (*MouseButtonEventHandler)(void* custom, int button, int action, int mods);
+
+      CustomValueCallback<KeyEventHandler,void*> keyEventHandler;
+      CustomValueCallback<MousePositionEventHandler,void*> mousePositionEventHandler;
+      CustomValueCallback<MouseButtonEventHandler,void*> mouseButtonEventHandler;
     };
 
   }
