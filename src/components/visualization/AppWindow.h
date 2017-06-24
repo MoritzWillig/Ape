@@ -80,6 +80,8 @@ namespace ape {
 
       std::string createName();
 
+      void setWindowHint(std::string hint);
+
       void processKeyEvent(int key, int scancode, int action, int mods);
 
       void processMousePositionEvent(double x, double y);

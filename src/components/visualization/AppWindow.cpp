@@ -118,7 +118,7 @@ namespace ape {
           Ogre::StringConverter::toString(glfwGetX11Window(glfwWindow));
 
       renderWindow = root->createRenderWindow("title", 1024, 768, false, &opts);
-      glfwSetWindowTitle(glfwWindow,"Ape!");
+      setWindowHint("");
 
       glfwSetKeyCallback(glfwWindow, glfw_key_callback);
       glfwSetCursorPosCallback(glfwWindow, glfw_cursor_pos_callback);
@@ -408,6 +408,13 @@ namespace ape {
 
     std::string AppWindow::createName() {
       return nameGenerator.generate();
+    }
+
+    void AppWindow::setWindowHint(std::string hint) {
+      auto title=std::string("Ape!")+
+                 std::string((hint=="")?"":" - ")+
+                 hint;
+      glfwSetWindowTitle(glfwWindow,title.c_str());
     }
 
     void

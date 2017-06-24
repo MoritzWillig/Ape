@@ -28,21 +28,28 @@ namespace ape {
     }
 
     void OGREVisualizationController::setOverlay(Overlay overlay, bool enable) {
+      std::string stageTitle;
       switch (overlay) {
         case Overlay::Loading:
+          stageTitle="Loading";
           ldcStage.setActive(enable);
           break;
         case Overlay::Menu:
+          stageTitle="Menu";
           //FIXME
           //xyzStage.setActive(enable);
           break;
         case Overlay::WorldScreen:
+          stageTitle="WorldScreen";
           wsStage.setActive(enable);
           break;
         case Overlay::TextureSynthesisSelection:
+          stageTitle="TextureSynthesisSelection";
           tssStage.setActive(enable);
           break;
       }
+
+      appWindow->setWindowHint(stageTitle);
     }
 
     bool OGREVisualizationController::getTerminateRequest() {
