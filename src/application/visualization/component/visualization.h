@@ -30,6 +30,8 @@ namespace ape {
 
       virtual void setViewTransform(const glm::mat4x4 viewMatrix) = 0;
 
+      virtual void setProjectionMatrix(const glm::mat3x3 projectionMatrix) = 0;
+
       virtual void setProgress(float d) = 0;
 
       typedef void (*OverlayChangeRequestHandler)(void* custom, Overlay overlay);

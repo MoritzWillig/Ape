@@ -69,6 +69,10 @@ namespace ape {
       this->viewMatrix=viewMatrix;
     }
 
+    void OGREVisualizationController::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
+      appWindow->setProjectionMatrix(projectionMatrix);
+    }
+
     void OGREVisualizationController::setProgress(float percent) {
       auto diff=this->percent-percent;
       ldcStage.update(diff);

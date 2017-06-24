@@ -105,6 +105,7 @@ int main(int argc, char** argv) {
   //setup visualization
   auto visController=
       ape::visualization::IVisualizationController::createInstance(camStream);
+  visController->setProjectionMatrix(camMatrix);
 
   ape::app::desktop::section::appState::AppStateController appStateController(
       ipController.get(),

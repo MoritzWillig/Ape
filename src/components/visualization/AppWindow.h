@@ -50,7 +50,7 @@ namespace ape {
       //FIXME magic numbers
 	    int textureWidth = 640;
 	    int textureHeight = 480;
-      float coordAxesLength = 0.05;
+      float coordAxesLength = 0.026;
 
       Ogre::NameGenerator nameGenerator;
     protected:
@@ -98,6 +98,8 @@ namespace ape {
       CustomValueCallback<KeyEventHandler,void*> keyEventHandler;
       CustomValueCallback<MousePositionEventHandler,void*> mousePositionEventHandler;
       CustomValueCallback<MouseButtonEventHandler,void*> mouseButtonEventHandler;
+
+      void setProjectionMatrix(const glm::mat3x3 projectionMatrix);
     };
 
   }

@@ -38,6 +38,8 @@ namespace ape {
 
       virtual void setViewTransform(const glm::mat4x4 viewMatrix) override;
 
+      virtual void setProjectionMatrix(const glm::mat3x3 projectionMatrix) override;
+
       virtual void setProgress(float percent) override;
     };
   }

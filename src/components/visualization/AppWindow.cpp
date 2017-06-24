@@ -452,5 +452,31 @@ namespace ape {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
     }
 
+    void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
+      // Set CameraProjection Matrix based on calibration parameters
+      float znear = 0.001f;
+      float zfar = 5.0f;
+      int camWidth = 640;
+      int camHeight = 480;
+
+      double L = 0;
+      double R = camWidth;
+      double B = 0;
+      double T = camHeight;
+
+      double alpha = projectionMatrix[0][0]; //0
+      double beta = projectionMatrix[1][0]; //4
+      double u0 = projectionMatrix[0][2]; //2
+      double v0 = projectionMatrix[1][1]; //5
+      double skew = 0.0;
+
+      Ogre::Matrix4 Projection = Ogre::Matrix4(
+          (Ogre::Real)(2.0*alpha / camWidth), 0, (Ogre::Real)(2.0*(u0 / camWidth) - 1.0), 0,
+          0, (Ogre::Real)(2.0*beta / camHeight), (Ogre::Real)(2.0*(v0 / camHeight) - 1.0), 0,
+          0, 0, (Ogre::Real)(-1.0*(zfar+znear) / (zfar-znear)), (Ogre::Real)(-2.0*zfar*znear / (zfar-znear)),
+          0, 0, -1.0, 0);
+      mainCam->setCustomProjectionMatrix(true, Projection);
+    }
+
   }
 }
