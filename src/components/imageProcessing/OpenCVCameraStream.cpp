@@ -23,12 +23,12 @@ namespace ape {
       frameHeight=(unsigned int)cap.get(CV_CAP_PROP_FRAME_HEIGHT);
     }
 
-    void* OpenCVCameraStream::getCurrentFrame() {
+    cv::Mat OpenCVCameraStream::getCurrentFrame() {
       if (!cap.read(frame)) {
         throw std::runtime_error("Could not read frame from camera.");
       }
 
-      return frame.data;
+      return frame;
     }
 
     unsigned int OpenCVCameraStream::getFrameWidth() {

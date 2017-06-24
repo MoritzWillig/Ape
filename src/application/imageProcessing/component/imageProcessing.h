@@ -1,14 +1,12 @@
 #pragma once
 
 #include "imageProcessing/CameraStream.h"
+#include "imageProcessing/ProcessingContext.h"
 
 #include <memory>
+#include <opencv2/core/mat.hpp>
 
 #include "glm/glm.hpp"
-#include <opencv2/aruco/dictionary.hpp>
-#include <opencv2/aruco.hpp>
-
-#include "common/signals/Signal.h"
 
 namespace ape {
   namespace imageProcessing {
@@ -51,6 +49,8 @@ namespace ape {
       //texture synthesis
       virtual cv::Mat extractTextureFromStream(const cv::Rect regionOfInterest)
         = 0;
+
+      virtual void setProcessingContext(ProcessingContext::Context context) = 0;
 
       static std::shared_ptr<IImageProcessingController> createInstance(
           glm::mat3x3 cameraIntrinsics,

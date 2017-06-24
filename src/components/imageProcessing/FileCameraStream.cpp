@@ -28,7 +28,7 @@ namespace ape {
       frameHeight=(unsigned int)cap.get(CV_CAP_PROP_FRAME_HEIGHT);
     }
 
-    void* FileCameraStream::getCurrentFrame() {
+    cv::Mat FileCameraStream::getCurrentFrame() {
       cv::Mat src;//src image
       if (!cap.read(src)) {
         if (loop) {
@@ -41,14 +41,7 @@ namespace ape {
         }
       }
 
-      cv::Size size(640,480);//the dst image size,e.g.100x100
-      cv::resize(src,frame,size);//resize image
-
-
-      //cv::imshow("frame",frame);
-      //cv::waitKey(1); //message pump ...
-
-      return frame.data;
+      return src;
     }
 
     unsigned int FileCameraStream::getFrameWidth() {

@@ -29,7 +29,7 @@ namespace ape {
         markerLength(0.15), //FIXME magic number ...
         ids(), corners(), rejected(), rvecs(), tvecs(),
         detectorParams(cv::aruco::DetectorParameters::create()),
-        viewMatrix() {
+        viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
       //cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
@@ -79,10 +79,7 @@ namespace ape {
       searchedMarkerSignal.set();
 
       auto camStream = getCameraStream();
-      cv::Mat frame(
-          camStream->getFrameWidth(),
-          camStream->getFrameHeight(),
-          CV_8UC3, camStream->getCurrentFrame());
+      auto frame=camStream->getCurrentFrame();
 
       // detect markers and estimate pose
       cv::aruco::detectMarkers(
@@ -160,8 +157,25 @@ namespace ape {
       return transformation.get();
     }
 
+    void CvImageProcessingController::setProcessingContext(
+        ProcessingContext::Context context) {
+      switch (context) {
+        case ProcessingContext::Context::Stream:
+          processingContext.setStreamContext(getCameraStream());
+          break;
+        case ProcessingContext::Context::Image:
+          //TODO we 'freeze' the current stream
+          //it may be better to allow arbitrary images to be set
+          processingContext.setImageContext(getCameraStream()
+                                                ->getCurrentFrame());
+          break;
+      }
+    }
+
     cv::Mat CvImageProcessingController::extractTextureFromStream(
         const cv::Rect regionOfInterest) {
+      textureExtraction.extractRegionOfInterest(
+          processingContext.getContextValue(), regionOfInterest);
     }
 
   }

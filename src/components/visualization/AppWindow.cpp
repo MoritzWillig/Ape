@@ -9,7 +9,6 @@
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <imageProcessing/CameraStream.h>
-#include <opencv2/imgcodecs.hpp>
 
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
@@ -320,7 +319,7 @@ namespace ape {
 
 
     void AppWindow::updateBackgroundTexture(
-        unsigned char* frameData, unsigned int width, unsigned int height) {
+        cv::Mat frame, unsigned int width, unsigned int height) {
       if (textureWidth != width || textureHeight != height) {
         textureWidth = width;
         textureHeight = height;
@@ -334,24 +333,28 @@ namespace ape {
           Ogre::HardwareBuffer::HBL_NORMAL); // for best performance use HBL_DISCARD!
       const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
-      //FIXME do we have to copy the buffer - find another way ...
-      //pixelBuffer.getPointer()->writeData(0, width*height, frameData);
-
       //* FIXME check functionality of above and remove this
       unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
+      unsigned char* frameData=frame.data;
 
       // Fill in some pixel data. This will give a semi-transparent blue,
       // but this is of course dependent on the chosen pixel format.
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
+
           *pDest++ = frameData[3 * (width * j + i) + 0]; // B
           *pDest++ = frameData[3 * (width * j + i) + 1]; // G
           *pDest++ = frameData[3 * (width * j + i) + 2]; // R
-          *pDest++ = 127; // A
+          *pDest++ = 127; //A
+
+          /*pDest++ = frameData[0]; frameData++;
+          *pDest++ = frameData[0]; frameData++;
+          *pDest++ = frameData[0]; frameData++;
+          *pDest++=127;*/
         }
 
-        pDest += pixelBox.getRowSkip() *
-                 Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+        //pDest += pixelBox.getRowSkip() *
+        //         Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
       }//*/
 
       // Unlock the pixel buffer
@@ -384,7 +387,7 @@ namespace ape {
       //mainCam->setPosition(position);
 
       updateBackgroundTexture(
-          (unsigned char*) stream->getCurrentFrame(),
+          stream->getCurrentFrame(),
           stream->getFrameWidth(), stream->getFrameHeight());
       root->renderOneFrame(timeStep);
       renderWindow->update(true);

@@ -7,13 +7,16 @@
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <OGRE/OgreFontManager.h>
 #include <glm/mat4x4.hpp>
-#include <imageProcessing/CameraStream.h>
+#include <opencv2/core/mat.hpp>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 //FIXME :( ...
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3native.h>
+
+#include <imageProcessing/CameraStream.h>
 #include <common/callbacks/CustomValueCallback.h>
 
 namespace ape {
@@ -29,7 +32,7 @@ namespace ape {
 	    void createBackgroundTexture();
 
 	    void updateBackgroundTexture(
-          unsigned char* frameData, unsigned int width, unsigned int height);
+          cv::Mat frame, unsigned int width, unsigned int height);
 
 	    void initScene();
 

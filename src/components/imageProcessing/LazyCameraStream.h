@@ -11,7 +11,7 @@ namespace ape {
     class LazyCameraStream : public CameraStream {
     private:
       CameraStream* stream;
-      void* frame;
+      cv::Mat frame;
     protected:
     public:
       //Default
@@ -36,7 +36,7 @@ namespace ape {
 
       void pullFrame();
 
-      virtual void* getCurrentFrame();
+      virtual cv::Mat getCurrentFrame();
 
       virtual unsigned int getFrameWidth();
 

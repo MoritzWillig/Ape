@@ -8,7 +8,7 @@ namespace ape {
   namespace imageProcessing {
 
     LazyCameraStream::LazyCameraStream(CameraStream* stream):
-        stream(stream), frame(nullptr) {
+        stream(stream), frame() {
       pullFrame();
     }
 
@@ -16,7 +16,7 @@ namespace ape {
       frame=stream->getCurrentFrame();
     }
 
-    void* LazyCameraStream::getCurrentFrame() {
+    cv::Mat LazyCameraStream::getCurrentFrame() {
       return frame;
     }
 

@@ -2,12 +2,15 @@
 
 #include "imageProcessing.h"
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/aruco.hpp>
 
 #include "imageProcessing/CameraStream.h"
 #include "common/signals/Signal.h"
+
+#include "textureSynthesis/TextureExtraction.h"
+#include "ProcessingContextImplementation.h"
 
 namespace ape {
   namespace imageProcessing {
@@ -37,6 +40,9 @@ namespace ape {
       std::vector<cv::Vec3d> rvecs, tvecs;
       cv::Ptr<cv::aruco::DetectorParameters> detectorParams;
       glm::mat4x4 viewMatrix;
+
+      TextureExtraction textureExtraction;
+      ProcessingContextImplementation processingContext;
     protected:
     public:
       //Default
@@ -73,6 +79,8 @@ namespace ape {
       virtual bool hasMarker() override;
 
       virtual glm::mat4x4 getTransformation() override;
+
+      virtual void setProcessingContext(ProcessingContext::Context context) override;
 
       //texture synthesis
       virtual cv::Mat extractTextureFromStream(

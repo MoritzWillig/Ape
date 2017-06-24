@@ -16,7 +16,7 @@ namespace ape {
       unsigned int frameHeight;
     protected:
       cv::VideoCapture cap;
-      cv::Mat frame;
+      std::shared_ptr<cv::Mat> frame;
 
       bool loop;
     public:
@@ -40,7 +40,7 @@ namespace ape {
       // Destructor
       virtual ~FileCameraStream() = default;
 
-      virtual void* getCurrentFrame() override;
+      virtual cv::Mat getCurrentFrame() override;
 
       virtual unsigned int getFrameWidth() override;
 
