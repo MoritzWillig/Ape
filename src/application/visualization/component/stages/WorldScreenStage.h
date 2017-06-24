@@ -10,6 +10,7 @@
 #include <AppWindow.h>
 
 #include "Stage.h"
+#include "../visualization.h"
 
 namespace ape {
   namespace visualization {
@@ -17,12 +18,20 @@ namespace ape {
     class WorldScreenStage: public Stage {
     private:
       shapes::Container overlay;
+
+      CustomValueCallback<
+          IVisualizationController::OverlayChangeRequestHandler,
+          void*>& overlayChangeRequestHandler;
     protected:
     public:
       //Default
       WorldScreenStage() = delete;
 
-      WorldScreenStage(AppWindow* appWindow);
+      WorldScreenStage(
+          AppWindow* appWindow,
+          CustomValueCallback<
+              IVisualizationController::OverlayChangeRequestHandler,
+              void*>& overlayChangeRequestHandler);
 
       // Copy constructor
       WorldScreenStage(const WorldScreenStage&) = default;
@@ -43,6 +52,9 @@ namespace ape {
       void setActive(bool active);
 
       void update(float delta);
+
+      virtual void processKeyEvent(
+          int key, int scancode, int action, int mods);
     };
 
   }

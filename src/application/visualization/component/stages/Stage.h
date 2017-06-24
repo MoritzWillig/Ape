@@ -32,7 +32,12 @@ namespace ape {
       // Destructor
       virtual ~Stage() = default;
 
-      virtual void processInput(glm::vec2 point);
+      virtual void processKeyEvent(
+          int key, int scancode, int action, int mods);
+      virtual void processMousePositionEvent(
+          double x, double y);
+      virtual void processMouseButtonEvent(
+          int button, int action, int mods);
     };
 
   }

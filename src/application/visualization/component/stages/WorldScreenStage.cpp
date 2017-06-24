@@ -1,19 +1,22 @@
-//
-// Created by moritz on 05.06.17.
-//
 
 #include <math.h>
 
 #include <glm/vec2.hpp>
 #include <overlay/OgreShapes.h>
 #include "WorldScreenStage.h"
+#include "../visualization.h"
 
 
 namespace ape {
   namespace visualization {
 
-    WorldScreenStage::WorldScreenStage(AppWindow* appWindow):
-        Stage(appWindow), overlay() {
+    WorldScreenStage::WorldScreenStage(
+        AppWindow* appWindow,
+        CustomValueCallback<
+            IVisualizationController::OverlayChangeRequestHandler,
+            void*>& overlayChangeRequestHandler):
+        Stage(appWindow), overlay(),
+        overlayChangeRequestHandler(overlayChangeRequestHandler) {
       std::vector<glm::vec2> circle;
       auto circlePosX=0.875;
       auto circlePosY=0.875;
@@ -44,6 +47,24 @@ namespace ape {
     void WorldScreenStage::update(float delta) {
       if (!active) {
         return;
+      }
+    }
+
+    void WorldScreenStage::processKeyEvent(
+        int key, int scancode, int action, int mods) {
+      Stage::processKeyEvent(key, scancode, action, mods);
+
+      if (!active) {
+        return;
+      }
+
+      switch (key) {
+        case 32:
+          overlayChangeRequestHandler.callExceptIfNotSet(
+              IVisualizationController::Overlay::WorldScreen);
+          break;
+        default:
+          break;
       }
     }
 

@@ -11,7 +11,16 @@ namespace ape {
       appWindow(appWindow), active(false) {
     }
 
-    void Stage::processInput(glm::vec2 point) {
+    void Stage::processKeyEvent(
+        int key, int scancode, int action, int mods) {
+    }
+
+    void Stage::processMousePositionEvent(
+        double x, double y) {
+    }
+
+    void Stage::processMouseButtonEvent(
+        int button, int action, int mods) {
     }
 
   }

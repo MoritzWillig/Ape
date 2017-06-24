@@ -9,21 +9,38 @@ namespace ape {
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
         appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
-        tssStage(appWindow), wsStage(appWindow), stream(stream) {
+        tssStage(appWindow), wsStage(appWindow,overlayChangeRequestHandler),
+        stream(stream) {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);
 
       appWindow->keyEventHandler.setCallback([](
           void* selfPtr, int key, int scancode, int action, int mods
       ) -> void {
         auto self=(OGREVisualizationController*)selfPtr;
-        switch (key) {
-          case 32:
-            self->overlayChangeRequestHandler.callExceptIfNotSet(
-                Overlay::WorldScreen);
-            break;
-          default:
-            break;
-        }
+        self->wsStage.processKeyEvent(key,scancode,action,mods);
+        self->ldcStage.processKeyEvent(key,scancode,action,mods);
+        self->tssStage.processKeyEvent(key,scancode,action,mods);
+        self->wsStage.processKeyEvent(key,scancode,action,mods);
+      }, this);
+
+      appWindow->mousePositionEventHandler.setCallback([](
+          void* selfPtr, double x, double y
+      ) -> void {
+        auto self=(OGREVisualizationController*)selfPtr;
+        self->wsStage.processMousePositionEvent(x,y);
+        self->ldcStage.processMousePositionEvent(x,y);
+        self->tssStage.processMousePositionEvent(x,y);
+        self->wsStage.processMousePositionEvent(x,y);
+      }, this);
+
+      appWindow->mouseButtonEventHandler.setCallback([](
+          void* selfPtr, int button, int action, int mods
+      ) -> void {
+        auto self=(OGREVisualizationController*)selfPtr;
+        self->wsStage.processMouseButtonEvent(button,action,mods);
+        self->ldcStage.processMouseButtonEvent(button,action,mods);
+        self->tssStage.processMouseButtonEvent(button,action,mods);
+        self->wsStage.processMouseButtonEvent(button,action,mods);
       }, this);
     }
 

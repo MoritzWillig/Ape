@@ -129,7 +129,7 @@ namespace ape {
       // add a camera
       mainCam = sceneMgr->createCamera("MainCam");
 
-      mainCam->setPosition(Ogre::Vector3(0.0f, 0.0f, 500.0f));
+      mainCam->setPosition(Ogre::Vector3(0.0f, 0.0f, 20.0f));
       mainCam->lookAt(Ogre::Vector3(0.0f, 0.0f, 0.0f));
       mainCam->setNearClipDistance(0.05f);
       mainCam->setFarClipDistance(200.0f);
