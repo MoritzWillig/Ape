@@ -17,7 +17,10 @@ include_directories(${APE_WORLDSTATE_COMPONENT_DIR})
 #FIXME this is needed by the model. A variable containing this path
 #should be defined there
 include_directories(${OGRE_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIR})
+include_directories(${FASTNOISE_INCLUDE_DIR})
+
 
 #merge model and controller to component target
 set(APE_WORLDSTATE_COMPONENT_SOURCES
