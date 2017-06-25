@@ -36,7 +36,7 @@ namespace ape {
       // Destructor
       virtual ~OpenCVCameraStream() = default;
 
-      virtual void* getCurrentFrame() override;
+      virtual cv::Mat getCurrentFrame() override;
 
       virtual unsigned int getFrameWidth() override;
 

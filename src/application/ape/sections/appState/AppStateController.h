@@ -7,6 +7,7 @@
 #include "fsm/LoadingScreenState.h"
 #include "fsm/MainMenuState.h"
 #include "fsm/WorldScreenState.h"
+#include "fsm/TextureSynthesisState.h"
 #include "../../../imageProcessing/component/imageProcessing.h"
 #include "../../../visualization/component/visualization.h"
 
@@ -36,17 +37,18 @@ namespace ape {
             fsm::LoadingScreenState lsState;
             fsm::MainMenuState mmState;
             fsm::WorldScreenState wsState;
+            fsm::TextureSynthesisState tsState;
 
-            fsm::State& activeState;
-            fsm::State& requestedState;
+            fsm::State* activeState;
+            fsm::State* requestedState;
 
-            void transition(fsm::State& newState);
+            void transition(fsm::State* newState);
           public:
             //Default
             AppStateController()=delete;
 
             AppStateController(
-                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController);
 
             // Copy constructor
@@ -69,7 +71,8 @@ namespace ape {
             enum class State {
               LoadingScreen,
               MainMenu,
-              WorldScreen
+              WorldScreen,
+              TextureSynthesisSelection
             };
 
             void requestTransition(State newState);

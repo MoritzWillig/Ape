@@ -1,7 +1,7 @@
 #pragma once
-//
-// Created by moritz on 20.05.17.
-//
+
+#include <memory>
+#include <opencv2/core/mat.hpp>
 
 namespace ape {
   namespace imageProcessing {
@@ -10,7 +10,7 @@ namespace ape {
     private:
     protected:
     public:
-      virtual void* getCurrentFrame() = 0;
+      virtual cv::Mat getCurrentFrame() = 0;
 
       virtual unsigned int getFrameWidth() = 0;
 

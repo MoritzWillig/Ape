@@ -97,19 +97,48 @@ int main(int argc, char** argv) {
   //FIXME magic string
   readCameraParameters(conf.intrinsics, camMatrix, distCoeffs);
 
-  ape::imageProcessing::ImageProcessingController ipController(
-      camMatrix, &distCoeffs.coeffs[0]);
-  auto camStream = ipController.getCameraStream();
+  auto  ipController=
+      ape::imageProcessing::IImageProcessingController::createInstance(
+          camMatrix, &distCoeffs.coeffs[0]);
+  auto camStream = ipController->getCameraStream();
 
   //setup visualization
   auto visController=
       ape::visualization::IVisualizationController::createInstance(camStream);
-  visController->startDisplay();
+  visController->setProjectionMatrix(camMatrix);
 
   ape::app::desktop::section::appState::AppStateController appStateController(
-      &ipController,
+      ipController.get(),
       visController.get()
   );
+
+  visController->overlayChangeRequestHandler.setCallback([](
+      void* appStateController,
+      ape::visualization::IVisualizationController::Overlay overlay) -> void {
+    auto asc=(ape::app::desktop::section::appState::AppStateController*)appStateController;
+    switch (overlay) {
+      case ape::visualization::IVisualizationController::Overlay::Loading:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::LoadingScreen
+        );
+        break;
+      case ape::visualization::IVisualizationController::Overlay::Menu:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::MainMenu
+        );
+        break;
+      case ape::visualization::IVisualizationController::Overlay::WorldScreen:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::WorldScreen
+        );
+        break;
+      case ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection:
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::TextureSynthesisSelection
+        );
+        break;
+    }
+  },&appStateController);
 
   //application loop
   //FIXME refactor into separate class
@@ -120,7 +149,7 @@ int main(int argc, char** argv) {
     );
 
     //update controllers handling incoming data
-    ipController.update(frameTime);
+    ipController->update(frameTime);
 
     //update internal app state
     appStateController.update(frameTime);

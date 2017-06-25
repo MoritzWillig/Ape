@@ -5,6 +5,10 @@
 namespace ape {
   namespace visualization {
 
+    IVisualizationController::IVisualizationController():
+        overlayChangeRequestHandler(nullptr,nullptr) {
+    }
+
     std::shared_ptr<IVisualizationController> IVisualizationController::createInstance(
         imageProcessing::CameraStream* stream
     ) {

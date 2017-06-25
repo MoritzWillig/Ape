@@ -4,6 +4,7 @@
 
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
+#include <common/callbacks/CustomValueCallback.h>
 
 namespace ape {
   namespace visualization {
@@ -12,15 +13,16 @@ namespace ape {
     private:
     protected:
     public:
-      virtual void startDisplay() = 0;
+      IVisualizationController();
 
       enum class Overlay {
         Loading,
         Menu,
-        WorldScreen
+        WorldScreen,
+        TextureSynthesisSelection
       };
 
-      virtual void setOverlay(Overlay overlay) = 0;
+      virtual void setOverlay(Overlay overlay, bool enable) = 0;
 
       virtual void update(float timeStep) = 0;
 
@@ -28,8 +30,15 @@ namespace ape {
 
       virtual void setViewTransform(const glm::mat4x4 viewMatrix) = 0;
 
+      virtual void setProjectionMatrix(const glm::mat3x3 projectionMatrix) = 0;
+
       virtual void setProgress(float d) = 0;
 
+      typedef void (*OverlayChangeRequestHandler)(void* custom, Overlay overlay);
+
+      CustomValueCallback<
+          IVisualizationController::OverlayChangeRequestHandler,
+          void*> overlayChangeRequestHandler;
 
       static std::shared_ptr<IVisualizationController> createInstance(
           imageProcessing::CameraStream* stream

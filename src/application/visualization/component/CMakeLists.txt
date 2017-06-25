@@ -18,13 +18,18 @@ include_directories(${APE_VISUALIZATION_COMPONENT_DIR})
 #should be defined there
 include_directories(${OGRE_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIR})
+include_directories(${glfw3_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 #merge model and controller to component target
 set(APE_VISUALIZATION_COMPONENT_SOURCES
         ${APE_VISUALIZATION_SOURCES}
         visualization.cpp
         visualizationOGRE.cpp
+        stages/Stage.cpp
         stages/LoadingControllerStage.cpp
+        stages/TextureSynthesisSelectionStage.cpp
+        stages/WorldScreenStage.cpp
         )
 
 #FIXME this is needed by the model. A variable should be defined there

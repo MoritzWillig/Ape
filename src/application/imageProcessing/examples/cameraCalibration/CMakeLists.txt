@@ -14,5 +14,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIR})
 #INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(CameraCalibration Threads::Threads)
+
 target_link_libraries(CameraCalibration ${OGRE_LIBRARIES})
 target_link_libraries(CameraCalibration ${OpenCV_LIBRARIES})

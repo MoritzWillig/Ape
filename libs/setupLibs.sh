@@ -4,10 +4,11 @@ skipGLM=false
 skipOpenCV=false
 skipbgfx=true
 skipOGRE=false
+skipGLFW=false
 
 if [ "$skipGLM" = false ] ; then
     git clone git@github.com:g-truc/glm.git glm
-    
+
     cd glm
     git fetch --tags
     git checkout tags/0.9.8.4
@@ -16,7 +17,7 @@ if [ "$skipGLM" = false ] ; then
     #files
     mkdir include
     mv glm include/glm
-    
+
     cd ..
 fi
 
@@ -75,4 +76,16 @@ if [ "$skipOGRE" = false ] ; then
 	cd ../..
 fi
 
+if [ "$skipGLFW" = false ] ; then
+	git clone git@github.com:glfw/glfw.git glfw
+	cd glfw
+	git fetch --tags
+	git checkout tags/3.2.1
+	mkdir build
+	cd build
+	
+	cmake .. -DCMAKE_INSTALL_PREFIX=../../customInstall 
+	make
+	make install
+fi
 

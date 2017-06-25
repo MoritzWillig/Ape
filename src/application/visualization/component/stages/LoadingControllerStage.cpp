@@ -3,25 +3,80 @@
 //
 
 #include <glm/vec2.hpp>
+#include <overlay/OgreShapes.h>
 #include "LoadingControllerStage.h"
 
 
 namespace ape {
   namespace visualization {
 
-    LoadingControllerStage::LoadingControllerStage():
-        active(false), stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY},
+    LoadingControllerStage::LoadingControllerStage(AppWindow* appWindow):
+        Stage(appWindow), stageLength{0.7f, 0.7f, 0.4f, 1.5f, INFINITY},
         percent(0.0f), stageProgress(0.0f), face() {
 
-      //FIXME static array
-      /*shapes::Polygon2D stat(3, {
-          glm::vec2(-0.3, -1.0),
-          glm::vec2(+0.3, -1.0),
-          glm::vec2(+0.0, +0.0)
-      });*/
+      /*auto p1=std::make_shared<shapes::OgrePolygon2D>(
+          appWindow,std::vector<glm::vec2>({
+                                               glm::vec2(+0.95, +0.7),
+                                               glm::vec2(+0.95, +0.95),
+                                               glm::vec2(+0.7, +0.95)}),
+          Ogre::ColourValue(1.0f,0.6f,0.0f));
+      face.childs.emplace_back(p1);*/
 
-      //FIXME ...
+      //eye outer l
+      auto p5=std::make_shared<shapes::OgrePolygon2D>(
+          appWindow,std::vector<glm::vec2>({
+                                               glm::vec2(-0.28-0.2, +0.23+0.00),
+                                               glm::vec2(-0.28-0.09, +0.23+0.2),
+                                               glm::vec2(-0.28+0.09, +0.23+0.2),
+                                               glm::vec2(-0.28+0.2, +0.23+0.00),
+                                               glm::vec2(-0.28+0.09, +0.23-0.2),
+                                               glm::vec2(-0.28-0.09, +0.23-0.2)
+                                           }),
+          Ogre::ColourValue(1.0f,1.0f,1.0f));
+      face.childs.emplace_back(p5);
 
+      //inner top
+      auto p4=std::make_shared<shapes::OgrePolygon2D>(
+          appWindow,std::vector<glm::vec2>({
+                                               glm::vec2(-0.50, +0.70),
+                                               glm::vec2(+0.50, +0.70),
+                                               glm::vec2(+0.20, +0.15),
+                                               glm::vec2(-0.20, +0.15)
+                                           }),
+          Ogre::ColourValue(0.9f,0.6f,0.0f));
+      face.childs.emplace_back(p4);
+
+      //outline
+      auto p2=std::make_shared<shapes::OgrePolygon2D>(
+          appWindow,std::vector<glm::vec2>({
+                                               glm::vec2(-0.40, -0.75),
+                                               glm::vec2(+0.40, -0.75),
+                                               glm::vec2(+0.80, -0.05),
+                                               glm::vec2(+0.40, +0.65),
+                                               glm::vec2(-0.40, +0.65),
+                                               glm::vec2(-0.80, -0.05)
+                                           }),
+          Ogre::ColourValue(0.0f,0.0f,0.0f));
+      face.childs.emplace_back(p2);
+
+      //inner middle
+      auto p3=std::make_shared<shapes::OgrePolygon2D>(
+          appWindow,std::vector<glm::vec2>({
+                                               glm::vec2(-0.00, -0.08),
+                                               glm::vec2(-0.28, -0.08),
+                                               glm::vec2(-0.30, -0.05),
+                                               glm::vec2(-0.20, +0.15),
+                                               glm::vec2(-0.20, +0.50),
+                                               glm::vec2(-0.00, +0.65),
+                                               glm::vec2(+0.20, +0.50),
+                                               glm::vec2(+0.20, +0.15),
+                                               glm::vec2(+0.30, -0.05),
+                                               glm::vec2(+0.28, -0.08),
+                                           }),
+          Ogre::ColourValue(0.0f,0.6f,0.4f));
+      face.childs.emplace_back(p3);
+
+      setActive(false);
     }
 
     void LoadingControllerStage::setActive(bool active) {

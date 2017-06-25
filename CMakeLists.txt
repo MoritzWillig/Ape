@@ -10,6 +10,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin/Release")
 find_package(Boost 1.4.9 REQUIRED
         COMPONENTS thread date_time)
 
+find_package(glfw3 3.2.1 REQUIRED
+        PATHS "${CMAKE_CURRENT_SOURCE_DIR}/libs/customInstall/lib/cmake/glfw3")
+set(glfw3_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libs/customInstall/include")
+
 if(WIN32)
     set(prefix "")
     set(suffix ".lib")
@@ -38,7 +42,9 @@ else()
             "${OpenCVInstDir}/${prefix}opencv_aruco${suffix}"
             "${OpenCVInstDir}/${prefix}opencv_highgui${suffix}"
             "${OpenCVInstDir}/${prefix}opencv_videoio${suffix}"
-            "${OpenCVInstDir}/${prefix}opencv_calib3d${suffix}")
+            "${OpenCVInstDir}/${prefix}opencv_calib3d${suffix}"
+            "${OpenCVInstDir}/${prefix}opencv_imgproc${suffix}"
+            "${OpenCVInstDir}/${prefix}opencv_imgcodecs${suffix}")
     set(OpenCV_INCLUDE_DIRS
             "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv/customInstall/include")
 endif()

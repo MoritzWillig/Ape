@@ -2,6 +2,7 @@
 // Created by moritz on 03.06.17.
 //
 
+#include <iostream>
 #include "LoadingScreenState.h"
 
 namespace ape {
@@ -12,7 +13,7 @@ namespace ape {
           namespace fsm {
 
             LoadingScreenState::LoadingScreenState(
-                ape::imageProcessing::ImageProcessingController* ipController,
+                ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController,
                 Signal* onLoadingComplete):
                 ipController(ipController), visController(visController),
@@ -32,12 +33,16 @@ namespace ape {
               loadingProgress=0.0;
 
               visController->setOverlay(
-                  ape::visualization::IVisualizationController::Overlay::Loading
+                  ape::visualization::IVisualizationController::Overlay::Loading,
+                  true
               );
             }
 
             void LoadingScreenState::onDeactivation() {
-
+              visController->setOverlay(
+                  ape::visualization::IVisualizationController::Overlay::Loading,
+                  false
+              );
             }
 
             void LoadingScreenState::update(float delta) {
