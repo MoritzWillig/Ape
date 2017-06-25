@@ -11,8 +11,10 @@
 #include <opencv2/calib3d.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
+
+// Do we need this?
+//#include <boost/shared_ptr.hpp>
+//#include <boost/smart_ptr/shared_ptr.hpp>
 
 namespace ape {
   namespace imageProcessing {
@@ -180,7 +182,7 @@ namespace ape {
 
     cv::Mat CvImageProcessingController::extractTextureFromStream(
         const cv::Rect regionOfInterest) {
-      textureExtraction.extractRegionOfInterest(
+      return textureExtraction.extractRegionOfInterest(
           processingContext.getContextValue(), regionOfInterest);
     }
 

@@ -1,4 +1,4 @@
-
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 #include <glm/vec2.hpp>

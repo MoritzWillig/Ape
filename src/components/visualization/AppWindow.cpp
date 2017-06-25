@@ -114,8 +114,9 @@ namespace ape {
       opts["resolution"] = "1024x768";
       opts["fullscreen"] = "false";
       opts["vsync"] = "true";
+	  // Fix native access
       opts["externalWindowHandle"]=
-          Ogre::StringConverter::toString(glfwGetX11Window(glfwWindow));
+          Ogre::StringConverter::toString(glfwGetWin32Window(glfwWindow));
 
       renderWindow = root->createRenderWindow("title", 1024, 768, false, &opts);
       setWindowHint("");
