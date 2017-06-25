@@ -54,7 +54,7 @@ namespace ape {
       void update(float delta);
 
       virtual void processKeyEvent(
-          int key, int scancode, int action, int mods);
+          int key, int scancode, int action, int mods) override;
     };
 
   }

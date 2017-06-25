@@ -19,6 +19,7 @@ namespace ape {
               lsState(ipController,visController, &onLoadingCompleteSignal),
               mmState(ipController,visController),
               wsState(ipController,visController),
+              tsState(ipController,visController),
               activeState(&lsState), requestedState(&lsState) {
             lsState.setActive(true);
           };
@@ -47,6 +48,9 @@ namespace ape {
                 break;
               case State::WorldScreen:
                 requestedState=&wsState;
+                break;
+              case State::TextureSynthesisSelection:
+                requestedState=&tsState;
                 break;
             }
           }

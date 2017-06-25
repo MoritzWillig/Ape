@@ -8,8 +8,13 @@
 namespace ape {
   namespace visualization {
 
-    TextureSynthesisSelectionStage::TextureSynthesisSelectionStage(AppWindow* appWindow):
-        Stage(appWindow), overlay() {
+    TextureSynthesisSelectionStage::TextureSynthesisSelectionStage(
+        AppWindow* appWindow,
+        CustomValueCallback<
+            IVisualizationController::OverlayChangeRequestHandler,
+            void*>& overlayChangeRequestHandler):
+        Stage(appWindow), overlay(),
+        overlayChangeRequestHandler(overlayChangeRequestHandler) {
       setActive(false);
     }
 
@@ -25,6 +30,24 @@ namespace ape {
       }
 
       //FIXME
+    }
+
+    void TextureSynthesisSelectionStage::processKeyEvent(
+        int key, int scancode, int action, int mods) {
+      Stage::processKeyEvent(key, scancode, action, mods);
+
+      if (!active) {
+        return;
+      }
+
+      switch (key) {
+        case GLFW_KEY_ESCAPE:
+          overlayChangeRequestHandler.callExceptIfNotSet(
+              IVisualizationController::Overlay::WorldScreen);
+          break;
+        default:
+          break;
+      }
     }
 
   }

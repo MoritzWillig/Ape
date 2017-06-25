@@ -129,12 +129,13 @@ int main(int argc, char** argv) {
         break;
       case ape::visualization::IVisualizationController::Overlay::WorldScreen:
         asc->requestTransition(
-            ape::app::desktop::section::appState::AppStateController::State::MainMenu
+            ape::app::desktop::section::appState::AppStateController::State::WorldScreen
         );
         break;
       case ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection:
-        //FIXME
-        throw std::runtime_error("not implemented");
+        asc->requestTransition(
+            ape::app::desktop::section::appState::AppStateController::State::TextureSynthesisSelection
+        );
         break;
     }
   },&appStateController);

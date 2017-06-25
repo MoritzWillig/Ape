@@ -11,27 +11,27 @@ namespace ape {
         namespace appState {
           namespace fsm {
 
-            TextureSynthesis::TextureSynthesis(
+            TextureSynthesisState::TextureSynthesisState(
                 ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController):
                 ipController(ipController), visController(visController) {
             }
 
-            void TextureSynthesis::onActivation() {
+            void TextureSynthesisState::onActivation() {
               visController->setOverlay(
                   ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection,
                   true
               );
             }
 
-            void TextureSynthesis::onDeactivation() {
+            void TextureSynthesisState::onDeactivation() {
               visController->setOverlay(
                   ape::visualization::IVisualizationController::Overlay::TextureSynthesisSelection,
                   false
               );
             }
 
-            void TextureSynthesis::update(float delta) {
+            void TextureSynthesisState::update(float delta) {
 
             }
 

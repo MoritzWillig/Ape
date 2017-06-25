@@ -59,9 +59,9 @@ namespace ape {
       }
 
       switch (key) {
-        case 32:
+        case GLFW_KEY_SPACE:
           overlayChangeRequestHandler.callExceptIfNotSet(
-              IVisualizationController::Overlay::WorldScreen);
+              IVisualizationController::Overlay::TextureSynthesisSelection);
           break;
         default:
           break;

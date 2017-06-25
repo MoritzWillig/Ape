@@ -9,7 +9,8 @@ namespace ape {
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
         appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
-        tssStage(appWindow), wsStage(appWindow,overlayChangeRequestHandler),
+        tssStage(appWindow,overlayChangeRequestHandler),
+        wsStage(appWindow,overlayChangeRequestHandler),
         stream(stream) {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);
 
@@ -20,7 +21,6 @@ namespace ape {
         self->wsStage.processKeyEvent(key,scancode,action,mods);
         self->ldcStage.processKeyEvent(key,scancode,action,mods);
         self->tssStage.processKeyEvent(key,scancode,action,mods);
-        self->wsStage.processKeyEvent(key,scancode,action,mods);
       }, this);
 
       appWindow->mousePositionEventHandler.setCallback([](
@@ -30,7 +30,6 @@ namespace ape {
         self->wsStage.processMousePositionEvent(x,y);
         self->ldcStage.processMousePositionEvent(x,y);
         self->tssStage.processMousePositionEvent(x,y);
-        self->wsStage.processMousePositionEvent(x,y);
       }, this);
 
       appWindow->mouseButtonEventHandler.setCallback([](
@@ -40,7 +39,6 @@ namespace ape {
         self->wsStage.processMouseButtonEvent(button,action,mods);
         self->ldcStage.processMouseButtonEvent(button,action,mods);
         self->tssStage.processMouseButtonEvent(button,action,mods);
-        self->wsStage.processMouseButtonEvent(button,action,mods);
       }, this);
     }
 

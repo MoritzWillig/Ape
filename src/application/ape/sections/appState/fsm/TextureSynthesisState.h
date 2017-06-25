@@ -14,7 +14,7 @@ namespace ape {
         namespace appState {
           namespace fsm {
 
-            class TextureSynthesis : public State {
+            class TextureSynthesisState : public State {
             private:
               ape::imageProcessing::IImageProcessingController* ipController;
               ape::visualization::IVisualizationController* visController;
@@ -23,27 +23,27 @@ namespace ape {
               virtual void onDeactivation() override;
             public:
               //Default
-              TextureSynthesis() = delete;
+              TextureSynthesisState() = delete;
 
-              TextureSynthesis(
+              TextureSynthesisState(
                   ape::imageProcessing::IImageProcessingController* ipController,
                   ape::visualization::IVisualizationController* visController
               );
 
               // Copy constructor
-              TextureSynthesis(const TextureSynthesis&) = default;
+              TextureSynthesisState(const TextureSynthesisState&) = default;
 
               // Move constructor
-              TextureSynthesis(TextureSynthesis&&) = default;
+              TextureSynthesisState(TextureSynthesisState&&) = default;
 
               // Copy assignment operator
-              TextureSynthesis& operator=(const TextureSynthesis&)& = default;
+              TextureSynthesisState& operator=(const TextureSynthesisState&)& = default;
 
               // Move assignment operator
-              TextureSynthesis& operator=(TextureSynthesis&&)& = default;
+              TextureSynthesisState& operator=(TextureSynthesisState&&)& = default;
 
               // Destructor
-              virtual ~TextureSynthesis() = default;
+              virtual ~TextureSynthesisState() = default;
 
               void update(float delta) override;
             };

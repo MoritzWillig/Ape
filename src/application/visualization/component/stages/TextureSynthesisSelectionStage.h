@@ -10,6 +10,7 @@
 #include <AppWindow.h>
 
 #include "Stage.h"
+#include "../visualization.h"
 
 namespace ape {
   namespace visualization {
@@ -17,12 +18,20 @@ namespace ape {
     class TextureSynthesisSelectionStage: public Stage {
     private:
       shapes::Container overlay;
+
+      CustomValueCallback<
+          IVisualizationController::OverlayChangeRequestHandler,
+          void*>& overlayChangeRequestHandler;
     protected:
     public:
       //Default
       TextureSynthesisSelectionStage() = delete;
 
-      TextureSynthesisSelectionStage(AppWindow* appWindow);
+      TextureSynthesisSelectionStage(
+          AppWindow* appWindow,
+          CustomValueCallback<
+              IVisualizationController::OverlayChangeRequestHandler,
+              void*>& overlayChangeRequestHandler);
 
       // Copy constructor
       TextureSynthesisSelectionStage(const TextureSynthesisSelectionStage&) = default;
@@ -44,6 +53,9 @@ namespace ape {
       void setActive(bool active);
 
       void update(float delta);
+
+      virtual void processKeyEvent(
+          int key, int scancode, int action, int mods) override;
     };
 
   }
