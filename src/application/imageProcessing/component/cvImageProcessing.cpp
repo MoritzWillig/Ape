@@ -120,11 +120,12 @@ namespace ape {
 
         viewMatrix = convertVectorsToViewMatrix(rvecs[0], tvecs[0]);
 
+#ifdef DEBUG_BUILD
         for (unsigned int i = 0; i < ids.size(); i++) {
-          //FIXME add flag for and draw only in debug mode
-          //cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i], tvecs[i],
-          //                    markerLength * 0.5f);
+          cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i],
+            tvecs[i], markerLength * 0.5f);
         }
+#endif
 
         //TODO for now, we only care about the nearest marker
         transformation.setValue(viewMatrix);
