@@ -76,6 +76,7 @@ namespace ape {
       appWindow->update(timeStep, stream, viewMatrix);
 
       //FIXME all stages should contain an update method ...
+      ldcStage.update(timeStep);
       wsStage.update(timeStep);
       tssStage.update(timeStep);
     }

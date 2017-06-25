@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/aruco.hpp>
+#include <LazyCameraStream.h>
 
 #include "imageProcessing/CameraStream.h"
 #include "common/signals/Signal.h"
@@ -21,7 +22,8 @@ namespace ape {
       //but it would be nice to state the actual types here
       //(without using pointers)
       CameraStream* cvCameraStream;
-      CameraStream* lazyCameraStream;
+      LazyCameraStream* lazyCameraStream;
+      bool cameraFrozen;
 
       Signal searchedMarkerSignal;
       SignalOrDefault<bool> marker;
@@ -73,6 +75,8 @@ namespace ape {
 
       virtual CameraStream* getCameraStream() override;
 
+      virtual void freezeCameraStream(bool freeze) override;
+
       virtual bool getTerminateRequest() override;
 
       //AR tracking
@@ -85,6 +89,8 @@ namespace ape {
       //texture synthesis
       virtual cv::Mat extractTextureFromStream(
           const cv::Rect regionOfInterest)  override;
+
+      virtual cv::Mat createTile(int width, int height, cv::Mat source) override;
 
     };
 

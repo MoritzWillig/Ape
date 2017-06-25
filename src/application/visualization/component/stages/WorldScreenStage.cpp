@@ -63,6 +63,10 @@ namespace ape {
           overlayChangeRequestHandler.callExceptIfNotSet(
               IVisualizationController::Overlay::TextureSynthesisSelection);
           break;
+        case GLFW_KEY_M:
+          overlayChangeRequestHandler.callExceptIfNotSet(
+              IVisualizationController::Overlay::Menu);
+          break;
         default:
           break;
       }

@@ -39,6 +39,8 @@ namespace ape {
 
       virtual CameraStream* getCameraStream() = 0;
 
+      virtual void freezeCameraStream(bool freeze) = 0;
+
       virtual bool getTerminateRequest() = 0;
 
       //AR tracking
@@ -52,11 +54,12 @@ namespace ape {
 
       virtual void setProcessingContext(ProcessingContext::Context context) = 0;
 
+      virtual cv::Mat createTile(int width, int height, cv::Mat source) = 0;
+
       static std::shared_ptr<IImageProcessingController> createInstance(
           glm::mat3x3 cameraIntrinsics,
           float* distCoeffs
       );
-
     };
 
   }

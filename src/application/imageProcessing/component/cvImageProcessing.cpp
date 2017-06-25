@@ -13,6 +13,8 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <opencv2/imgproc.hpp>
+#include <textureSynthesis/TextureSynthesis.h>
 
 namespace ape {
   namespace imageProcessing {
@@ -20,7 +22,7 @@ namespace ape {
     CvImageProcessingController::CvImageProcessingController(
           glm::mat3x3 cameraIntrinsics,
           float* distCoeffs) :
-        cvCameraStream(nullptr), lazyCameraStream(nullptr),
+        cvCameraStream(nullptr), lazyCameraStream(nullptr), cameraFrozen(false),
         searchedMarkerSignal(), marker(&searchedMarkerSignal),
         transformation(&searchedMarkerSignal),
         cameraIntrinsics(cameraIntrinsics), distCoeffs(distCoeffs),
@@ -134,12 +136,17 @@ namespace ape {
 
     void CvImageProcessingController::update(float timeDelta) {
       searchedMarkerSignal.reset();
-      //FIXME cast because we dont want to show LazyCameraStream to the public
-      ((LazyCameraStream*)lazyCameraStream)->pullFrame();
+      if (!cameraFrozen) {
+        lazyCameraStream->pullFrame();
+      }
     }
 
     CameraStream* CvImageProcessingController::getCameraStream() {
       return lazyCameraStream;
+    }
+
+    void CvImageProcessingController::freezeCameraStream(bool freeze) {
+      this->cameraFrozen=freeze;
     }
 
     bool CvImageProcessingController::getTerminateRequest() {
@@ -183,6 +190,16 @@ namespace ape {
         const cv::Rect regionOfInterest) {
       textureExtraction.extractRegionOfInterest(
           processingContext.getContextValue(), regionOfInterest);
+    }
+
+    cv::Mat CvImageProcessingController::createTile(int width, int height,
+                                                    cv::Mat source) {
+      cv::Mat result;
+      TextureSynthesis textureSynthesis(
+          source, width, height);
+      //FIXME magic numbers, yay!
+      textureSynthesis.generateTexture(5,result);
+      return result;
     }
 
   }

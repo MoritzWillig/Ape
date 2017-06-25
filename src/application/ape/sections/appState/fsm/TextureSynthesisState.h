@@ -21,6 +21,8 @@ namespace ape {
             protected:
               virtual void onActivation() override;
               virtual void onDeactivation() override;
+
+              void generateTile(glm::vec2 vertex1, glm::vec2 vertex2);
             public:
               //Default
               TextureSynthesisState() = delete;

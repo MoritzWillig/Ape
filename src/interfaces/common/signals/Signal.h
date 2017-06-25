@@ -1,8 +1,8 @@
 #pragma once
-//
-// Created by moritz on 03.06.17.
-//
 
+#include <stdexcept>
+
+//FIXME Signal as interface - this as RWSignal
 class Signal {
 private:
   bool signal;
@@ -25,7 +25,7 @@ public:
   }
 
   void reset() {
-    signal=false;
+    set(false);
   }
 
   bool hasSignal() const {
@@ -34,6 +34,26 @@ public:
 
   explicit operator bool() const {
     return hasSignal();
+  }
+};
+
+//FIXME see above - use SignalInterface
+template <typename T>
+class ValueSignal: public Signal {
+protected:
+  T value;
+public:
+  void setValue(T value) {
+    this->set();
+    this->value;
+  }
+
+  T getValue() {
+    if (!hasSignal()) {
+      throw std::runtime_error("Signal not set");
+    }
+
+    return value;
   }
 };
 

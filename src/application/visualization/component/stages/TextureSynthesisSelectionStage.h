@@ -8,9 +8,12 @@
 #include <overlay/Shapes.h>
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
+#include <common/signals/Signal.h>
 
 #include "Stage.h"
 #include "../visualization.h"
+//FIXME check correct import
+#include "../../../imageProcessing/component/imageProcessing.h"
 
 namespace ape {
   namespace visualization {
@@ -22,6 +25,19 @@ namespace ape {
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,
           void*>& overlayChangeRequestHandler;
+
+      ValueSignal<glm::vec2> vertex1;
+      ValueSignal<glm::vec2> vertex2;
+
+      enum class SelectionState {
+        CapturingP1,
+        CapturingP2,
+        Waiting,
+        Generating,
+        Confirmation
+      } selectionState;
+
+      void performStateTransition(SelectionState newSelectionState);
     protected:
     public:
       //Default
