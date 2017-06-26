@@ -75,7 +75,7 @@ namespace ape {
 
       void update(
           float timeStep, imageProcessing::CameraStream* stream,
-          const glm::mat4& viewMatrix);
+          const glm::mat4x4& viewMatrix);
 
       bool isClosed();
 

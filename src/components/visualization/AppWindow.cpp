@@ -8,11 +8,13 @@
 #include <OGRE/OgreFontManager.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <imageProcessing/CameraStream.h>
+
 
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
-#define TEXTURE_FOLDER "C:/dev/Uni/VRAR/Ape/assets/textures"
+#define TEXTURE_FOLDER "../../../data/assets/meshes/textures"
 #define FONT_FILE_NAME "FreeSans.otf"
 #define MESH_FILE_NAME "cube.mesh"
 
@@ -62,10 +64,7 @@ namespace ape {
 
       that->processMouseButtonEvent(button, action, mods);
     }
-
-
-
-
+    
     bool AppWindow::createWindow() {
       glfwSetErrorCallback(glfw_error_callback);
       if (glfwInit()!=GLFW_TRUE)
@@ -73,7 +72,7 @@ namespace ape {
         throw std::runtime_error("Could not initialize glfw");
       }
 
-      glfwWindow = glfwCreateWindow(1024, 768, "My Title", NULL, NULL);
+      glfwWindow = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
       if (!glfwWindow)
       {
         //FIXME this needs to be called because createWindow is called from
@@ -99,16 +98,6 @@ namespace ape {
       root->setRenderSystem(renderSystems[0]);
       root->initialise(false);
 
-      // load the basic resource location(s)
-      //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource", "FileSystem", "General");
-      //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("resource/gui.lcd", "Zip", "GUI");
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-          FONT_FOLDER, "FileSystem", "GUI");
-
-      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
-          "General");
-      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
-
       // setup main window; hardcode some defaults for the sake of presentation
       Ogre::NameValuePairList opts;
       opts["resolution"] = "1024x768";
@@ -116,7 +105,7 @@ namespace ape {
       opts["vsync"] = "true";
 	  // Fix native access
       opts["externalWindowHandle"]=
-          Ogre::StringConverter::toString(glfwGetWin32Window(glfwWindow));
+          Ogre::StringConverter::toString((size_t)glfwGetWin32Window(glfwWindow));
 
       renderWindow = root->createRenderWindow("title", 1024, 768, false, &opts);
       setWindowHint("");
@@ -130,10 +119,10 @@ namespace ape {
       // add a camera
       mainCam = sceneMgr->createCamera("MainCam");
 
-      mainCam->setPosition(Ogre::Vector3(0.0f, 0.0f, 20.0f));
+      mainCam->setPosition(Ogre::Vector3(1.0f, 1.0f, 1.0f));
       mainCam->lookAt(Ogre::Vector3(0.0f, 0.0f, 0.0f));
-      mainCam->setNearClipDistance(0.05f);
-      mainCam->setFarClipDistance(200.0f);
+      mainCam->setNearClipDistance(0.001f);
+      mainCam->setFarClipDistance(20.0f);
 
       // add viewport
       vp = renderWindow->addViewport(mainCam);
@@ -151,8 +140,7 @@ namespace ape {
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
           TEXTURE_FOLDER, "FileSystem", "General");
 
-      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
-          "General");
+      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
       createFont();
       createBackgroundTexture();
@@ -219,11 +207,6 @@ namespace ape {
       Ogre::AxisAlignedBox aabInf;
       aabInf.setInfinite();
       rect->setBoundingBox(aabInf);
-
-
-
-      // Example of background scrolling
-      //material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setScrollAnimation(-0.25, 0.0);
     }
 
     void AppWindow::createCoordinateAxes() {
@@ -283,16 +266,17 @@ namespace ape {
       sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
       Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME,
                                                         MESH_FILE_NAME);
-      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->setPosition(0, 0, 0.05);
-      ogreNode->setScale(0.001, 0.001, 0.001);
-      ogreNode->attachObject(ogreEntity);
 
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
           createChildSceneNode("debug");
       debugNode->setPosition(0, 0, 0);
-      debugNode->setScale(1.0, 1.0, 1.0);
+      debugNode->setScale(20.0, 20.0, 20.0);
       debugNode->attachObject(coordAxes);
+
+      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      ogreNode->setPosition(0, 0, 0.1);
+      ogreNode->setScale(0.0001, 0.0001, 0.0001);
+      ogreNode->attachObject(ogreEntity);
 
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
@@ -387,28 +371,15 @@ namespace ape {
 
     void AppWindow::update(
         float timeStep, imageProcessing::CameraStream* stream,
-        const glm::mat4& viewMatrix) {
+        const glm::mat4x4& viewMatrix) {
       glfwPollEvents();
 
-      //FrameListener listener(renderWindow); // Add the simple frame listener.
-      //root->addFrameListener(&listener);
-      //root->startRendering(); //we implement our own loop
-
-
-      const float* vmPtr = glm::value_ptr(viewMatrix);
-      Ogre::Matrix4 matrix = Ogre::Matrix4(vmPtr[0], vmPtr[1], vmPtr[2],
-                                           vmPtr[3],
-                                           vmPtr[4], vmPtr[5], vmPtr[6],
-                                           vmPtr[7],
-                                           vmPtr[8], vmPtr[9], vmPtr[10],
-                                           vmPtr[11],
-                                           vmPtr[12], vmPtr[13], vmPtr[14],
-                                           vmPtr[15]);
+      //const float* vmPtr = glm::value_ptr(viewMatrix);
+      Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0][0], viewMatrix[0][1], viewMatrix[0][2], viewMatrix[0][3],
+                                           viewMatrix[1][0], viewMatrix[1][1], viewMatrix[1][2], viewMatrix[1][3],
+                                           viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2], viewMatrix[2][3],
+                                           viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2], viewMatrix[3][3]);
       mainCam->setCustomViewMatrix(true, matrix);
-      //mainCam->setDirection(Ogre::Vector3(rotation[0], rotation[1], rotation[2]));
-      //Ogre::Vector3 position = Ogre::Vector3(-translation[0], -translation[1], translation[2]);
-      //printf("Position: (%f, %f, %f)", position.x, position.y, position.z);
-      //mainCam->setPosition(position);
 
       updateBackgroundTexture(
           stream->getCurrentFrame(),
@@ -454,26 +425,22 @@ namespace ape {
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
+      std::cout << glm::to_string(projectionMatrix) << std::endl;
       // Set CameraProjection Matrix based on calibration parameters
       float znear = 0.001f;
-      float zfar = 5.0f;
+      float zfar = 20.0f;
       int camWidth = 640;
       int camHeight = 480;
 
-      double L = 0;
-      double R = camWidth;
-      double B = 0;
-      double T = camHeight;
-
-      double alpha = projectionMatrix[0][0]; //0
-      double beta = projectionMatrix[1][0]; //4
-      double u0 = projectionMatrix[0][2]; //2
-      double v0 = projectionMatrix[1][1]; //5
+      double fx = projectionMatrix[0][0];
+      double fy = projectionMatrix[1][1];
+      double u0 = projectionMatrix[0][2];
+      double v0 = projectionMatrix[1][2];
       double skew = 0.0;
 
       Ogre::Matrix4 Projection = Ogre::Matrix4(
-          (Ogre::Real)(2.0*alpha / camWidth), 0, (Ogre::Real)(2.0*(u0 / camWidth) - 1.0), 0,
-          0, (Ogre::Real)(2.0*beta / camHeight), (Ogre::Real)(2.0*(v0 / camHeight) - 1.0), 0,
+          (Ogre::Real)(2.0*fx / camWidth), 0, (Ogre::Real)(2.0*(u0 / camWidth) - 1.0), 0,
+          0, (Ogre::Real)(2.0*fy / camHeight), (Ogre::Real)(2.0*(v0 / camHeight) - 1.0), 0,
           0, 0, (Ogre::Real)(-1.0*(zfar+znear) / (zfar-znear)), (Ogre::Real)(-2.0*zfar*znear / (zfar-znear)),
           0, 0, -1.0, 0);
       mainCam->setCustomProjectionMatrix(true, Projection);

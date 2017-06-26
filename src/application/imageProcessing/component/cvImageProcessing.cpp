@@ -28,16 +28,16 @@ namespace ape {
         cameraIntrinsics(cameraIntrinsics), distCoeffs(distCoeffs),
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
-        markerLength(0.05), //FIXME magic number ...
+        markerLength(0.024), //FIXME magic number ...
         ids(), corners(), rejected(), rvecs(), tvecs(),
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
 		  cvCameraStream = new OpenCVCameraStream();
-      //auto stream= new FileCameraStream(
-      //    "../../../data/dummy/cameraStream/marker01.avi");
+     // auto stream= new FileCameraStream(
+     //     "../../../data/dummy/cameraStream/marker01.avi");
       //stream->setSize(640,480);
-      //cvCameraStream=stream;
+     // cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
     }
 
@@ -78,9 +78,13 @@ namespace ape {
       cvToGl[3][3] = 1.0f;
       viewMatrix = cvToGl * viewMatrix;
 
+      viewMatrix[0][3] = (float)translation[0];
+      viewMatrix[1][3] = -(float)translation[1];
+      viewMatrix[2][3] = -(float)translation[2];
+
       //FIXME only print in debug mode
       glm::vec4 test;
-      std::cout<<glm::to_string(viewMatrix)<<std::endl;
+     // std::cout<<glm::to_string(viewMatrix)<<std::endl;
 
       return viewMatrix;
     }
@@ -126,9 +130,9 @@ namespace ape {
         viewMatrix = convertVectorsToViewMatrix(rvecs[0], tvecs[0]);
 
         for (unsigned int i = 0; i < ids.size(); i++) {
-          //FIXME add flag for and draw only in debug mode
-          cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i], tvecs[i],
-                              markerLength);
+              //FIXME add flag for and draw only in debug mode
+              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i], tvecs[i],
+                                  markerLength);
         }
 
         //TODO for now, we only care about the nearest marker

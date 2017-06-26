@@ -71,16 +71,17 @@ int main(int argc, char** argv) {
   std::vector<std::vector<int>> allIds;
   std::vector<cv::Mat> allImgs;
 
-  ape::imageProcessing::IImageProcessingController controller(glm::mat3(), nullptr);
-  ape::imageProcessing::CameraStream * camera = controller.getCameraStream();
+  auto controller = ape::imageProcessing::IImageProcessingController::createInstance(
+        glm::mat3(), nullptr);
+  ape::imageProcessing::CameraStream * camera = controller->getCameraStream();
 
    while (true) {
     if (allImgs.size() > 3) break;
 
 
     cv::Mat frame(camera->getFrameHeight(), camera->getFrameWidth(), CV_8UC3);
-    controller.update(0);
-    frame.data = (uchar*) camera->getCurrentFrame();
+    controller->update(0);
+    frame.data = (uchar*) camera->getCurrentFrame().data;
 
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners, rejected;
@@ -163,8 +164,8 @@ int main(int argc, char** argv) {
     allCharucoIds, board, cameraImageSize, cameraMatrix, distCoeffs, rvecs, tvecs,
     calibrationFlags);
 
-
-  saveCameraIntrinsics("/tmp/intrinsics", cameraImageSize, cameraMatrix,
+  //FIX ME magic string
+  saveCameraIntrinsics("out", cameraImageSize, cameraMatrix,
     distCoeffs, repError);
 
   std::cout << "Calibration reprojection errror: " << repError << std::endl;
@@ -172,8 +173,8 @@ int main(int argc, char** argv) {
   while (true) {
     cv::Mat frame(camera->getFrameHeight(),
       camera->getFrameWidth(), CV_8UC3);
-    controller.update(0);
-    frame.data = (uchar*) camera->getCurrentFrame();
+    controller->update(0);
+    frame.data = (uchar*) camera->getCurrentFrame().data;
 
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> corners, rejected;
