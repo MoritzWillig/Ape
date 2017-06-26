@@ -274,7 +274,7 @@ namespace ape {
       debugNode->attachObject(coordAxes);
 
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->setPosition(0, 0, 0.1);
+      ogreNode->setPosition(0, 0, 0.01);
       ogreNode->setScale(0.0001, 0.0001, 0.0001);
       ogreNode->attachObject(ogreEntity);
 
