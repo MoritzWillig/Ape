@@ -78,6 +78,12 @@ namespace ape {
       cvToGl[3][3] = 1.0f;
       viewMatrix = cvToGl * viewMatrix;
 
+      //FIX ME Manuel fix by comparison with correct view matrix
+      viewMatrix[0][1] = -viewMatrix[0][1];
+      viewMatrix[0][2] = -viewMatrix[0][2];
+      viewMatrix[1][0] = -viewMatrix[1][0];
+      viewMatrix[2][0] = -viewMatrix[2][0];
+
       viewMatrix[0][3] = (float)translation[0];
       viewMatrix[1][3] = -(float)translation[1];
       viewMatrix[2][3] = -(float)translation[2];
