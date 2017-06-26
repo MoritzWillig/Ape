@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <time.h>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui.hpp"

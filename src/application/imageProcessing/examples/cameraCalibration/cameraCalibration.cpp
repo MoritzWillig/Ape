@@ -164,8 +164,8 @@ int main(int argc, char** argv) {
     allCharucoIds, board, cameraImageSize, cameraMatrix, distCoeffs, rvecs, tvecs,
     calibrationFlags);
 
-
-  saveCameraIntrinsics("/tmp/intrinsics", cameraImageSize, cameraMatrix,
+  //FIX ME magic string
+  saveCameraIntrinsics("out", cameraImageSize, cameraMatrix,
     distCoeffs, repError);
 
   std::cout << "Calibration reprojection errror: " << repError << std::endl;

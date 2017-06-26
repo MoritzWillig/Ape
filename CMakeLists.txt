@@ -32,6 +32,9 @@ endif()
 
 set(GLM_INCLUDE_DIR
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/glm/include")
+		
+set(FASTNOISE_INCLUDE_DIR
+	"${CMAKE_CURRENT_SOURCE_DIR}/libs/FastNoise-0.4")
 
 find_package(OpenCV 3.2.0 QUIET)
 if (OpenCV_FOUND)

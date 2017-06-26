@@ -12,8 +12,12 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-//FIXME :( ...
+#ifdef WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#else
 #define GLFW_EXPOSE_NATIVE_X11
+#endif
+
 #include <GLFW/glfw3native.h>
 
 #include <imageProcessing/CameraStream.h>
@@ -75,7 +79,7 @@ namespace ape {
 
       void update(
           float timeStep, imageProcessing::CameraStream* stream,
-          const glm::mat4& viewMatrix);
+          const glm::mat4x4& viewMatrix);
 
       bool isClosed();
 

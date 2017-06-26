@@ -11,10 +11,9 @@
 #include <opencv2/calib3d.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <opencv2/imgproc.hpp>
 #include <textureSynthesis/TextureSynthesis.h>
+
 
 namespace ape {
   namespace imageProcessing {
@@ -28,12 +27,12 @@ namespace ape {
         cameraIntrinsics(cameraIntrinsics), distCoeffs(distCoeffs),
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
-        markerLength(0.15), //FIXME magic number ...
+        markerLength(0.024), //FIXME magic number ...
         ids(), corners(), rejected(), rvecs(), tvecs(),
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-      //cvCameraStream = new OpenCVCameraStream();
+		  //cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
           "../../../data/dummy/cameraStream/marker01.avi");
       stream->setSize(640,480);
@@ -49,12 +48,16 @@ namespace ape {
     // Source: http://stackoverflow.com/questions/3712049/how-to-use-an-opencv-rotation-and-translation-vector-with-opengl-es-in-android
     //FIXME move to helper class
     static glm::mat4x4 convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translation) {
+	std::cout << translation << std::endl;
+
       // rotation matrix
-      cv::Mat rotMat = cv::Mat::zeros(4, 4, CV_64F);
+      cv::Mat rotMat = cv::Mat::zeros(3, 3, CV_64F);
       glm::mat4x4 viewMatrix(0.0);
 
       // rotation vectors can be converted to a 3-by-3 rotation matrix
-      cv::Rodrigues(rotation, rotMat);
+	    cv::Rodrigues(rotation, rotMat);
+
+	    //std::cout << rotMat << std::endl;
 
       //Complete matrix ready to use
       for (unsigned int row = 0; row<3; ++row)
@@ -74,10 +77,19 @@ namespace ape {
       cvToGl[3][3] = 1.0f;
       viewMatrix = cvToGl * viewMatrix;
 
+      //FIX ME Manuel fix by comparison with correct view matrix
+      viewMatrix[0][1] = -viewMatrix[0][1];
+      viewMatrix[0][2] = -viewMatrix[0][2];
+      viewMatrix[1][0] = -viewMatrix[1][0];
+      viewMatrix[2][0] = -viewMatrix[2][0];
+
+      viewMatrix[0][3] = (float)translation[0];
+      viewMatrix[1][3] = -(float)translation[1];
+      viewMatrix[2][3] = -(float)translation[2];
 
       //FIXME only print in debug mode
       glm::vec4 test;
-      std::cout<<glm::to_string(viewMatrix)<<std::endl;
+     // std::cout<<glm::to_string(viewMatrix)<<std::endl;
 
       return viewMatrix;
     }
@@ -122,12 +134,11 @@ namespace ape {
 
         viewMatrix = convertVectorsToViewMatrix(rvecs[0], tvecs[0]);
 
-#ifdef DEBUG_BUILD
         for (unsigned int i = 0; i < ids.size(); i++) {
-          cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i],
-            tvecs[i], markerLength * 0.5f);
+              //FIXME add flag for and draw only in debug mode
+              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i], tvecs[i],
+                                  markerLength);
         }
-#endif
 
         //TODO for now, we only care about the nearest marker
         transformation.setValue(viewMatrix);
@@ -188,7 +199,7 @@ namespace ape {
 
     cv::Mat CvImageProcessingController::extractTextureFromStream(
         const cv::Rect regionOfInterest) {
-      textureExtraction.extractRegionOfInterest(
+      return textureExtraction.extractRegionOfInterest(
           processingContext.getContextValue(), regionOfInterest);
     }
 
