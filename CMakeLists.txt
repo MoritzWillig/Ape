@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 # set a custom flag when building in debug mode
 # can be used with an "#ifdef DEBUG_BUILD" to enable
 # code only in debug builds
-set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG_BUILD")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_BUILD")
 
 # move executables to specific folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin/Debug")
