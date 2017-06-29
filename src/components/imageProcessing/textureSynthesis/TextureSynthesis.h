@@ -8,7 +8,12 @@ namespace ape {
 
     class TextureSynthesis {
     private:
+
+      // initialize output texture with random pixels from the sample
       void initializeTexture(int size);
+
+      // Find the best match for the texture image at pixel (i, j)
+      // using a window of size x size
       void findBestMatch(int i, int j, int size);
 
       int sample_w, sample_h;
@@ -26,8 +31,6 @@ namespace ape {
       unsigned char** red;
       unsigned char** green;
       unsigned char** blue;
-      std::vector<int> candidate_x;
-      std::vector<int> candidate_y;
 
     protected:
     public:
