@@ -28,13 +28,14 @@ elseif(APPLE)
 else()
     set(prefix "lib")
     set(suffix ".so")
+    set(staticLibSuffix ".a")
 endif()
 
 set(GLM_INCLUDE_DIR
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/glm/include")
-		
+
 set(FASTNOISE_INCLUDE_DIR
-	"${CMAKE_CURRENT_SOURCE_DIR}/libs/FastNoise-0.4")
+	"${CMAKE_CURRENT_SOURCE_DIR}/libs/customInstall/include")
 
 find_package(OpenCV 3.2.0 QUIET)
 if (OpenCV_FOUND)
@@ -64,6 +65,9 @@ if(WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/include")
     set(OGRE_PLUGIN_DIR
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/bin/release/")
+
+    set(FastNoise_LIBRARIES
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/customInstall/lib/${prefix}FastNoise${suffix}")
 else()
     set(OGRE_LIBRARIES
             "${Boost_LIBRARIES}"
@@ -73,6 +77,9 @@ else()
             "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/include")
     set(OGRE_PLUGIN_DIR
         "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/OGRE")
+
+    set(FastNoise_LIBRARIES
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/customInstall/lib/${prefix}FastNoise${staticLibSuffix}")
 endif()
 
 add_subdirectory(src)
