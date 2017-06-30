@@ -39,7 +39,7 @@ namespace ape {
 
       virtual void recordValue(T value) override {
         if (history.size()==storedValuesCount) {
-          history.pop_back();
+          history.pop_front();
         }
 
         history.emplace_back(value);

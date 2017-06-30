@@ -28,7 +28,7 @@ namespace ape {
         searchedMarkerSignal(), marker(&searchedMarkerSignal),
         transformation(&searchedMarkerSignal),
         //FIXME magic numbers
-        viewSmoother(MeanSmoother<cv::Vec3d>(2), MeanSmoother<cv::Vec3d>(2)),
+        viewSmoother(MeanSmoother<cv::Vec3d>(5), MeanSmoother<cv::Vec3d>(5)),
         cameraIntrinsics(cameraIntrinsics), distCoeffs(distCoeffs),
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
