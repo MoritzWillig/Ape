@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.1.0)
+
+#set cmake flags
+set(CMAKE_CXX_STANDARD 11)
+
+project(FastNoise CXX)
+
+#sources for the application
+set(FASTNOISE_SOURCES
+        FastNoise.cpp
+        )
+
+set(FASTNOISE_HEADERS
+        FastNoise.h
+        )
+
+add_library(FastNoise STATIC ${FASTNOISE_SOURCES})
+
+install(TARGETS FastNoise DESTINATION lib)
+install(FILES ${FASTNOISE_HEADERS} DESTINATION include/FastNoise)

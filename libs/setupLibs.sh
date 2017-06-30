@@ -2,9 +2,9 @@
 
 skipGLM=false
 skipOpenCV=false
-skipbgfx=true
 skipOGRE=false
 skipGLFW=false
+skipFastNoise=false
 
 if [ "$skipGLM" = false ] ; then
     git clone git@github.com:g-truc/glm.git glm
@@ -45,17 +45,6 @@ if [ "$skipOpenCV" = false ] ; then
 	cd ../..
 fi
 
-if [ "$skipbgfx" = false ] ; then
-	git clone git://github.com/bkaradzic/bx.git bx
-	git clone git://github.com/bkaradzic/bimg.git bimg
-	git clone git://github.com/bkaradzic/bgfx.git bgfx
-
-	cd bgfx
-	make linux-debug64
-
-	cd ..
-fi
-
 if [ "$skipOGRE" = false ] ; then
     # dependencies for ubuntu/debian
     #sudo apt-get install libfreetype6-dev libfreeimage-dev libzzip-dev libxrandr-dev libxaw7-dev freeglut3-dev libgl1-mesa-dev libglu1-mesa-dev
@@ -83,9 +72,29 @@ if [ "$skipGLFW" = false ] ; then
 	git checkout tags/3.2.1
 	mkdir build
 	cd build
-	
-	cmake .. -DCMAKE_INSTALL_PREFIX=../../customInstall 
+
+	cd ../..
+
+	cmake .. -DCMAKE_INSTALL_PREFIX=../../customInstall
 	make
 	make install
+fi
+
+if [ "$skipFastNoise" = false ] ; then
+	git clone git@github.com:Auburns/FastNoise.git fastNoise
+	cd fastNoise
+	git fetch --tags
+	git checkout tags/0.4
+
+	cp ../misc/fastNoise_CMakeLists.txt ./CMakeLists.txt
+
+	mkdir build
+	cd build
+
+	cmake .. -DCMAKE_INSTALL_PREFIX=../../customInstall
+	make
+	make install
+
+	cd ../..
 fi
 

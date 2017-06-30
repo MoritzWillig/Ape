@@ -21,7 +21,7 @@ add_executable(apeDesktop
         $<TARGET_OBJECTS:apeImageProcessing>
         #$<TARGET_OBJECTS:textureGen>
         $<TARGET_OBJECTS:apeVisualization>
-        #$<TARGET_OBJECTS:worldState>
+        $<TARGET_OBJECTS:apeWorldState>
         )
 
 include_directories(${OpenCV_INCLUDE_DIRS})
