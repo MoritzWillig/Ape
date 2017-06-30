@@ -140,6 +140,25 @@ int main(int argc, char** argv) {
     }
   },&appStateController);
 
+  visController->textureGenerationRequestHandler.setCallback([](
+      void* ipController, glm::vec2 v1, glm::vec2 v2,
+      CustomValueCallback<
+          ape::visualization::IVisualizationController::TextureGenerationFinishedHandler,
+              void*>*
+      textureGenerationFinishedHandler
+  ) {
+    auto ipc=(ape::imageProcessing::IImageProcessingController*)ipController;
+
+    cv::Rect roi((int)v1.x,(int)v1.y,(int)v2.x,(int)v2.y);
+    auto region=ipc->extractTextureFromStream(roi);
+    auto tile=ipc->createTile(512,512,region);
+
+    std::cout<<"Generated texture!"<<std::endl;
+
+    //FIXME pass actual texture id
+    textureGenerationFinishedHandler->call(12345);
+  },ipController.get());
+
   //application loop
   //FIXME refactor into separate class
   auto frameTime = 1.0f / 30.0f;

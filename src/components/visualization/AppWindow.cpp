@@ -64,7 +64,7 @@ namespace ape {
 
       that->processMouseButtonEvent(button, action, mods);
     }
-    
+
     bool AppWindow::createWindow() {
       glfwSetErrorCallback(glfw_error_callback);
       if (glfwInit()!=GLFW_TRUE)

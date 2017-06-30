@@ -45,7 +45,7 @@ protected:
 public:
   void setValue(T value) {
     this->set();
-    this->value;
+    this->value = value;
   }
 
   T getValue() {

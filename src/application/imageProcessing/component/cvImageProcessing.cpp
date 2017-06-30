@@ -48,7 +48,7 @@ namespace ape {
     // Source: http://stackoverflow.com/questions/3712049/how-to-use-an-opencv-rotation-and-translation-vector-with-opengl-es-in-android
     //FIXME move to helper class
     static glm::mat4x4 convertVectorsToViewMatrix(cv::Vec3d rotation, cv::Vec3d translation) {
-	std::cout << translation << std::endl;
+  	//std::cout << translation << std::endl;
 
       // rotation matrix
       cv::Mat rotMat = cv::Mat::zeros(3, 3, CV_64F);

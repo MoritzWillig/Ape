@@ -26,8 +26,19 @@ namespace ape {
           IVisualizationController::OverlayChangeRequestHandler,
           void*>& overlayChangeRequestHandler;
 
+      CustomValueCallback<
+          IVisualizationController::TextureGenerationRequestHandler,
+          void*>& textureGenerationRequestHandler;
+
       ValueSignal<glm::vec2> vertex1;
       ValueSignal<glm::vec2> vertex2;
+
+      glm::vec2 lastMousePosition;
+
+      CustomValueCallback<
+          IVisualizationController::TextureGenerationFinishedHandler,
+          void*
+      > generationFinishedHandler;
 
       enum class SelectionState {
         CapturingP1,
@@ -47,7 +58,10 @@ namespace ape {
           AppWindow* appWindow,
           CustomValueCallback<
               IVisualizationController::OverlayChangeRequestHandler,
-              void*>& overlayChangeRequestHandler);
+              void*>& overlayChangeRequestHandler,
+          CustomValueCallback<
+              IVisualizationController::TextureGenerationRequestHandler,
+              void*>& textureGenerationRequestHandler);
 
       // Copy constructor
       TextureSynthesisSelectionStage(const TextureSynthesisSelectionStage&) = default;
@@ -72,6 +86,10 @@ namespace ape {
 
       virtual void processKeyEvent(
           int key, int scancode, int action, int mods) override;
+      virtual void processMousePositionEvent(
+          double x, double y) override;
+      virtual void processMouseButtonEvent(
+          int button, int action, int mods) override;
     };
 
   }
