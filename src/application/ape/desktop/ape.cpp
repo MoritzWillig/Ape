@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
   },&appStateController);
 
   visController->textureGenerationRequestHandler.setCallback([](
-      void* ipController, glm::vec2 v1, glm::vec2 v2,
+      void* ipController, glm::vec2 vertex1, glm::vec2 vertex2,
       CustomValueCallback<
           ape::visualization::IVisualizationController::TextureGenerationFinishedHandler,
               void*>*
@@ -149,7 +149,9 @@ int main(int argc, char** argv) {
   ) {
     auto ipc=(ape::imageProcessing::IImageProcessingController*)ipController;
 
-    cv::Rect roi((int)v1.x,(int)v1.y,(int)v2.x,(int)v2.y);
+    auto min = glm::min(vertex1, vertex2);
+    auto max = glm::max(vertex1, vertex2);
+    cv::Rect roi((int)min.x,(int)min.y,(int)(max.x-min.x),(int)(max.y-min.y));
     auto region=ipc->extractTextureFromStream(roi);
     auto tile=ipc->createTile(512,512,region);
 
