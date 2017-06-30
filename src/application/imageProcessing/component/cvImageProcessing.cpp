@@ -38,6 +38,7 @@ namespace ape {
       stream->setSize(640,480);
       cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
+      setProcessingContext(ProcessingContext::Context::Stream);
     }
 
     CvImageProcessingController::~CvImageProcessingController() {
@@ -189,7 +190,11 @@ namespace ape {
           processingContext.setStreamContext(getCameraStream());
           break;
         case ProcessingContext::Context::Image:
-          //TODO we 'freeze' the current stream
+          //we currently do not freeze context
+          //but simply freeze th whole camera stream
+          //by doing so, we also get a frozen image in the display
+
+          //TODO we 'freeze' the context to the current stream image
           //it may be better to allow arbitrary images to be set
           processingContext.setImageContext(getCameraStream()
                                                 ->getCurrentFrame());
@@ -199,8 +204,9 @@ namespace ape {
 
     cv::Mat CvImageProcessingController::extractTextureFromStream(
         const cv::Rect regionOfInterest) {
+      auto context=processingContext.getContextValue();
       return textureExtraction.extractRegionOfInterest(
-          processingContext.getContextValue(), regionOfInterest);
+          context, regionOfInterest);
     }
 
     cv::Mat CvImageProcessingController::createTile(int width, int height,

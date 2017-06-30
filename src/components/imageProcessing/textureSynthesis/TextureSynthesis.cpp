@@ -89,6 +89,7 @@ namespace ape {
       std::cout<<"Texture generation complete" << std::endl;
 
       // write image in BGR format
+      texture.create(texture_w, texture_h, CV_8UC3);
       for (std::size_t j = 0; j < texture_h; j++)
       {
         for(std::size_t i = 0; i < texture_w; i++)
