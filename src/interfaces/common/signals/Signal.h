@@ -9,7 +9,7 @@ private:
 protected:
 public:
   Signal():
-      signal(true) {
+      signal(false) {
   }
 
   Signal(bool signal):
@@ -48,7 +48,7 @@ public:
     this->value = value;
   }
 
-  T getValue() {
+  T getValue() const {
     if (!hasSignal()) {
       throw std::runtime_error("Signal not set");
     }

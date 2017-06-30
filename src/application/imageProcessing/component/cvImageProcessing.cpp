@@ -11,8 +11,11 @@
 #include <opencv2/calib3d.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <algorithm>
 #include <opencv2/imgproc.hpp>
 #include <textureSynthesis/TextureSynthesis.h>
+
+#include "smoothing/MeanSmoother.h"
 
 
 namespace ape {
@@ -24,6 +27,8 @@ namespace ape {
         cvCameraStream(nullptr), lazyCameraStream(nullptr), cameraFrozen(false),
         searchedMarkerSignal(), marker(&searchedMarkerSignal),
         transformation(&searchedMarkerSignal),
+        //FIXME magic numbers
+        viewSmoother(MeanSmoother<cv::Vec3d>(2), MeanSmoother<cv::Vec3d>(2)),
         cameraIntrinsics(cameraIntrinsics), distCoeffs(distCoeffs),
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
@@ -133,7 +138,15 @@ namespace ape {
       if (marker) {
         cv::aruco::drawDetectedMarkers(frame, corners, ids);
 
-        viewMatrix = convertVectorsToViewMatrix(rvecs[0], tvecs[0]);
+        viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
+            tvecs[0],rvecs[0]
+        ));
+
+        auto smoothedViewParams=viewSmoother.getSmoothedValue();
+
+        viewMatrix = convertVectorsToViewMatrix(
+            smoothedViewParams.rotation,
+            smoothedViewParams.translation);
 
         for (unsigned int i = 0; i < ids.size(); i++) {
               //FIXME add flag for and draw only in debug mode
@@ -141,7 +154,6 @@ namespace ape {
                                   markerLength);
         }
 
-        //TODO for now, we only care about the nearest marker
         transformation.setValue(viewMatrix);
       }
     }

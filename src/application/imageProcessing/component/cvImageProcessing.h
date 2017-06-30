@@ -2,6 +2,8 @@
 
 #include "imageProcessing.h"
 
+#include <list>
+
 #include <glm/glm.hpp>
 #include <opencv2/aruco/dictionary.hpp>
 #include <opencv2/aruco.hpp>
@@ -12,6 +14,7 @@
 
 #include "textureSynthesis/TextureExtraction.h"
 #include "ProcessingContextImplementation.h"
+#include "smoothing/TransformationSmoother.h"
 
 namespace ape {
   namespace imageProcessing {
@@ -28,6 +31,11 @@ namespace ape {
       Signal searchedMarkerSignal;
       SignalOrDefault<bool> marker;
       SignalOrDefault<glm::mat4x4> transformation;
+
+      TransformationSmoother<
+          cv::Vec3d,cv::Vec3d,
+          MeanSmoother<cv::Vec3d>,
+          MeanSmoother<cv::Vec3d>> viewSmoother;
 
       void updateTransformation();
 
