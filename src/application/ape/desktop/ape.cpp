@@ -140,27 +140,6 @@ int main(int argc, char** argv) {
     }
   },&appStateController);
 
-  visController->textureGenerationRequestHandler.setCallback([](
-      void* ipController, glm::vec2 vertex1, glm::vec2 vertex2,
-      CustomValueCallback<
-          ape::visualization::IVisualizationController::TextureGenerationFinishedHandler,
-              void*>*
-      textureGenerationFinishedHandler
-  ) {
-    auto ipc=(ape::imageProcessing::IImageProcessingController*)ipController;
-
-    auto min = glm::min(vertex1, vertex2);
-    auto max = glm::max(vertex1, vertex2);
-    cv::Rect roi((int)min.x,(int)min.y,(int)(max.x-min.x),(int)(max.y-min.y));
-    auto region=ipc->extractTextureFromStream(roi);
-    auto tile=ipc->createTile(512,512,region);
-
-    std::cout<<"Generated texture!"<<std::endl;
-
-    //FIXME pass actual texture id
-    textureGenerationFinishedHandler->call(12345);
-  },ipController.get());
-
   //application loop
   //FIXME refactor into separate class
   auto frameTime = 1.0f / 30.0f;
