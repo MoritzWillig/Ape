@@ -26,6 +26,7 @@ set(APE_WORLDSTATE_COMPONENT_SOURCES
         ${APE_WORLDSTATE_SOURCES}
         worldState.cpp
         worldStateImplementation.cpp
+        SurfaceImplementation.cpp
         )
 
 add_library(apeWorldState OBJECT ${APE_WORLDSTATE_COMPONENT_SOURCES})

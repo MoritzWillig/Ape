@@ -43,6 +43,15 @@ class ValueSignal: public Signal {
 protected:
   T value;
 public:
+  ValueSignal():
+      Signal() {
+  }
+
+  ValueSignal(T value):
+      ValueSignal() {
+    setValue(value);
+  }
+
   void setValue(T value) {
     this->set();
     this->value = value;
