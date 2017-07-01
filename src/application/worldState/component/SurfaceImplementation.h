@@ -17,6 +17,7 @@ namespace ape {
     protected:
       ValueSignal<ISurface::SurfacePersistentHandle> handle;
       std::string name;
+      cv::Mat texture;
 
       void probeSurfaceExisting();
     public:
@@ -47,6 +48,10 @@ namespace ape {
 
       virtual ValueSignal<ISurface::SurfacePersistentHandle>
         getPersistentHandle() override;
+
+      virtual cv::Mat getTexture() override;
+
+      void setTexture(cv::Mat texture);
     };
 
   }

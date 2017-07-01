@@ -25,7 +25,7 @@ include_directories(${FASTNOISE_INCLUDE_DIR})
 set(APE_WORLDSTATE_COMPONENT_SOURCES
         ${APE_WORLDSTATE_SOURCES}
         worldState.cpp
-        worldStateImplementation.cpp
+        worldFileBasedState.cpp
         SurfaceImplementation.cpp
         )
 

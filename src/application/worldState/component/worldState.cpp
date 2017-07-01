@@ -1,6 +1,6 @@
 #include "worldState.h"
 
-#include "worldStateImplementation.h"
+#include "worldFileBasedState.h"
 
 namespace ape {
   namespace worldState {
@@ -9,7 +9,7 @@ namespace ape {
         std::string surfaceDatabasePath,
         std::string surfaceDatabaseName
     ) {
-      return std::make_shared<WorldStateImplementation>(
+      return std::make_shared<WorldFileBasedStateController>(
           surfaceDatabasePath,
           surfaceDatabaseName);
     }

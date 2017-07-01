@@ -18,6 +18,7 @@ namespace ape {
 
       virtual std::string getName() = 0;
       virtual ValueSignal<SurfacePersistentHandle> getPersistentHandle() = 0;
+      virtual cv::Mat getTexture() = 0;
     };
 
     class IWorldStateController {
@@ -28,6 +29,9 @@ namespace ape {
           std::string name, cv::Mat texture) = 0;
 
       virtual bool removeSurface(
+          ISurface::SurfacePersistentHandle surfaceHandle) = 0;
+
+      virtual void persistSurface(
           ISurface::SurfacePersistentHandle surfaceHandle) = 0;
 
       virtual std::shared_ptr<ISurface> getSurface(

@@ -1,7 +1,3 @@
-//
-// Created by moritz on 01.07.17.
-//
-
 #include <fstream>
 #include "SurfaceImplementation.h"
 
@@ -9,7 +5,7 @@ namespace ape {
   namespace worldState {
 
     SurfaceImplementation::SurfaceImplementation():
-        path(), handle(), name() {
+        path(), handle(), name(), texture() {
     }
 
     SurfaceImplementation::SurfaceImplementation(
@@ -33,6 +29,14 @@ namespace ape {
     ValueSignal<ISurface::SurfacePersistentHandle>
     SurfaceImplementation::getPersistentHandle() {
       return handle;
+    }
+
+    cv::Mat SurfaceImplementation::getTexture() {
+      return texture;
+    }
+
+    void SurfaceImplementation::setTexture(cv::Mat texture) {
+      texture.copyTo(this->texture);
     }
 
   }

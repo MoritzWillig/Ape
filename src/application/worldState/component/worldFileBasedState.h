@@ -1,12 +1,15 @@
 #pragma once
 
+#include <map>
+#include <memory>
+
 #include "worldState.h"
 #include "SurfaceImplementation.h"
 
 namespace ape {
   namespace worldState {
 
-    class WorldStateImplementation : public IWorldStateController {
+    class WorldFileBasedStateController : public IWorldStateController {
     private:
       std::string surfaceDatabasePath;
       std::string surfaceDatabaseName;
@@ -16,36 +19,43 @@ namespace ape {
       std::string getFileNameFromHandle(
           ISurface::SurfacePersistentHandle surfaceHandle);
 
-      std::vector<SurfaceImplementation> surfaces;
+      std::map<
+          ISurface::SurfacePersistentHandle,
+          std::shared_ptr<SurfaceImplementation>> surfaces;
+
+      ISurface::SurfacePersistentHandle createNewHandle();
     public:
       //Default
-      WorldStateImplementation() = delete;
+      WorldFileBasedStateController() = delete;
 
-      WorldStateImplementation(
+      WorldFileBasedStateController(
           std::string surfaceDatabasePath,
           std::string surfaceDatabaseName);
 
       // Copy constructor
-      WorldStateImplementation(const WorldStateImplementation&) = default;
+      WorldFileBasedStateController(const WorldFileBasedStateController&) = default;
 
       // Move constructor
-      WorldStateImplementation(WorldStateImplementation&&) = default;
+      WorldFileBasedStateController(WorldFileBasedStateController&&) = default;
 
       // Copy assignment operator
-      WorldStateImplementation&
-      operator=(const WorldStateImplementation&)& = default;
+      WorldFileBasedStateController&
+      operator=(const WorldFileBasedStateController&)& = default;
 
       // Move assignment operator
-      WorldStateImplementation&
-      operator=(WorldStateImplementation&&)& = default;
+      WorldFileBasedStateController&
+      operator=(WorldFileBasedStateController&&)& = default;
 
       // Destructor
-      virtual ~WorldStateImplementation() = default;
+      virtual ~WorldFileBasedStateController() = default;
 
       virtual ISurface::SurfacePersistentHandle createSurface(
           std::string name, cv::Mat texture) override;
 
       virtual bool removeSurface(
+          ISurface::SurfacePersistentHandle surfaceHandle) override;
+
+      virtual void persistSurface(
           ISurface::SurfacePersistentHandle surfaceHandle) override;
 
       virtual std::shared_ptr<ISurface> getSurface(
