@@ -3,6 +3,7 @@
 // Created by moritz on 13.05.17.
 //
 
+#include <OgreRay.h>
 #include <OGRE/Ogre.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
 #include <OGRE/OgreFontManager.h>
@@ -32,14 +33,14 @@ namespace ape {
       void createFont();
       void createPanel();
 
-  	  void createRessources();
-	    void createBackgroundTexture();
+      void createRessources();
+	     void createBackgroundTexture();
       void createCoordinateAxes();
 
-	    void updateBackgroundTexture(
+	     void updateBackgroundTexture(
           cv::Mat frame, unsigned int width, unsigned int height);
 
-	    void initScene();
+	     void initScene();
 
       Ogre::Root* root;
       Ogre::RenderWindow* renderWindow;
@@ -47,13 +48,19 @@ namespace ape {
       Ogre::SceneManager* sceneMgr;
       Ogre::Camera* mainCam;
       Ogre::Viewport* vp;
-	    Ogre::Rectangle2D* rect;
-	    Ogre::TexturePtr backgroundTexture;
+	     Ogre::Rectangle2D* rect;
+	     Ogre::TexturePtr backgroundTexture;
       Ogre::ManualObject* coordAxes;
+      Ogre::MaterialPtr cubeMat;
+
+      int mousePosX;
+      int mousePosY;
+      bool movableFound;
+      ape::visualization::OgreRay* queryRay;
 
       //FIXME magic numbers
-	    int textureWidth = 640;
-	    int textureHeight = 480;
+      int textureWidth = 640;
+      int textureHeight = 480;
       float coordAxesLength = 0.026;
 
       Ogre::NameGenerator nameGenerator;

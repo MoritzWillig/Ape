@@ -14,9 +14,9 @@
 
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
-#define TEXTURE_FOLDER "../../../data/assets/meshes/textures"
+#define TEXTURE_FOLDER "../../../data/assets/textures"
 #define FONT_FILE_NAME "FreeSans.otf"
-#define MESH_FILE_NAME "cube.mesh"
+#define MESH_FILE_NAME "house.mesh"
 
 //FIXME remove
 class FrameListener : public Ogre::FrameListener {
@@ -72,7 +72,7 @@ namespace ape {
         throw std::runtime_error("Could not initialize glfw");
       }
 
-      glfwWindow = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+      glfwWindow = glfwCreateWindow(1024, 768, "My Title", NULL, NULL);
       if (!glfwWindow)
       {
         //FIXME this needs to be called because createWindow is called from
@@ -130,6 +130,9 @@ namespace ape {
       // add viewport
       vp = renderWindow->addViewport(mainCam);
       vp->setBackgroundColour(Ogre::ColourValue(0.2, 0.3, 0.7));
+
+      // Init sceneQuery
+      queryRay = new ape::visualization::OgreRay(sceneMgr);
 
       return true;
     }
@@ -267,19 +270,51 @@ namespace ape {
     void AppWindow::initScene() {
       // Add Cube
       sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-      Ogre::Entity* ogreEntity = sceneMgr->createEntity(MESH_FILE_NAME,
+      Ogre::Entity* ogreEntity = sceneMgr->createEntity("cube1",
                                                         MESH_FILE_NAME);
+      Ogre::Entity* ogreEntity2 = sceneMgr->createEntity("cube2",
+        MESH_FILE_NAME);
+      Ogre::Entity* ogreEntity3 = sceneMgr->createEntity("cube3",
+        MESH_FILE_NAME);
+      Ogre::Entity* ogreEntity4 = sceneMgr->createEntity("cube4",
+        MESH_FILE_NAME);
 
+      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      ogreNode->setPosition(-0.02, 0, 0.01);
+      ogreNode->setScale(0.0001, 0.0001, 0.0001);
+      ogreNode->attachObject(ogreEntity);
+
+      Ogre::SceneNode* ogreNode2 = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      ogreNode2->setPosition(0.02, 0.0, 0.01);
+      ogreNode2->setScale(0.0001, 0.0001, 0.0001);
+      ogreNode2->attachObject(ogreEntity2);
+
+
+      Ogre::SceneNode* ogreNode3 = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      ogreNode3->setPosition(-0.02, 0.01, 0.01);
+      ogreNode3->setScale(0.0001, 0.0001, 0.0001);
+      ogreNode3->attachObject(ogreEntity3);
+
+      Ogre::SceneNode* ogreNode4 = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      ogreNode4->setPosition(0.02, 0.01, 0.01);
+      ogreNode4->setScale(0.0001, 0.0001, 0.0001);
+      ogreNode4->attachObject(ogreEntity4);
+
+#ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
           createChildSceneNode("debug");
       debugNode->setPosition(0, 0, 0);
       debugNode->setScale(20.0, 20.0, 20.0);
       debugNode->attachObject(coordAxes);
+#endif
 
-      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->setPosition(0, 0, 0.01);
-      ogreNode->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode->attachObject(ogreEntity);
+
+      // Create a material using the texture
+      Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().load("0.jpg", "General");
+      cubeMat = Ogre::MaterialManager::getSingleton().create(
+        "CubeMaterial", // name
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+      cubeMat->getTechnique(0)->getPass(0)->createTextureUnitState()->setTexture(texture);
 
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
@@ -308,7 +343,9 @@ namespace ape {
         nameGenerator("ape"),
         keyEventHandler(nullptr, nullptr),
         mousePositionEventHandler(nullptr, nullptr),
-        mouseButtonEventHandler(nullptr, nullptr) {
+        mouseButtonEventHandler(nullptr, nullptr),
+        movableFound(false)
+        {
       createWindow();
       createRessources();
       createPanel();
@@ -421,10 +458,31 @@ namespace ape {
 
     void AppWindow::processMousePositionEvent(double x, double y) {
       mousePositionEventHandler.callExceptIfNotSet(x, y);
+      mousePosX = x;
+      mousePosY = y;
     }
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
+      std::cout << "Pressed " << button << " at Position " << mousePosX << " " << mousePosY << std::endl;
+      Ogre::Ray mouseRay = mainCam->getCameraToViewportRay(mousePosX/1024.0f, mousePosY/768.0f);
+
+      Ogre::Vector3 resultVec(0.0f);
+      Ogre::MovableObject* resultObj;
+
+      queryRay->Raycast(mouseRay, resultVec, &resultObj);
+      std::cout << resultObj << std::endl;
+
+      movableFound = resultObj->getName() == "cube1" ||
+        resultObj->getName() == "cube2" ||
+        resultObj->getName() == "cube3" ||
+        resultObj->getName() == "cube4";
+
+      if (movableFound)
+      {
+        Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
+        entity->setMaterial(cubeMat);
+      }
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
