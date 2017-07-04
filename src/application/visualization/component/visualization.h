@@ -4,6 +4,8 @@
 
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
+//FIXME correct include
+#include "../../worldState/component/worldState.h"
 #include <common/callbacks/CustomValueCallback.h>
 
 namespace ape {
@@ -19,7 +21,8 @@ namespace ape {
         Loading,
         Menu,
         WorldScreen,
-        TextureSynthesisSelection
+        TextureSynthesisSelection,
+        SurfaceSelection
       };
 
       virtual void setOverlay(Overlay overlay, bool enable) = 0;
@@ -49,6 +52,21 @@ namespace ape {
       CustomValueCallback<
           IVisualizationController::TextureGenerationRequestHandler,
           void*> textureGenerationRequestHandler;
+
+      enum class SurfaceSelectionAction {
+        SELECT_TEMPORARY,
+        SELECT_PERMANENT,
+        RESET
+      };
+
+      typedef void (*SurfaceSelectionHandler)
+          (void* custom, SurfaceSelectionAction action,
+           ape::worldState::ISurface* surface);
+
+      CustomValueCallback<
+          IVisualizationController::SurfaceSelectionHandler,
+          void*> surfaceSelectionHandler;
+
 
       static std::shared_ptr<IVisualizationController> createInstance(
           imageProcessing::CameraStream* stream

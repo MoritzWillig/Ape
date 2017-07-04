@@ -8,6 +8,7 @@
 #include "stages/LoadingControllerStage.h"
 #include "stages/TextureSynthesisSelectionStage.h"
 #include "stages/WorldScreenStage.h"
+#include "stages/SurfaceSelectionStage.h"
 
 namespace ape {
   namespace visualization {
@@ -19,6 +20,7 @@ namespace ape {
       float percent;
       LoadingControllerStage ldcStage;
       TextureSynthesisSelectionStage tssStage;
+      SurfaceSelectionStage ssStage;
       WorldScreenStage wsStage;
 
       imageProcessing::CameraStream* stream;

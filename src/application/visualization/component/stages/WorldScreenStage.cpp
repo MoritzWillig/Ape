@@ -14,9 +14,11 @@ namespace ape {
         AppWindow* appWindow,
         CustomValueCallback<
             IVisualizationController::OverlayChangeRequestHandler,
-            void*>& overlayChangeRequestHandler):
+            void*>& overlayChangeRequestHandler,
+        SurfaceSelectionStage& surfaceSelectionStage):
         Stage(appWindow), overlay(),
-        overlayChangeRequestHandler(overlayChangeRequestHandler) {
+        overlayChangeRequestHandler(overlayChangeRequestHandler),
+        surfaceSelectionStage(surfaceSelectionStage) {
       std::vector<glm::vec2> circle;
       auto circlePosX=0.875;
       auto circlePosY=0.875;
@@ -67,6 +69,8 @@ namespace ape {
           overlayChangeRequestHandler.callExceptIfNotSet(
               IVisualizationController::Overlay::Menu);
           break;
+        case GLFW_KEY_S:
+          surfaceSelectionStage.setActive(true);
         default:
           break;
       }
