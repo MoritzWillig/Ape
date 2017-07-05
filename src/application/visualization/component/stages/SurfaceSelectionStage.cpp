@@ -14,15 +14,10 @@ namespace ape {
         Stage(appWindow), overlay(), selectedItem(nullptr),
         hoveredItem(nullptr), scrollPosition(0),
         surfaceSelectionHandler(surfaceSelectionHandler),
-        lastMousePosition() {
-
-      //TODO do not hardcode surface patches but implement updateShapes()
-      //updateShapes();
-
-      auto dictButton=std::make_shared<shapes::OgreButton>(
-          appWindow, -0.95,0.95,0.3,0.2,Ogre::ColourValue(0.8f,0.0f,0.0f));
-      overlay.childs.emplace_back(dictButton);
-
+        lastMousePosition(), dictPosition(0,0), dictSize(1.0,1.0),
+        surfaceButtonSize(0.09,0.09), surfaceButtonPadding(0.05),
+        surfaces() {
+      updateShapes();
       setActive(false);
     }
 
@@ -53,7 +48,33 @@ namespace ape {
       //TODO send SELECT_PERMANENT request
     }
 
-    void SurfaceSelectionStagesetSelection(ape::worldState::ISurface* surface);
+    void SurfaceSelectionStage::updateShapes() {
+      overlay.childs.clear();
+
+      glm::vec2 patchPosition(0.0,-surfaceButtonPadding);
+
+      for (auto const surface: surfaces) {
+        if (patchPosition.x+
+                surfaceButtonSize.x+
+                2*surfaceButtonPadding>dictSize.x) {
+          patchPosition.x=0.0;
+          patchPosition.y-=surfaceButtonSize.y+2*surfaceButtonPadding;
+        }
+        patchPosition.x+=surfaceButtonPadding;
+
+        auto dictSurfaceButton=std::make_shared<shapes::OgreButton>(
+            appWindow,
+            dictPosition.x+patchPosition.x, dictPosition.y+patchPosition.y,
+            surfaceButtonSize.x, surfaceButtonSize.y,
+            Ogre::ColourValue(1.0f,1.0f,1.0f));
+        //FIXME dictSurfaceButton->textureName.setValue(surface);
+        overlay.childs.emplace_back(dictSurfaceButton);
+
+        //TODO update visual if surface is hovered or selected
+
+        patchPosition.x+=surfaceButtonSize.x+surfaceButtonPadding;
+      }
+    }
 
     void SurfaceSelectionStage::processKeyEvent(
         int key, int scancode, int action, int mods) {
@@ -99,8 +120,7 @@ namespace ape {
       }
 
       if ((button==GLFW_MOUSE_BUTTON_LEFT) && (action==GLFW_RELEASE)) {
-        //send selection permanent, change "selected"
-        throw std::runtime_error("Not implemented");
+        //TODO send selection permanent, change "selected"
       }
     }
 

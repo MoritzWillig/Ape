@@ -62,12 +62,23 @@ namespace ape {
 
       void setSelection(ape::worldState::ISurface* surface);
 
+      void updateShapes();
+
       virtual void processKeyEvent(
           int key, int scancode, int action, int mods) override;
       virtual void processMousePositionEvent(
           double x, double y) override;
       virtual void processMouseButtonEvent(
           int button, int action, int mods) override;
+
+      std::vector<std::string> surfaces;
+
+      glm::vec2 dictPosition;
+      glm::vec2 dictSize;
+
+      glm::vec2 surfaceButtonSize;
+      float surfaceButtonPadding;
+
     };
 
   }

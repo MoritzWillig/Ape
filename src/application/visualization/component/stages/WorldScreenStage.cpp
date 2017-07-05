@@ -44,6 +44,11 @@ namespace ape {
     void WorldScreenStage::setActive(bool active) {
       this->active=active;
       overlay.setVisible(active);
+
+      //if we leave this stage, we disable all "sub-stages"
+      if (!active) {
+        surfaceSelectionStage.setActive(false);
+      }
     }
 
     void WorldScreenStage::update(float delta) {
@@ -70,6 +75,20 @@ namespace ape {
               IVisualizationController::Overlay::Menu);
           break;
         case GLFW_KEY_S:
+          surfaceSelectionStage.dictPosition=glm::vec2(-1.0,-0.2);
+          surfaceSelectionStage.dictSize=glm::vec2(2.0,0.8);
+          surfaceSelectionStage.surfaceButtonSize=glm::vec2(0.20,0.25);
+          surfaceSelectionStage.surfaceButtonPadding=0.025;
+          //FIXME ...
+          surfaceSelectionStage.surfaces.clear();
+          surfaceSelectionStage.surfaces.emplace_back("X");
+          surfaceSelectionStage.surfaces.emplace_back("Y");
+          surfaceSelectionStage.surfaces.emplace_back("Z");
+          surfaceSelectionStage.surfaces.emplace_back("W");
+          surfaceSelectionStage.surfaces.emplace_back("K");
+          surfaceSelectionStage.surfaces.emplace_back("H");
+          surfaceSelectionStage.surfaces.emplace_back("Q");
+          surfaceSelectionStage.updateShapes();
           surfaceSelectionStage.setActive(true);
         default:
           break;
