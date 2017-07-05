@@ -131,36 +131,44 @@ namespace ape {
       ((double*)distCoeffs_.data)[3]=distCoeffs[3];
       ((double*)distCoeffs_.data)[4]=distCoeffs[4];
 
-      cv::aruco::estimatePoseSingleMarkers(
-          corners, markerLength, cameraIntrinsics_, distCoeffs_, rvecs, tvecs);
+
 
       cv::Ptr<cv::aruco::GridBoard> gridboard = cv::aruco::GridBoard::create(5, 5, float(0.012),
         float(0.0031), dictionary);
       cv::Ptr<cv::aruco::Board> board = gridboard.staticCast<cv::aruco::Board>();
 
-
-      cv::aruco::estimatePoseBoard(
-        corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
+      cv::aruco::refineDetectedMarkers(
+        frame, board, corners, ids, rejected, cameraIntrinsics_, distCoeffs_);
 
       marker.setValue(ids.size() > 0);
 
       if (marker) {
+
+        if (std::isnan(rvec[0]))
+          rvec = cv::Vec3d();
+        if (std::isnan(tvec[0]))
+          tvec = cv::Vec3d();
+
+        cv::aruco::estimatePoseBoard(
+          corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
+
+
         cv::aruco::drawDetectedMarkers(frame, corners, ids);
 
         viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
-            tvec,rvec
+          tvec, rvec
         ));
 
         auto smoothedViewParams=viewSmoother.getSmoothedValue();
 
         viewMatrix = convertVectorsToViewMatrix(
-         rvec, tvec);
+          rvec, tvec);
 
         //std::cout << "Smoothed: " << smoothedViewParams.rotation << std::endl;
 
         for (unsigned int i = 0; i < ids.size(); i++) {
               //FIXME add flag for and draw only in debug mode
-              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, smoothedViewParams.rotation, smoothedViewParams.translation,
+              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvec, tvec,
                                   markerLength);
         }
 

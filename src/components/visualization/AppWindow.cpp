@@ -125,7 +125,7 @@ namespace ape {
       mainCam->setPosition(Ogre::Vector3(1.0f, 1.0f, 1.0f));
       mainCam->lookAt(Ogre::Vector3(0.0f, 0.0f, 0.0f));
       mainCam->setNearClipDistance(0.001f);
-      mainCam->setFarClipDistance(20.0f);
+      mainCam->setFarClipDistance(200.0f);
 
       // add viewport
       vp = renderWindow->addViewport(mainCam);
@@ -281,7 +281,7 @@ namespace ape {
 
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
       ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1), Ogre::Node::TS_LOCAL);
-      ogreNode->setPosition(0, 0, 0.05);
+      ogreNode->setPosition(0.05, 0.05, 0.05);
       ogreNode->setScale(0.001, 0.001, 0.001);
       ogreNode->attachObject(ogreEntity);
 
@@ -498,7 +498,7 @@ namespace ape {
       std::cout << glm::to_string(projectionMatrix) << std::endl;
       // Set CameraProjection Matrix based on calibration parameters
       float znear = 0.001f;
-      float zfar = 20.0f;
+      float zfar = 200.0f;
       int camWidth = 640;
       int camHeight = 480;
 
