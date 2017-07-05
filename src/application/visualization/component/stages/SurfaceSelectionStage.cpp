@@ -67,7 +67,10 @@ namespace ape {
             dictPosition.x+patchPosition.x, dictPosition.y+patchPosition.y,
             surfaceButtonSize.x, surfaceButtonSize.y,
             Ogre::ColourValue(1.0f,1.0f,1.0f));
-        //FIXME dictSurfaceButton->textureName.setValue(surface);
+        dictSurfaceButton->textureName.setValue(appWindow->getTextureName(surface));
+        //TODO update should be triggered when setting texture
+        //or be taken care of by a handle
+        dictSurfaceButton->updateOgreObject();
         overlay.childs.emplace_back(dictSurfaceButton);
 
         //TODO update visual if surface is hovered or selected

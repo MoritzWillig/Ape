@@ -303,9 +303,11 @@ namespace ape {
     }*/
 
     AppWindow::AppWindow():
-        glfwWindow(nullptr),
-        //fixme magic string
-        nameGenerator("ape"),
+        root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
+        sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
+        backgroundTexture(nullptr), coordAxes(nullptr),
+        nameGenerator("ape"), //fixme magic string
+        materials(),
         keyEventHandler(nullptr, nullptr),
         mousePositionEventHandler(nullptr, nullptr),
         mouseButtonEventHandler(nullptr, nullptr) {
@@ -447,6 +449,55 @@ namespace ape {
           0, 0, (Ogre::Real)(-1.0*(zfar+znear) / (zfar-znear)), (Ogre::Real)(-2.0*zfar*znear / (zfar-znear)),
           0, 0, -1.0, 0);
       mainCam->setCustomProjectionMatrix(true, Projection);
+    }
+
+    std::string
+    AppWindow::registerTexture(std::string name, cv::Mat texture) {
+      auto textureName = nameGenerator.generate();
+      auto materialName= textureName+"_material";
+
+      Ogre::TexturePtr ogreTexture = Ogre::TextureManager::getSingleton().createManual(
+          textureName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+          Ogre::TEX_TYPE_2D, texture.cols, texture.rows, 0,// number of mipmaps
+          Ogre::PF_BYTE_RGBA, Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+
+      auto buffer=ogreTexture->getBuffer();
+      buffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+      auto pBox=buffer->getCurrentLock();
+      auto data= static_cast<unsigned char*>(pBox.data);
+      auto tData=texture.data;
+      for (auto y=0; y<texture.rows; y++) {
+        for (auto x=0; x<texture.cols; x++) {
+          *data++=*tData++;
+          *data++=*tData++;
+          *data++=*tData++;
+          *data++=127;
+        }
+
+        data+=pBox.getRowSkip()*Ogre::PixelUtil::getNumElemBytes(pBox.format);
+      }
+      buffer->unlock();
+
+      Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
+          materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+      material->getTechnique(0)->getPass(0)->createTextureUnitState(
+          ogreTexture->getName());
+      material->setDiffuse(1.0, 1.0, 1.0, 0.5);
+      material->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+      material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+      material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+      material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
+
+      InternalMaterial iMat;
+      iMat.matPtr=material;
+      iMat.texPtr=ogreTexture;
+      materials[name]=iMat;
+
+      return materialName;
+    }
+
+    std::string AppWindow::getTextureName(const std::string surface) {
+      return materials[surface].matPtr->getName();
     }
 
   }

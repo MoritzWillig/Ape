@@ -57,6 +57,13 @@ namespace ape {
       float coordAxesLength = 0.026;
 
       Ogre::NameGenerator nameGenerator;
+
+      struct InternalMaterial {
+        Ogre::MaterialPtr matPtr;
+        Ogre::TexturePtr texPtr;
+      };
+
+      std::map<std::string,InternalMaterial> materials;
     protected:
     public:
       //Default
@@ -104,6 +111,10 @@ namespace ape {
       CustomValueCallback<MouseButtonEventHandler,void*> mouseButtonEventHandler;
 
       void setProjectionMatrix(const glm::mat3x3 projectionMatrix);
+
+      std::string registerTexture(std::string name, cv::Mat texture);
+
+      std::string getTextureName(const std::string surface);
     };
 
   }

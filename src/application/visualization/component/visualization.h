@@ -37,6 +37,8 @@ namespace ape {
 
       virtual void setProgress(float d) = 0;
 
+      virtual void registerSurface(std::string name, cv::Mat data) = 0;
+
       typedef void (*OverlayChangeRequestHandler)(void* custom, Overlay overlay);
 
       typedef void (*TextureGenerationFinishedHandler)(void* custom, int textureId);

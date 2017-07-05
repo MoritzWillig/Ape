@@ -149,6 +149,13 @@ int main(int argc, char** argv) {
     }
   },&appStateController);
 
+  //load existing surfaces into visualization controller
+  auto surfaceHandles=wsController->getSurfaceHandles();
+  for (const auto handle: surfaceHandles) {
+    auto surface = wsController->getSurface(handle);
+    visController->registerSurface(surface->getName(),surface->getTexture());
+  }
+
   //application loop
   //FIXME refactor into separate class
   auto frameTime = 1.0f / 30.0f;

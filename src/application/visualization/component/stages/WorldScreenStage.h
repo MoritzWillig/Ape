@@ -25,6 +25,8 @@ namespace ape {
           void*>& overlayChangeRequestHandler;
 
       SurfaceSelectionStage& surfaceSelectionStage;
+
+      std::vector<std::string>* surfaceNames;
     protected:
     public:
       //Default
@@ -35,7 +37,8 @@ namespace ape {
           CustomValueCallback<
               IVisualizationController::OverlayChangeRequestHandler,
               void*>& overlayChangeRequestHandler,
-          SurfaceSelectionStage& surfaceSelectionStage);
+          SurfaceSelectionStage& surfaceSelectionStage,
+          std::vector<std::string>* surfaceNames);
 
       // Copy constructor
       WorldScreenStage(const WorldScreenStage&) = default;

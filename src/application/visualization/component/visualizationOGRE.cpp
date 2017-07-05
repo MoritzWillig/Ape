@@ -8,12 +8,13 @@ namespace ape {
 
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
-        appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
+        appWindow(new AppWindow()), percent(0.0),
+        surfaces(), surfaceNames(), ldcStage(appWindow),
         tssStage(appWindow,overlayChangeRequestHandler,
                  textureGenerationRequestHandler),
         ssStage(appWindow, surfaceSelectionHandler),
-        wsStage(appWindow, overlayChangeRequestHandler, ssStage),
-        stream(stream) {
+        wsStage(appWindow, overlayChangeRequestHandler, ssStage, &surfaceNames),
+        stream(stream), viewMatrix() {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);
 
       appWindow->keyEventHandler.setCallback([](
@@ -104,6 +105,13 @@ namespace ape {
       ldcStage.update(diff);
 
       this->percent=percent;
+    }
+
+    void OGREVisualizationController::registerSurface(std::string name,
+                                                      cv::Mat data) {
+      std::string materialName = appWindow->registerTexture(name,data);
+      surfaces.emplace(name, materialName);
+      surfaceNames.emplace_back(name);
     }
 
   }

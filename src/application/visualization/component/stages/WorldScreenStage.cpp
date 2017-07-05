@@ -15,10 +15,12 @@ namespace ape {
         CustomValueCallback<
             IVisualizationController::OverlayChangeRequestHandler,
             void*>& overlayChangeRequestHandler,
-        SurfaceSelectionStage& surfaceSelectionStage):
+        SurfaceSelectionStage& surfaceSelectionStage,
+        std::vector<std::string>* surfaceNames):
         Stage(appWindow), overlay(),
         overlayChangeRequestHandler(overlayChangeRequestHandler),
-        surfaceSelectionStage(surfaceSelectionStage) {
+        surfaceSelectionStage(surfaceSelectionStage),
+        surfaceNames(surfaceNames) {
       std::vector<glm::vec2> circle;
       auto circlePosX=0.875;
       auto circlePosY=0.875;
@@ -79,15 +81,11 @@ namespace ape {
           surfaceSelectionStage.dictSize=glm::vec2(2.0,0.8);
           surfaceSelectionStage.surfaceButtonSize=glm::vec2(0.20,0.25);
           surfaceSelectionStage.surfaceButtonPadding=0.025;
-          //FIXME ...
+
           surfaceSelectionStage.surfaces.clear();
-          surfaceSelectionStage.surfaces.emplace_back("X");
-          surfaceSelectionStage.surfaces.emplace_back("Y");
-          surfaceSelectionStage.surfaces.emplace_back("Z");
-          surfaceSelectionStage.surfaces.emplace_back("W");
-          surfaceSelectionStage.surfaces.emplace_back("K");
-          surfaceSelectionStage.surfaces.emplace_back("H");
-          surfaceSelectionStage.surfaces.emplace_back("Q");
+          for (const auto surfaceName: *surfaceNames) {
+            surfaceSelectionStage.surfaces.emplace_back(surfaceName);
+          }
           surfaceSelectionStage.updateShapes();
           surfaceSelectionStage.setActive(true);
         default:
