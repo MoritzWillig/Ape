@@ -11,6 +11,7 @@
 
 #include "Stage.h"
 #include "../visualization.h"
+#include "SurfaceSelectionStage.h"
 
 namespace ape {
   namespace visualization {
@@ -22,6 +23,8 @@ namespace ape {
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,
           void*>& overlayChangeRequestHandler;
+
+      SurfaceSelectionStage& surfaceSelectionStage;
     protected:
     public:
       //Default
@@ -31,7 +34,8 @@ namespace ape {
           AppWindow* appWindow,
           CustomValueCallback<
               IVisualizationController::OverlayChangeRequestHandler,
-              void*>& overlayChangeRequestHandler);
+              void*>& overlayChangeRequestHandler,
+          SurfaceSelectionStage& surfaceSelectionStage);
 
       // Copy constructor
       WorldScreenStage(const WorldScreenStage&) = default;

@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include "SurfaceImplementation.h"
 
 namespace ape {
