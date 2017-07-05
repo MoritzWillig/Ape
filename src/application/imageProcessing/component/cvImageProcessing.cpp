@@ -11,8 +11,11 @@
 #include <opencv2/calib3d.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <algorithm>
 #include <opencv2/imgproc.hpp>
 #include <textureSynthesis/TextureSynthesis.h>
+
+#include "smoothing/MeanSmoother.h"
 
 
 namespace ape {
@@ -24,20 +27,26 @@ namespace ape {
         cvCameraStream(nullptr), lazyCameraStream(nullptr), cameraFrozen(false),
         searchedMarkerSignal(), marker(&searchedMarkerSignal),
         transformation(&searchedMarkerSignal),
+        //FIXME magic numbers
+        viewSmoother(MeanSmoother<cv::Vec3d>(5), MeanSmoother<cv::Vec3d>(3)),
         cameraIntrinsics(cameraIntrinsics), distCoeffs(distCoeffs),
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
         markerLength(0.024), //FIXME magic number ...
-        ids(), corners(), rejected(), rvecs(), tvecs(),
+        ids(), corners(), rejected(), rvecs(), tvecs(), rvec(), tvec(),
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-		  //cvCameraStream = new OpenCVCameraStream();
+		    cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
           "../../../data/dummy/cameraStream/marker01.avi");
       stream->setSize(640,480);
-      cvCameraStream=stream;
+      //cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
+      setProcessingContext(ProcessingContext::Context::Stream);
+      detectorParams->doCornerRefinement = true; 
+      detectorParams->cornerRefinementMaxIterations = 60;
+      detectorParams->cornerRefinementMinAccuracy = 0.01;
     }
 
     CvImageProcessingController::~CvImageProcessingController() {
@@ -54,6 +63,8 @@ namespace ape {
 
       // rotation vectors can be converted to a 3-by-3 rotation matrix
 	    cv::Rodrigues(rotation, rotMat);
+
+    // std::cout << "Rotation Matrix: " << rotMat << std::endl;
 
       //Complete matrix ready to use
       for (unsigned int row = 0; row<3; ++row)
@@ -123,20 +134,36 @@ namespace ape {
       cv::aruco::estimatePoseSingleMarkers(
           corners, markerLength, cameraIntrinsics_, distCoeffs_, rvecs, tvecs);
 
+      cv::Ptr<cv::aruco::GridBoard> gridboard = cv::aruco::GridBoard::create(5, 5, float(0.012),
+        float(0.0031), dictionary);
+      cv::Ptr<cv::aruco::Board> board = gridboard.staticCast<cv::aruco::Board>();
+
+
+      cv::aruco::estimatePoseBoard(
+        corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
+
       marker.setValue(ids.size() > 0);
 
       if (marker) {
         cv::aruco::drawDetectedMarkers(frame, corners, ids);
 
-        viewMatrix = convertVectorsToViewMatrix(rvecs[0], tvecs[0]);
+        viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
+            tvec,rvec
+        ));
+
+        auto smoothedViewParams=viewSmoother.getSmoothedValue();
+
+        viewMatrix = convertVectorsToViewMatrix(
+         rvec, tvec);
+
+        //std::cout << "Smoothed: " << smoothedViewParams.rotation << std::endl;
 
         for (unsigned int i = 0; i < ids.size(); i++) {
               //FIXME add flag for and draw only in debug mode
-              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvecs[i], tvecs[i],
+              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, smoothedViewParams.rotation, smoothedViewParams.translation,
                                   markerLength);
         }
 
-        //TODO for now, we only care about the nearest marker
         transformation.setValue(viewMatrix);
       }
     }
@@ -185,7 +212,11 @@ namespace ape {
           processingContext.setStreamContext(getCameraStream());
           break;
         case ProcessingContext::Context::Image:
-          //TODO we 'freeze' the current stream
+          //we currently do not freeze context
+          //but simply freeze th whole camera stream
+          //by doing so, we also get a frozen image in the display
+
+          //TODO we 'freeze' the context to the current stream image
           //it may be better to allow arbitrary images to be set
           processingContext.setImageContext(getCameraStream()
                                                 ->getCurrentFrame());
@@ -195,8 +226,9 @@ namespace ape {
 
     cv::Mat CvImageProcessingController::extractTextureFromStream(
         const cv::Rect regionOfInterest) {
+      auto context=processingContext.getContextValue();
       return textureExtraction.extractRegionOfInterest(
-          processingContext.getContextValue(), regionOfInterest);
+          context, regionOfInterest);
     }
 
     cv::Mat CvImageProcessingController::createTile(int width, int height,

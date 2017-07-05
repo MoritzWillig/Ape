@@ -1,5 +1,5 @@
 #include "TerrainGenerator.h"
-#include "FastNoise.h"
+#include <FastNoise/FastNoise.h>
 
 namespace ape {
   namespace worldState {

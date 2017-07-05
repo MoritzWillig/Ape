@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 template <typename Fn, typename T>
 class CustomValueCallback {
 private:
@@ -23,6 +25,11 @@ public:
   template <typename R, typename... Args>
   R call(Args... args) {
     return fn(value, args...);
+  }
+
+  template <typename... Args>
+  void call(Args... args) {
+    fn(value, args...);
   }
 
   template <typename... Args>

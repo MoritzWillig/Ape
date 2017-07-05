@@ -15,6 +15,10 @@ include_directories(${APE_COMPONENTS_INCLUDE_DIR})
 #add component specific classes
 include_directories(${APE_IMAGEPROCESSING_COMPONENT_DIR})
 
+#list header files for vs
+file(GLOB_RECURSE HEADER1 "*.h")
+file(GLOB_RECURSE HEADER2 APE_IMAGEPROCESSING_COMPONENT_DIR"*.h")
+
 #add library deps
 #FIXME this should be imported through a variable set by the model
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -28,4 +32,4 @@ set(APE_IMAGEPROCESSING_COMPONENT_SOURCES
         ProcessingContextImplementation.cpp
         )
 
-add_library(apeImageProcessing OBJECT ${APE_IMAGEPROCESSING_COMPONENT_SOURCES})
+add_library(apeImageProcessing OBJECT ${APE_IMAGEPROCESSING_COMPONENT_SOURCES} ${HEADER1} ${HEADER2})

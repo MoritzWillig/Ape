@@ -26,6 +26,20 @@ namespace ape {
               //freeze stream to select image
               ipController->freezeCameraStream(true);
 
+              visController->textureGenerationRequestHandler.setCallback([](
+                  void* tsState, glm::vec2 vertex1, glm::vec2 vertex2,
+                  CustomValueCallback<
+                      ape::visualization::IVisualizationController::TextureGenerationFinishedHandler,
+                      void*>*
+                  textureGenerationFinishedHandler
+              ) {
+                auto self=(TextureSynthesisState*)tsState;
+                auto id=self->generateTile(vertex1, vertex2);
+                std::cout<<"Generated texture!"<<std::endl;
+                //FIXME save image
+
+                textureGenerationFinishedHandler->call(id);
+              },this);
             }
 
             void TextureSynthesisState::onDeactivation() {
@@ -41,30 +55,16 @@ namespace ape {
             void TextureSynthesisState::update(float delta) {
             }
 
-            void TextureSynthesisState::generateTile(
+            unsigned int TextureSynthesisState::generateTile(
                 glm::vec2 vertex1, glm::vec2 vertex2) {
               auto min = glm::min(vertex1, vertex2);
               auto max = glm::max(vertex1, vertex2);
+              cv::Rect roi((int)min.x,(int)min.y,(int)(max.x-min.x),(int)(max.y-min.y));
+              auto region=ipController->extractTextureFromStream(roi);
+              auto tile=ipController->createTile(512,512,region);
 
-              //FIXME constants ...
-              auto width = 640;
-              auto height = 480;
-              auto extracted = ipController->extractTextureFromStream(
-                  cv::Rect(
-                      (int) (min.x * width),
-                      (int) (min.y * height),
-                      (int) ((max.x - min.x) * width),
-                      (int) ((max.y - min.y) * height)
-                  ));
-
-              //FIXME make async!
-              auto tile = ipController->createTile(
-                  1000, 1000,
-                  extracted
-              );
-              //FIXME save image
-
-              //on finish transition visController to "Confirmation"
+              //FIXME pass actual texture id
+              return 12345;
             }
 
           }

@@ -18,6 +18,10 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "../../worldState/component/worldState.h"
+
+const std::string surfaceDatabasePath = "../../../data/assets/surfaces";
+const std::string surfaceDatabaseName = "surfaces.txt";
 
 namespace ape {
 
@@ -97,7 +101,7 @@ int main(int argc, char** argv) {
   //FIXME magic string
   readCameraParameters(conf.intrinsics, camMatrix, distCoeffs);
 
-  auto  ipController=
+  auto ipController=
       ape::imageProcessing::IImageProcessingController::createInstance(
           camMatrix, &distCoeffs.coeffs[0]);
   auto camStream = ipController->getCameraStream();
@@ -106,6 +110,11 @@ int main(int argc, char** argv) {
   auto visController=
       ape::visualization::IVisualizationController::createInstance(camStream);
   visController->setProjectionMatrix(camMatrix);
+
+  auto wsController=
+      ape::worldState::IWorldStateController::createInstance(
+          surfaceDatabasePath,surfaceDatabaseName);
+
 
   ape::app::desktop::section::appState::AppStateController appStateController(
       ipController.get(),
@@ -153,6 +162,9 @@ int main(int argc, char** argv) {
 
     //update internal app state
     appStateController.update(frameTime);
+
+    //update world state
+    wsController->update(frameTime);
 
     //update visualization
     visController->update(frameTime);

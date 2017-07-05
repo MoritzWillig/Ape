@@ -9,7 +9,8 @@ namespace ape {
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
         appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
-        tssStage(appWindow,overlayChangeRequestHandler),
+        tssStage(appWindow,overlayChangeRequestHandler,
+                 textureGenerationRequestHandler),
         wsStage(appWindow,overlayChangeRequestHandler),
         stream(stream) {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);

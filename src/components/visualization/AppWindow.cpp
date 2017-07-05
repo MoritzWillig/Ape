@@ -14,9 +14,9 @@
 
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
-#define TEXTURE_FOLDER "../../../data/assets/textures"
+#define TEXTURE_FOLDER "../../../data/assets/surfaces"
 #define FONT_FILE_NAME "FreeSans.otf"
-#define MESH_FILE_NAME "house.mesh"
+#define MESH_FILE_NAME "ogrehead.mesh"
 
 //FIXME remove
 class FrameListener : public Ogre::FrameListener {
@@ -64,7 +64,7 @@ namespace ape {
 
       that->processMouseButtonEvent(button, action, mods);
     }
-    
+
     bool AppWindow::createWindow() {
       glfwSetErrorCallback(glfw_error_callback);
       if (glfwInit()!=GLFW_TRUE)
@@ -280,11 +280,12 @@ namespace ape {
         MESH_FILE_NAME);
 
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->setPosition(-0.02, 0, 0.01);
-      ogreNode->setScale(0.0001, 0.0001, 0.0001);
+      ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1), Ogre::Node::TS_LOCAL);
+      ogreNode->setPosition(0, 0, 0.05);
+      ogreNode->setScale(0.001, 0.001, 0.001);
       ogreNode->attachObject(ogreEntity);
 
-      Ogre::SceneNode* ogreNode2 = sceneMgr->getRootSceneNode()->createChildSceneNode();
+     /* Ogre::SceneNode* ogreNode2 = sceneMgr->getRootSceneNode()->createChildSceneNode();
       ogreNode2->setPosition(0.02, 0.0, 0.01);
       ogreNode2->setScale(0.0001, 0.0001, 0.0001);
       ogreNode2->attachObject(ogreEntity2);
@@ -298,7 +299,7 @@ namespace ape {
       Ogre::SceneNode* ogreNode4 = sceneMgr->getRootSceneNode()->createChildSceneNode();
       ogreNode4->setPosition(0.02, 0.01, 0.01);
       ogreNode4->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode4->attachObject(ogreEntity4);
+      ogreNode4->attachObject(ogreEntity4);*/
 
 #ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
@@ -469,19 +470,27 @@ namespace ape {
 
       Ogre::Vector3 resultVec(0.0f);
       Ogre::MovableObject* resultObj;
+      size_t subIndex;
 
-      queryRay->Raycast(mouseRay, resultVec, &resultObj);
-      std::cout << resultObj << std::endl;
+      bool found = queryRay->Raycast(mouseRay, resultVec, &resultObj, subIndex);
+      std::cout << resultObj << " " << subIndex << std::endl;
 
-      movableFound = resultObj->getName() == "cube1" ||
+      movableFound = found && (resultObj->getName() == "cube1" ||
         resultObj->getName() == "cube2" ||
         resultObj->getName() == "cube3" ||
-        resultObj->getName() == "cube4";
+        resultObj->getName() == "cube4");
 
       if (movableFound)
       {
         Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
-        entity->setMaterial(cubeMat);
+        Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
+        subEnt->setMaterial(cubeMat);
+        Ogre::SubMesh* sub = entity->getMesh()->getSubMesh(subIndex);
+        sub->setMaterialName("CubeMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::MeshPtr mesh = entity->getMesh();
+        mesh->updateMaterialForAllSubMeshes();
+        std::cout << entity->getNumSubEntities() << std::endl;
+
       }
     }
 

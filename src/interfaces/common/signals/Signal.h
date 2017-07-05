@@ -9,7 +9,7 @@ private:
 protected:
 public:
   Signal():
-      signal(true) {
+      signal(false) {
   }
 
   Signal(bool signal):
@@ -43,12 +43,21 @@ class ValueSignal: public Signal {
 protected:
   T value;
 public:
-  void setValue(T value) {
-    this->set();
-    this->value;
+  ValueSignal():
+      Signal() {
   }
 
-  T getValue() {
+  ValueSignal(T value):
+      ValueSignal() {
+    setValue(value);
+  }
+
+  void setValue(T value) {
+    this->set();
+    this->value = value;
+  }
+
+  T getValue() const {
     if (!hasSignal()) {
       throw std::runtime_error("Signal not set");
     }

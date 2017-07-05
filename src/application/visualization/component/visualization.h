@@ -36,9 +36,19 @@ namespace ape {
 
       typedef void (*OverlayChangeRequestHandler)(void* custom, Overlay overlay);
 
+      typedef void (*TextureGenerationFinishedHandler)(void* custom, int textureId);
+
+      typedef void (*TextureGenerationRequestHandler)(void* custom,
+        glm::vec2 v1, glm::vec2 v2, CustomValueCallback<
+          TextureGenerationFinishedHandler,void*>* generationFinishedHandler);
+
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,
           void*> overlayChangeRequestHandler;
+
+      CustomValueCallback<
+          IVisualizationController::TextureGenerationRequestHandler,
+          void*> textureGenerationRequestHandler;
 
       static std::shared_ptr<IVisualizationController> createInstance(
           imageProcessing::CameraStream* stream
