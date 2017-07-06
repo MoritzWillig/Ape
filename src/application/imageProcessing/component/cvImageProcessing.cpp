@@ -145,13 +145,14 @@ namespace ape {
       if (marker) {
 
         if (std::isnan(rvec[0]))
-          rvec = cv::Vec3d();
+          rvec = cv::Vec3d(273.076, -10.1916, 1.00672);
         if (std::isnan(tvec[0]))
-          tvec = cv::Vec3d();
+          tvec = cv::Vec3d(-0.0279756, 0.0286375, 0.130666);
 
         cv::aruco::estimatePoseBoard(
           corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
 
+        std::cout << rvec << " " << tvec << std::endl;
 
         cv::aruco::drawDetectedMarkers(frame, corners, ids);
 
