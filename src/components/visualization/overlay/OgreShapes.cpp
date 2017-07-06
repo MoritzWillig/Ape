@@ -10,11 +10,16 @@ namespace ape {
                                    std::vector<glm::vec2> shape,
                                    Ogre::ColourValue colour) :
           appWindow(appWindow), shape(shape),
-          ogreObject(appWindow->getSceneMgr()->createManualObject()),
-          colour(colour) {
-        ogreObject->setUseIdentityProjection(true);
-        ogreObject->setUseIdentityView(true);
+          ogreObject(nullptr),
+          colour(colour), textureName() {
+        regenerateOgreObject();
         updateOgreObject();
+      }
+
+      OgrePolygon2D::~OgrePolygon2D() {
+        if (ogreObject!=nullptr) {
+          appWindow->getSceneMgr()->destroyManualObject(ogreObject);
+        }
       }
 
       void OgrePolygon2D::setVisible(bool visible) {
@@ -26,19 +31,23 @@ namespace ape {
       }
 
       void OgrePolygon2D::updateOgreObject() {
+        regenerateOgreObject();
+
         ogreObject->begin("OverlayButton",
                           Ogre::RenderOperation::OT_TRIANGLE_FAN);
         ogreObject->colour(colour);
+        if (textureName.hasSignal()) {
+          ogreObject->setMaterialName(0,textureName.getValue());
+        }
 
         for (auto vertex: shape) {
           ogreObject->position(vertex.x, vertex.y, 0.0f);
-          ogreObject->textureCoord(vertex.x*0.5f, vertex.y*0.5f);
+          ogreObject->textureCoord(vertex.x, vertex.y);
         }
 
         for(unsigned int i=0; i<shape.size(); i++) {
           ogreObject->index(i);
         }
-        //ogreObject->index(0);
 
         ogreObject->end();
 
@@ -55,6 +64,15 @@ namespace ape {
 
         appWindow->getSceneMgr()->getRootSceneNode()->createChildSceneNode()
             ->attachObject(ogreObject);
+      }
+
+      void OgrePolygon2D::regenerateOgreObject() {
+        if (ogreObject!=nullptr) {
+          appWindow->getSceneMgr()->destroyManualObject(ogreObject);
+        }
+        ogreObject=appWindow->getSceneMgr()->createManualObject();
+        ogreObject->setUseIdentityProjection(true);
+        ogreObject->setUseIdentityView(true);
       }
 
 

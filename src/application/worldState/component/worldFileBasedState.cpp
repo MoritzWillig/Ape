@@ -36,7 +36,7 @@ namespace ape {
           surfaces.emplace(
               handle,
               std::make_shared<SurfaceImplementation>(
-                  surfaceDatabasePath+getFileNameFromHandle(handle),
+                  surfaceDatabasePath+"/"+getFileNameFromHandle(handle),
                   handle,
                   nameStr
               )

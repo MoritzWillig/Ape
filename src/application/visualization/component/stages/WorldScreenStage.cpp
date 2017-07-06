@@ -14,9 +14,13 @@ namespace ape {
         AppWindow* appWindow,
         CustomValueCallback<
             IVisualizationController::OverlayChangeRequestHandler,
-            void*>& overlayChangeRequestHandler):
+            void*>& overlayChangeRequestHandler,
+        SurfaceSelectionStage& surfaceSelectionStage,
+        std::vector<std::string>* surfaceNames):
         Stage(appWindow), overlay(),
-        overlayChangeRequestHandler(overlayChangeRequestHandler) {
+        overlayChangeRequestHandler(overlayChangeRequestHandler),
+        surfaceSelectionStage(surfaceSelectionStage),
+        surfaceNames(surfaceNames) {
       std::vector<glm::vec2> circle;
       auto circlePosX=0.875;
       auto circlePosY=0.875;
@@ -42,6 +46,11 @@ namespace ape {
     void WorldScreenStage::setActive(bool active) {
       this->active=active;
       overlay.setVisible(active);
+
+      //if we leave this stage, we disable all "sub-stages"
+      if (!active) {
+        surfaceSelectionStage.setActive(false);
+      }
     }
 
     void WorldScreenStage::update(float delta) {
@@ -67,6 +76,18 @@ namespace ape {
           overlayChangeRequestHandler.callExceptIfNotSet(
               IVisualizationController::Overlay::Menu);
           break;
+        case GLFW_KEY_S:
+          surfaceSelectionStage.dictPosition=glm::vec2(-1.0,-0.2);
+          surfaceSelectionStage.dictSize=glm::vec2(2.0,0.8);
+          surfaceSelectionStage.surfaceButtonSize=glm::vec2(0.20,0.25);
+          surfaceSelectionStage.surfaceButtonPadding=0.025;
+
+          surfaceSelectionStage.surfaces.clear();
+          for (const auto surfaceName: *surfaceNames) {
+            surfaceSelectionStage.surfaces.emplace_back(surfaceName);
+          }
+          surfaceSelectionStage.updateShapes();
+          surfaceSelectionStage.setActive(true);
         default:
           break;
       }

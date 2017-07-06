@@ -1,2 +1,3 @@
 add_subdirectory(cameraCalibration)
 add_subdirectory(textureSynthesis)
+add_subdirectory(color)

@@ -8,11 +8,13 @@ namespace ape {
 
     OGREVisualizationController::OGREVisualizationController(
         imageProcessing::CameraStream* stream):
-        appWindow(new AppWindow()), percent(0.0), ldcStage(appWindow),
+        appWindow(new AppWindow()), percent(0.0),
+        surfaces(), surfaceNames(), ldcStage(appWindow),
         tssStage(appWindow,overlayChangeRequestHandler,
                  textureGenerationRequestHandler),
-        wsStage(appWindow,overlayChangeRequestHandler),
-        stream(stream) {
+        ssStage(appWindow, surfaceSelectionHandler),
+        wsStage(appWindow, overlayChangeRequestHandler, ssStage, &surfaceNames),
+        stream(stream), viewMatrix() {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);
 
       appWindow->keyEventHandler.setCallback([](
@@ -22,6 +24,7 @@ namespace ape {
         self->wsStage.processKeyEvent(key,scancode,action,mods);
         self->ldcStage.processKeyEvent(key,scancode,action,mods);
         self->tssStage.processKeyEvent(key,scancode,action,mods);
+        self->ssStage.processKeyEvent(key,scancode,action,mods);
       }, this);
 
       appWindow->mousePositionEventHandler.setCallback([](
@@ -31,6 +34,7 @@ namespace ape {
         self->wsStage.processMousePositionEvent(x,y);
         self->ldcStage.processMousePositionEvent(x,y);
         self->tssStage.processMousePositionEvent(x,y);
+        self->ssStage.processMousePositionEvent(x,y);
       }, this);
 
       appWindow->mouseButtonEventHandler.setCallback([](
@@ -40,6 +44,7 @@ namespace ape {
         self->wsStage.processMouseButtonEvent(button,action,mods);
         self->ldcStage.processMouseButtonEvent(button,action,mods);
         self->tssStage.processMouseButtonEvent(button,action,mods);
+        self->ssStage.processMouseButtonEvent(button,action,mods);
       }, this);
     }
 
@@ -63,6 +68,10 @@ namespace ape {
           stageTitle="TextureSynthesisSelection";
           tssStage.setActive(enable);
           break;
+        case Overlay::SurfaceSelection:
+          stageTitle="SurfaceSelection";
+          ssStage.setActive(enable);
+          break;
       }
 
       appWindow->setWindowHint(stageTitle);
@@ -80,6 +89,7 @@ namespace ape {
       ldcStage.update(timeStep);
       wsStage.update(timeStep);
       tssStage.update(timeStep);
+      wsStage.update(timeStep);
     }
 
     void OGREVisualizationController::setViewTransform(const glm::mat4x4 viewMatrix) {
@@ -95,6 +105,13 @@ namespace ape {
       ldcStage.update(diff);
 
       this->percent=percent;
+    }
+
+    void OGREVisualizationController::registerSurface(std::string name,
+                                                      cv::Mat data) {
+      std::string materialName = appWindow->registerTexture(name,data);
+      surfaces.emplace(name, materialName);
+      surfaceNames.emplace_back(name);
     }
 
   }

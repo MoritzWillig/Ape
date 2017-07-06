@@ -1,4 +1,6 @@
 #include <fstream>
+#include <iostream>
+#include <opencv2/imgcodecs.hpp>
 #include "SurfaceImplementation.h"
 
 namespace ape {
@@ -13,6 +15,23 @@ namespace ape {
     std::string name):
     path(path), isExisting(), handle(handle), name(name) {
       probeSurfaceExisting();
+
+      std::cout<<"Loading surface "<<path<<std::endl;
+      if (isExisting.hasSignal()) {
+        try {
+          texture = cv::imread(path, cv::IMREAD_COLOR);
+          std::cout<<"Loaded surface "<<name<<std::endl;
+        } catch (std::exception e) {
+          std::cout<<"Could not load surface "<<name<<std::endl
+                   <<e.what()<<std::endl;
+          isExisting.reset();
+        }
+      }
+
+      //FIXME set dummy texture
+      if (isExisting.hasSignal()) {
+
+      }
     }
 
     void SurfaceImplementation::probeSurfaceExisting() {

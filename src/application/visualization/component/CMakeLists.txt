@@ -32,6 +32,7 @@ set(APE_VISUALIZATION_COMPONENT_SOURCES
         visualization.cpp
         visualizationOGRE.cpp
         stages/Stage.cpp
+        stages/SurfaceSelectionStage.cpp
         stages/LoadingControllerStage.cpp
         stages/TextureSynthesisSelectionStage.cpp
         stages/WorldScreenStage.cpp
