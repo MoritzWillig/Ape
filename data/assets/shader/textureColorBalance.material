@@ -1,0 +1,36 @@
+// CG Vertex shader definition
+vertex_program TextureColorBalanceVERT glsl            
+{
+    source textureColorBalance.vert
+}
+
+
+fragment_program TextureColorBalanceFRAG glsl
+{
+    source textureColorBalance.frag
+}
+ 
+material TextureColorBalance
+{
+    technique
+    {
+        pass
+        {
+            // Makes the pixel shader alpha output be used for alpha blending
+            //scene_blend alpha_blend            
+ 
+            vertex_program_ref TextureColorBalanceVERT
+            {
+				param_named_auto worldViewProj worldviewproj_matrix
+            }
+            fragment_program_ref TextureColorBalanceFRAG
+            {
+				param_named diffuse int 0
+            }
+            texture_unit
+            {
+                texture 1.jpg 2d
+            }
+        }
+    }
+}

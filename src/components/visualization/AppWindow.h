@@ -41,7 +41,7 @@ namespace ape {
 
 	     void updateBackgroundTexture(
           cv::Mat frame, unsigned int width, unsigned int height);
-      void applyColorCorrection();
+      void computeColorBalancingParameter();
 	     void initScene();
 
       Ogre::Root* root;
@@ -57,6 +57,12 @@ namespace ape {
       Ogre::ManualObject* coordAxes;
       Ogre::MaterialPtr cubeMat;
       Ogre::RenderTexture* renderTexture;
+
+      //Uniforms for color balancing
+      Ogre::Vector3 meanInput;
+      Ogre::Vector3 meanTarget;
+      Ogre::Vector3 varianceInput;
+      Ogre::Vector3 varianceTarget;
 
       int mousePosX;
       int mousePosY;

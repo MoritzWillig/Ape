@@ -15,6 +15,7 @@
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
 #define TEXTURE_FOLDER "../../../data/assets/surfaces"
+#define SHADER_FOLDER "../../../data/assets/shader"
 #define FONT_FILE_NAME "FreeSans.otf"
 #define MESH_FILE_NAME "apetown.mesh"
 
@@ -166,9 +167,13 @@ namespace ape {
           MESH_FOLDER, "FileSystem", "General");
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
           TEXTURE_FOLDER, "FileSystem", "General");
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        SHADER_FOLDER, "FileSystem", "General");
 
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General");
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("GUI");
+
+
       createFont();
       createBackgroundTexture();
       createCoordinateAxes();
@@ -343,7 +348,7 @@ namespace ape {
 
       renderTexture->addViewport(mainCam);
       renderTexture->getViewport(0)->setClearEveryFrame(true);
-      renderTexture->getViewport(0)->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+      renderTexture->getViewport(0)->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0));
       renderTexture->getViewport(0)->setOverlaysEnabled(false);
       renderTexture->addListener(new RenderTargetListener(backgroundNode));
     }
@@ -404,17 +409,21 @@ namespace ape {
       for (int i = 0; i < width; i++)
         for (int j = 0; j < height; j++)
         {
-          meanVec[0] += *returnData++; //blue
-          meanVec[1] += *returnData++; //green
-          meanVec[2] += *returnData++; //red
-          *returnData++;  //alpha
+          std::size_t index = i*height + j;
+          if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2])
+            continue;
+          meanVec[2] += returnData[index]; //blue
+          meanVec[1] += returnData[index+1]; //green
+          meanVec[0] += returnData[index+2]; //red
         }
       returnBuffer->unlock();
-      meanVec[0] = meanVec[0] / (width*height);
-      meanVec[1] = meanVec[1] / (width*height);
-      meanVec[2] = meanVec[2] / (width*height);
+      meanVec[0] = (meanVec[0] / (width*height)) / 255.0;
+      meanVec[1] = (meanVec[1] / (width*height)) / 255.0;
+      meanVec[2] = (meanVec[2] / (width*height)) / 255.0;
       return meanVec;
     };
+
+#define POW2(x) ((x)*(x))
 
     Ogre::Vector3 computeVariance(Ogre::TexturePtr texture, Ogre::Vector3 mean) {
       Ogre::Vector3 varianceVec(0, 0, 0);
@@ -428,24 +437,35 @@ namespace ape {
       for (int i = 0; i < width; i++)
         for (int j = 0; j < height; j++)
         {
-          varianceVec[0] += pow(*returnData++ - mean[0], 2.0); //blue
-          varianceVec[1] += pow(*returnData++ - mean[1], 2.0); //green
-          varianceVec[2] += pow(*returnData++ - mean[2], 2.0); //red
-          *returnData++;  //alpha
+          std::size_t index = i*height + j;
+          if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2])
+            continue;
+          varianceVec[2] += POW2(returnData[index] - mean[2]); //blue
+          varianceVec[1] += POW2(returnData[index+1] - mean[1]); //green
+          varianceVec[0] += POW2(returnData[index+2] - mean[0]); //red
         }
       returnBuffer->unlock();
-      varianceVec[0] = varianceVec[0] / (width*height);
-      varianceVec[1] = varianceVec[1] / (width*height);
-      varianceVec[2] = varianceVec[2] / (width*height);
+      varianceVec[0] = (varianceVec[0] / (width*height)) / 255.0;
+      varianceVec[1] = (varianceVec[1] / (width*height)) / 255.0;
+      varianceVec[2] = (varianceVec[2] / (width*height)) / 255.0;
       return varianceVec;
     };
 
-    void AppWindow::applyColorCorrection() {
+    void AppWindow::computeColorBalancingParameter() {
       renderTexture->update();
-      Ogre::Vector3 meanInput = computeMean(rttTexture);
-      Ogre::Vector3 meanTarget = computeMean(backgroundTexture);
-      Ogre::Vector3 varianceInput = computeVariance(rttTexture, meanInput);
-      Ogre::Vector3 varianceTarget = computeVariance(backgroundTexture, meanTarget);
+      meanInput = computeMean(rttTexture);
+      meanTarget = computeMean(backgroundTexture);
+      varianceInput = computeVariance(rttTexture, meanInput);
+      varianceTarget = computeVariance(backgroundTexture, meanTarget);
+
+      Ogre::MaterialPtr textureMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
+      Ogre::Technique* technique = textureMaterial->getTechnique(0);
+      Ogre::Pass* pass = technique->getPass(0);
+      Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+      params->setNamedConstant("meanInput", meanInput);
+      params->setNamedConstant("meanTarget", meanTarget);
+      params->setNamedConstant("varianceInput", varianceInput);
+      params->setNamedConstant("varianceTarget", varianceTarget);
     }
 
 
@@ -508,7 +528,7 @@ namespace ape {
       updateBackgroundTexture(
           stream->getCurrentFrame(),
           stream->getFrameWidth(), stream->getFrameHeight());
-      applyColorCorrection();
+      computeColorBalancingParameter();
       root->renderOneFrame(timeStep);
       renderWindow->update(true);
 
@@ -555,13 +575,11 @@ namespace ape {
       Ogre::MovableObject* resultObj;
       size_t subIndex;
 
-      bool found = queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
-
-      if (found)
+      if (queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex))
       {
         Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
         Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
-        subEnt->setMaterial(cubeMat);
+        subEnt->setMaterialName("TextureColorBalance");
       }
     }
 
