@@ -15,13 +15,14 @@ namespace ape {
     }
 
 
-    bool OgreRay::Raycast(Ogre::Ray& ray, Ogre::Vector3& resultVec, Ogre::MovableObject** resultObj, size_t& resultSubIdx)
+    bool OgreRay::Raycast(Ogre::Ray& ray, Ogre::uint32 queryMask, Ogre::Vector3& resultVec, Ogre::MovableObject** resultObj, size_t& resultSubIdx)
     {
       if (!m_raySceneQuery)
         return false;
 
       // create a query object
       m_raySceneQuery->setRay(ray);
+      m_raySceneQuery->setQueryMask(queryMask);
 
       // execute the query, returns a vector of hits
       if (m_raySceneQuery->execute().size() <= 0) {

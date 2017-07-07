@@ -148,9 +148,9 @@ namespace ape {
 
         cv::aruco::estimatePoseBoard(
           corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
-
+#ifdef DEBUG_BUILD
         cv::aruco::drawDetectedMarkers(frame, corners, ids);
-
+#endif
         viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
           tvec, rvec
         ));
@@ -160,11 +160,10 @@ namespace ape {
         viewMatrix = convertVectorsToViewMatrix(
           rvec, tvec);
 
-        //std::cout << "Smoothed: " << smoothedViewParams.rotation << std::endl;
-
+#ifdef DEBUG_BUILD
         cv::aruco::drawAxis(
           frame, cameraIntrinsics_, distCoeffs_, rvec, tvec, markerLength);
-
+#endif
         transformation.setValue(viewMatrix);
       }
     }

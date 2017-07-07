@@ -18,6 +18,11 @@
 #define FONT_FILE_NAME "FreeSans.otf"
 #define MESH_FILE_NAME "ogrehead.mesh"
 
+enum QueryFlags
+{
+  WORLD_OBJECT = 1 << 0,
+};
+
 //FIXME remove
 class FrameListener : public Ogre::FrameListener {
 private:
@@ -270,36 +275,15 @@ namespace ape {
     void AppWindow::initScene() {
       // Add Cube
       sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-      Ogre::Entity* ogreEntity = sceneMgr->createEntity("cube1",
+      Ogre::Entity* ogreEntity = sceneMgr->createEntity("world",
                                                         MESH_FILE_NAME);
-      Ogre::Entity* ogreEntity2 = sceneMgr->createEntity("cube2",
-        MESH_FILE_NAME);
-      Ogre::Entity* ogreEntity3 = sceneMgr->createEntity("cube3",
-        MESH_FILE_NAME);
-      Ogre::Entity* ogreEntity4 = sceneMgr->createEntity("cube4",
-        MESH_FILE_NAME);
+      ogreEntity->addQueryFlags(WORLD_OBJECT);
 
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
       ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1), Ogre::Node::TS_LOCAL);
       ogreNode->setPosition(0.05, 0.05, 0.05);
       ogreNode->setScale(0.001, 0.001, 0.001);
       ogreNode->attachObject(ogreEntity);
-
-     /* Ogre::SceneNode* ogreNode2 = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode2->setPosition(0.02, 0.0, 0.01);
-      ogreNode2->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode2->attachObject(ogreEntity2);
-
-
-      Ogre::SceneNode* ogreNode3 = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode3->setPosition(-0.02, 0.01, 0.01);
-      ogreNode3->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode3->attachObject(ogreEntity3);
-
-      Ogre::SceneNode* ogreNode4 = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode4->setPosition(0.02, 0.01, 0.01);
-      ogreNode4->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode4->attachObject(ogreEntity4);*/
 
 #ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
@@ -472,15 +456,10 @@ namespace ape {
       Ogre::MovableObject* resultObj;
       size_t subIndex;
 
-      bool found = queryRay->Raycast(mouseRay, resultVec, &resultObj, subIndex);
+      bool found = queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
       std::cout << resultObj << " " << subIndex << std::endl;
 
-      movableFound = found && (resultObj->getName() == "cube1" ||
-        resultObj->getName() == "cube2" ||
-        resultObj->getName() == "cube3" ||
-        resultObj->getName() == "cube4");
-
-      if (movableFound)
+      if (found)
       {
         Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
         Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
@@ -490,7 +469,6 @@ namespace ape {
         Ogre::MeshPtr mesh = entity->getMesh();
         mesh->updateMaterialForAllSubMeshes();
         std::cout << entity->getNumSubEntities() << std::endl;
-
       }
     }
 
