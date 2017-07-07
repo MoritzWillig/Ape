@@ -406,16 +406,21 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      for (int i = 0; i < width; i++)
+      size_t leftOut = 0;
+      for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++)
         {
           std::size_t index = i*height + j;
-          if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2])
+          if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2]) {
+            leftOut++;
             continue;
+          }
           meanVec[2] += returnData[index]; //blue
-          meanVec[1] += returnData[index+1]; //green
-          meanVec[0] += returnData[index+2]; //red
+          meanVec[1] += returnData[index + 1]; //green
+          meanVec[0] += returnData[index + 2]; //red
         }
+      }
+      std::cout << leftOut << std::endl;
       returnBuffer->unlock();
       meanVec[0] = (meanVec[0] / (width*height)) / 255.0;
       meanVec[1] = (meanVec[1] / (width*height)) / 255.0;
@@ -434,16 +439,17 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      for (int i = 0; i < width; i++)
+      for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++)
         {
           std::size_t index = i*height + j;
           if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2])
             continue;
           varianceVec[2] += POW2(returnData[index] - mean[2]); //blue
-          varianceVec[1] += POW2(returnData[index+1] - mean[1]); //green
-          varianceVec[0] += POW2(returnData[index+2] - mean[0]); //red
+          varianceVec[1] += POW2(returnData[index + 1] - mean[1]); //green
+          varianceVec[0] += POW2(returnData[index + 2] - mean[0]); //red
         }
+      }
       returnBuffer->unlock();
       varianceVec[0] = (varianceVec[0] / (width*height)) / 255.0;
       varianceVec[1] = (varianceVec[1] / (width*height)) / 255.0;
@@ -454,6 +460,8 @@ namespace ape {
     void AppWindow::computeColorBalancingParameter() {
       renderTexture->update();
       meanInput = computeMean(rttTexture);
+
+      std::cout << meanInput << std::endl;
       meanTarget = computeMean(backgroundTexture);
       varianceInput = computeVariance(rttTexture, meanInput);
       varianceTarget = computeVariance(backgroundTexture, meanTarget);
