@@ -33,15 +33,15 @@ namespace ape {
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
         markerLength(0.024), //FIXME magic number ...
-        ids(), corners(), rejected(), rvecs(), tvecs(), rvec(), tvec(),
+        ids(), corners(), rejected(),
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-		    cvCameraStream = new OpenCVCameraStream();
+		    //cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
-          "../../../data/dummy/cameraStream/marker01.avi");
+          "../../../data/dummy/cameraStream/board01.flv");
       stream->setSize(640,480);
-      //cvCameraStream=stream;
+      cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
       setProcessingContext(ProcessingContext::Context::Stream);
       detectorParams->doCornerRefinement = true; 
@@ -144,15 +144,10 @@ namespace ape {
 
       if (marker) {
 
-        if (std::isnan(rvec[0]))
-          rvec = cv::Vec3d(273.076, -10.1916, 1.00672);
-        if (std::isnan(tvec[0]))
-          tvec = cv::Vec3d(-0.0279756, 0.0286375, 0.130666);
+        cv::Mat rvec, tvec;
 
         cv::aruco::estimatePoseBoard(
           corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
-
-        std::cout << rvec << " " << tvec << std::endl;
 
         cv::aruco::drawDetectedMarkers(frame, corners, ids);
 
@@ -167,11 +162,8 @@ namespace ape {
 
         //std::cout << "Smoothed: " << smoothedViewParams.rotation << std::endl;
 
-        for (unsigned int i = 0; i < ids.size(); i++) {
-              //FIXME add flag for and draw only in debug mode
-              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, rvec, tvec,
-                                  markerLength);
-        }
+        cv::aruco::drawAxis(
+          frame, cameraIntrinsics_, distCoeffs_, rvec, tvec, markerLength);
 
         transformation.setValue(viewMatrix);
       }
