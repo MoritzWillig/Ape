@@ -16,7 +16,12 @@
 #define MESH_FOLDER "../../../data/assets/meshes"
 #define TEXTURE_FOLDER "../../../data/assets/surfaces"
 #define FONT_FILE_NAME "FreeSans.otf"
-#define MESH_FILE_NAME "ogrehead.mesh"
+#define MESH_FILE_NAME "apetown.mesh"
+
+enum QueryFlags
+{
+  WORLD_OBJECT = 1 << 0,
+};
 
 //FIXME remove
 class FrameListener : public Ogre::FrameListener {
@@ -125,7 +130,7 @@ namespace ape {
       mainCam->setPosition(Ogre::Vector3(1.0f, 1.0f, 1.0f));
       mainCam->lookAt(Ogre::Vector3(0.0f, 0.0f, 0.0f));
       mainCam->setNearClipDistance(0.001f);
-      mainCam->setFarClipDistance(20.0f);
+      mainCam->setFarClipDistance(200.0f);
 
       // add viewport
       vp = renderWindow->addViewport(mainCam);
@@ -270,36 +275,16 @@ namespace ape {
     void AppWindow::initScene() {
       // Add Cube
       sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-      Ogre::Entity* ogreEntity = sceneMgr->createEntity("cube1",
+      Ogre::Entity* ogreEntity = sceneMgr->createEntity("world",
                                                         MESH_FILE_NAME);
-      Ogre::Entity* ogreEntity2 = sceneMgr->createEntity("cube2",
-        MESH_FILE_NAME);
-      Ogre::Entity* ogreEntity3 = sceneMgr->createEntity("cube3",
-        MESH_FILE_NAME);
-      Ogre::Entity* ogreEntity4 = sceneMgr->createEntity("cube4",
-        MESH_FILE_NAME);
+      ogreEntity->addQueryFlags(WORLD_OBJECT);
 
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1), Ogre::Node::TS_LOCAL);
-      ogreNode->setPosition(0, 0, 0.05);
-      ogreNode->setScale(0.001, 0.001, 0.001);
+      ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1.5707963268), Ogre::Node::TS_LOCAL);
+#define scale 0.007
+      ogreNode->setPosition(0.07, 0.00, 0.00);
+      ogreNode->setScale(scale, scale, scale);
       ogreNode->attachObject(ogreEntity);
-
-     /* Ogre::SceneNode* ogreNode2 = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode2->setPosition(0.02, 0.0, 0.01);
-      ogreNode2->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode2->attachObject(ogreEntity2);
-
-
-      Ogre::SceneNode* ogreNode3 = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode3->setPosition(-0.02, 0.01, 0.01);
-      ogreNode3->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode3->attachObject(ogreEntity3);
-
-      Ogre::SceneNode* ogreNode4 = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode4->setPosition(0.02, 0.01, 0.01);
-      ogreNode4->setScale(0.0001, 0.0001, 0.0001);
-      ogreNode4->attachObject(ogreEntity4);*/
 
 #ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
@@ -467,22 +452,17 @@ namespace ape {
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
-      std::cout << "Pressed " << button << " at Position " << mousePosX << " " << mousePosY << std::endl;
+//      std::cout << "Pressed " << button << " at Position " << mousePosX << " " << mousePosY << std::endl;
       Ogre::Ray mouseRay = mainCam->getCameraToViewportRay(mousePosX/1024.0f, mousePosY/768.0f);
 
       Ogre::Vector3 resultVec(0.0f);
       Ogre::MovableObject* resultObj;
       size_t subIndex;
 
-      bool found = queryRay->Raycast(mouseRay, resultVec, &resultObj, subIndex);
-      std::cout << resultObj << " " << subIndex << std::endl;
+      bool found = queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
+//      std::cout << resultObj << " " << subIndex << std::endl;
 
-      movableFound = found && (resultObj->getName() == "cube1" ||
-        resultObj->getName() == "cube2" ||
-        resultObj->getName() == "cube3" ||
-        resultObj->getName() == "cube4");
-
-      if (movableFound)
+      if (found)
       {
         Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
         Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
@@ -491,16 +471,15 @@ namespace ape {
         sub->setMaterialName("CubeMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         Ogre::MeshPtr mesh = entity->getMesh();
         mesh->updateMaterialForAllSubMeshes();
-        std::cout << entity->getNumSubEntities() << std::endl;
-
+    //    std::cout << entity->getNumSubEntities() << std::endl;
       }
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
-      std::cout << glm::to_string(projectionMatrix) << std::endl;
+  //    std::cout << glm::to_string(projectionMatrix) << std::endl;
       // Set CameraProjection Matrix based on calibration parameters
       float znear = 0.001f;
-      float zfar = 20.0f;
+      float zfar = 200.0f;
       int camWidth = 640;
       int camHeight = 480;
 

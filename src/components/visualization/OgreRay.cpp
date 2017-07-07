@@ -15,17 +15,18 @@ namespace ape {
     }
 
 
-    bool OgreRay::Raycast(Ogre::Ray& ray, Ogre::Vector3& resultVec, Ogre::MovableObject** resultObj, size_t& resultSubIdx)
+    bool OgreRay::Raycast(Ogre::Ray& ray, Ogre::uint32 queryMask, Ogre::Vector3& resultVec, Ogre::MovableObject** resultObj, size_t& resultSubIdx)
     {
       if (!m_raySceneQuery)
         return false;
 
       // create a query object
       m_raySceneQuery->setRay(ray);
+      m_raySceneQuery->setQueryMask(queryMask);
 
       // execute the query, returns a vector of hits
       if (m_raySceneQuery->execute().size() <= 0) {
-        std::cout << "Didnt hit anything" << std::endl;
+//        std::cout << "Didnt hit anything" << std::endl;
         // raycast did not hit an objects bounding box
         return false;
       }
@@ -62,7 +63,7 @@ namespace ape {
             Ogre::Entity *pentity = static_cast<Ogre::Entity*>(query_result[qr_idx].movable);
             // get SubMeshCount
             submesh_count = pentity->getMesh()->getNumSubMeshes();
-            std::cout << pentity << " " << submesh_count << std::endl;
+//            std::cout << pentity << " " << submesh_count << std::endl;
           }
           for (size_t sub_idx = 0; sub_idx < submesh_count; ++sub_idx){
 
@@ -98,11 +99,11 @@ namespace ape {
               break;
             }
 
-            std::cout << "Submesh " << sub_idx << " information computed" << std::endl;
+ //           std::cout << "Submesh " << sub_idx << " information computed" << std::endl;
 
             // test for hitting individual triangles on the mesh
             bool new_closest_found = false;
-            std::cout << "Indizes: " << static_cast<int>(index_count) << " - seid ihr vielfaches von 3?" << std::endl;
+  //          std::cout << "Indizes: " << static_cast<int>(index_count) << " - seid ihr vielfaches von 3?" << std::endl;
 
             for (int i = 0; i < static_cast<int>(index_count); i += 3)
             {
@@ -135,12 +136,12 @@ namespace ape {
               }
 
             }
-            std::cout << "Submesh " << sub_idx << " raycast computed" << std::endl;
+ //           std::cout << "Submesh " << sub_idx << " raycast computed" << std::endl;
 
           }
         }
       }
-      std::cout << "Return result" << std::endl;
+  //    std::cout << "Return result" << std::endl;
 
       // return the result
       if (closest_distance >= 0.0f) {
@@ -148,7 +149,7 @@ namespace ape {
         resultVec = closest_result;
         resultSubIdx = closet_subindex;
         (*resultObj) = query_result[closest_index].movable;
-        std::cout << "Hit submesh: " << closet_subindex << std::endl;
+  //      std::cout << "Hit submesh: " << closet_subindex << std::endl;
 
         return true;
       }
@@ -482,7 +483,7 @@ namespace ape {
 
     void OgreRay::GetSubMeshInformation(const Ogre::Entity* entity, const size_t subMeshIndex, size_t& vertex_count, Ogre::Vector3*& vertices, size_t& index_count, unsigned long*& indices, const Ogre::Vector3& position, const Ogre::Quaternion& orient, const Ogre::Vector3& scale)
     {
-      std::cout << "Get Sub Mesh Information" << std::endl;
+ //     std::cout << "Get Sub Mesh Information" << std::endl;
       bool added_shared = false;
       size_t current_offset = 0;
       size_t shared_offset = 0;

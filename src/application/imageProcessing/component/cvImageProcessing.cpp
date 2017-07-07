@@ -33,15 +33,15 @@ namespace ape {
         dictionary(cv::aruco::getPredefinedDictionary(
             cv::aruco::PREDEFINED_DICTIONARY_NAME(cv::aruco::DICT_6X6_250))),
         markerLength(0.024), //FIXME magic number ...
-        ids(), corners(), rejected(), rvecs(), tvecs(), rvec(), tvec(),
+        ids(), corners(), rejected(),
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-		    cvCameraStream = new OpenCVCameraStream();
+		    //cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
-          "../../../data/dummy/cameraStream/marker01.avi");
+          "../../../data/dummy/cameraStream/board01.flv");
       stream->setSize(640,480);
-      //cvCameraStream=stream;
+      cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
       setProcessingContext(ProcessingContext::Context::Stream);
       detectorParams->doCornerRefinement = true; 
@@ -131,39 +131,39 @@ namespace ape {
       ((double*)distCoeffs_.data)[3]=distCoeffs[3];
       ((double*)distCoeffs_.data)[4]=distCoeffs[4];
 
-      cv::aruco::estimatePoseSingleMarkers(
-          corners, markerLength, cameraIntrinsics_, distCoeffs_, rvecs, tvecs);
+
 
       cv::Ptr<cv::aruco::GridBoard> gridboard = cv::aruco::GridBoard::create(5, 5, float(0.012),
         float(0.0031), dictionary);
       cv::Ptr<cv::aruco::Board> board = gridboard.staticCast<cv::aruco::Board>();
 
-
-      cv::aruco::estimatePoseBoard(
-        corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
+      cv::aruco::refineDetectedMarkers(
+        frame, board, corners, ids, rejected, cameraIntrinsics_, distCoeffs_);
 
       marker.setValue(ids.size() > 0);
 
       if (marker) {
-        cv::aruco::drawDetectedMarkers(frame, corners, ids);
 
+        cv::Mat rvec, tvec;
+
+        cv::aruco::estimatePoseBoard(
+          corners, ids, board, cameraIntrinsics_, distCoeffs_, rvec, tvec);
+#ifdef DEBUG_BUILD
+        cv::aruco::drawDetectedMarkers(frame, corners, ids);
+#endif
         viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
-            tvec,rvec
+          tvec, rvec
         ));
 
         auto smoothedViewParams=viewSmoother.getSmoothedValue();
 
         viewMatrix = convertVectorsToViewMatrix(
-         rvec, tvec);
+          rvec, tvec);
 
-        //std::cout << "Smoothed: " << smoothedViewParams.rotation << std::endl;
-
-        for (unsigned int i = 0; i < ids.size(); i++) {
-              //FIXME add flag for and draw only in debug mode
-              cv::aruco::drawAxis(frame, cameraIntrinsics_, distCoeffs_, smoothedViewParams.rotation, smoothedViewParams.translation,
-                                  markerLength);
-        }
-
+#ifdef DEBUG_BUILD
+        cv::aruco::drawAxis(
+          frame, cameraIntrinsics_, distCoeffs_, rvec, tvec, markerLength);
+#endif
         transformation.setValue(viewMatrix);
       }
     }

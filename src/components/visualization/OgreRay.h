@@ -17,7 +17,7 @@ namespace ape {
     public:
       OgreRay(Ogre::SceneManager* sceneMgr);
       ~OgreRay();
-      bool Raycast(Ogre::Ray& ray, Ogre::Vector3& result, Ogre::MovableObject** resultObj, size_t& resultSubIdx);
+      bool Raycast(Ogre::Ray& ray, Ogre::uint32 queryMask, Ogre::Vector3& result, Ogre::MovableObject** resultObj, size_t& resultSubIdx);
 
     private:
       static void GetMeshInformation(const Ogre::MeshPtr mesh, size_t &vertex_count, Ogre::Vector3*& vertices, size_t& index_count, unsigned long*& indices, const Ogre::Vector3& position, const Ogre::Quaternion& orient, const Ogre::Vector3& scale);
