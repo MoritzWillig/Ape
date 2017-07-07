@@ -39,6 +39,22 @@ public:
   bool frameEnded(const Ogre::FrameEvent& evt) { return true; }
 };  // End of FrameListener class
 
+class RenderTargetListener : public Ogre::RenderTargetListener {
+  private:
+    Ogre::SceneNode* backgroundNode;
+  public:
+    RenderTargetListener(Ogre::SceneNode* backgroundNode) : backgroundNode(backgroundNode) {}
+  void RenderTargetListener::preRenderTargetUpdate(const Ogre::RenderTargetEvent& rte)
+  {
+    backgroundNode->setVisible(false);
+  }
+
+  void RenderTargetListener::postRenderTargetUpdate(const Ogre::RenderTargetEvent& rte)
+  {
+    backgroundNode->setVisible(true);
+  }
+};
+
 namespace ape {
   namespace visualization {
 
@@ -282,7 +298,7 @@ namespace ape {
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
       ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1.5707963268), Ogre::Node::TS_LOCAL);
 #define scale 0.007
-      ogreNode->setPosition(0.07, 0.00, 0.00);
+      ogreNode->setPosition(0.075, 0.00, 0.00);
       ogreNode->setScale(scale, scale, scale);
       ogreNode->attachObject(ogreEntity);
 
@@ -296,7 +312,7 @@ namespace ape {
 
 
       // Create a material using the texture
-      Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().load("0.jpg", "General");
+      Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().load("2.jpg", "General");
       cubeMat = Ogre::MaterialManager::getSingleton().create(
         "CubeMaterial", // name
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -307,9 +323,29 @@ namespace ape {
       light->setPosition(-20, 80, -50);
 
       // Attach background to the scene
-      Ogre::SceneNode* node = sceneMgr->getRootSceneNode()->createChildSceneNode(
+      backgroundNode = sceneMgr->getRootSceneNode()->createChildSceneNode(
           "Background");
-      node->attachObject(rect);
+      backgroundNode->attachObject(rect);
+    }
+
+    void AppWindow::createRenderTexture() {
+      rttTexture =
+        Ogre::TextureManager::getSingleton().createManual(
+          "RttTex",
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+          Ogre::TEX_TYPE_2D,
+          renderWindow->getWidth(), renderWindow->getHeight(),
+          0,
+          Ogre::PF_R8G8B8,
+          Ogre::TU_RENDERTARGET);
+
+      renderTexture = rttTexture->getBuffer()->getRenderTarget();
+
+      renderTexture->addViewport(mainCam);
+      renderTexture->getViewport(0)->setClearEveryFrame(true);
+      renderTexture->getViewport(0)->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+      renderTexture->getViewport(0)->setOverlaysEnabled(false);
+      renderTexture->addListener(new RenderTargetListener(backgroundNode));
     }
 
 /*    void AppWindow::initInputHandler() {
@@ -338,9 +374,12 @@ namespace ape {
       createRessources();
       createPanel();
       initScene();
+      createRenderTexture();
     }
 
     AppWindow::~AppWindow() {
+      std::cout << "Destroy App Window" << std::endl;
+
       renderWindow->removeViewport(vp->getZOrder());
       sceneMgr->destroyCamera(mainCam);
       root->destroySceneManager(sceneMgr);
@@ -350,6 +389,63 @@ namespace ape {
 
       glfwDestroyWindow(glfwWindow);
       glfwTerminate();
+    }
+
+
+    Ogre::Vector3 computeMean(Ogre::TexturePtr texture) {
+      Ogre::Vector3 meanVec(0,0,0);
+      size_t width = texture->getWidth();
+      size_t height = texture->getHeight();
+      Ogre::Image::Box imageBox;
+      Ogre::HardwarePixelBufferSharedPtr returnBuffer = texture->getBuffer();
+      const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
+      Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
+
+      for (int i = 0; i < width; i++)
+        for (int j = 0; j < height; j++)
+        {
+          meanVec[0] += *returnData++; //blue
+          meanVec[1] += *returnData++; //green
+          meanVec[2] += *returnData++; //red
+          *returnData++;  //alpha
+        }
+      returnBuffer->unlock();
+      meanVec[0] = meanVec[0] / (width*height);
+      meanVec[1] = meanVec[1] / (width*height);
+      meanVec[2] = meanVec[2] / (width*height);
+      return meanVec;
+    };
+
+    Ogre::Vector3 computeVariance(Ogre::TexturePtr texture, Ogre::Vector3 mean) {
+      Ogre::Vector3 varianceVec(0, 0, 0);
+      size_t width = texture->getWidth();
+      size_t height = texture->getHeight();
+      Ogre::Image::Box imageBox;
+      Ogre::HardwarePixelBufferSharedPtr returnBuffer = texture->getBuffer();
+      const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
+      Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
+
+      for (int i = 0; i < width; i++)
+        for (int j = 0; j < height; j++)
+        {
+          varianceVec[0] += pow(*returnData++ - mean[0], 2.0); //blue
+          varianceVec[1] += pow(*returnData++ - mean[1], 2.0); //green
+          varianceVec[2] += pow(*returnData++ - mean[2], 2.0); //red
+          *returnData++;  //alpha
+        }
+      returnBuffer->unlock();
+      varianceVec[0] = varianceVec[0] / (width*height);
+      varianceVec[1] = varianceVec[1] / (width*height);
+      varianceVec[2] = varianceVec[2] / (width*height);
+      return varianceVec;
+    };
+
+    void AppWindow::applyColorCorrection() {
+      renderTexture->update();
+      Ogre::Vector3 meanInput = computeMean(rttTexture);
+      Ogre::Vector3 meanTarget = computeMean(backgroundTexture);
+      Ogre::Vector3 varianceInput = computeVariance(rttTexture, meanInput);
+      Ogre::Vector3 varianceTarget = computeVariance(backgroundTexture, meanTarget);
     }
 
 
@@ -412,6 +508,7 @@ namespace ape {
       updateBackgroundTexture(
           stream->getCurrentFrame(),
           stream->getFrameWidth(), stream->getFrameHeight());
+      applyColorCorrection();
       root->renderOneFrame(timeStep);
       renderWindow->update(true);
 
@@ -452,7 +549,6 @@ namespace ape {
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
-//      std::cout << "Pressed " << button << " at Position " << mousePosX << " " << mousePosY << std::endl;
       Ogre::Ray mouseRay = mainCam->getCameraToViewportRay(mousePosX/1024.0f, mousePosY/768.0f);
 
       Ogre::Vector3 resultVec(0.0f);
@@ -460,23 +556,16 @@ namespace ape {
       size_t subIndex;
 
       bool found = queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
-//      std::cout << resultObj << " " << subIndex << std::endl;
 
       if (found)
       {
         Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
         Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
         subEnt->setMaterial(cubeMat);
-        Ogre::SubMesh* sub = entity->getMesh()->getSubMesh(subIndex);
-        sub->setMaterialName("CubeMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        Ogre::MeshPtr mesh = entity->getMesh();
-        mesh->updateMaterialForAllSubMeshes();
-    //    std::cout << entity->getNumSubEntities() << std::endl;
       }
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
-  //    std::cout << glm::to_string(projectionMatrix) << std::endl;
       // Set CameraProjection Matrix based on calibration parameters
       float znear = 0.001f;
       float zfar = 200.0f;

@@ -27,7 +27,8 @@
 namespace ape {
   namespace visualization {
 
-    class AppWindow {
+    class AppWindow 
+    {
     private:
       bool createWindow();
       void createFont();
@@ -36,10 +37,11 @@ namespace ape {
       void createRessources();
 	     void createBackgroundTexture();
       void createCoordinateAxes();
+      void createRenderTexture();
 
 	     void updateBackgroundTexture(
           cv::Mat frame, unsigned int width, unsigned int height);
-
+      void applyColorCorrection();
 	     void initScene();
 
       Ogre::Root* root;
@@ -50,8 +52,11 @@ namespace ape {
       Ogre::Viewport* vp;
 	     Ogre::Rectangle2D* rect;
 	     Ogre::TexturePtr backgroundTexture;
+      Ogre::TexturePtr rttTexture;
+      Ogre::SceneNode* backgroundNode;
       Ogre::ManualObject* coordAxes;
       Ogre::MaterialPtr cubeMat;
+      Ogre::RenderTexture* renderTexture;
 
       int mousePosX;
       int mousePosY;
