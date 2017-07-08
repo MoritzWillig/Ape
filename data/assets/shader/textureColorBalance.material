@@ -21,15 +21,19 @@ material TextureColorBalance
  
             vertex_program_ref TextureColorBalanceVERT
             {
-				param_named_auto worldViewProj worldviewproj_matrix
+				param_named_auto worldViewProj		worldviewproj_matrix				
+				param_named_auto worldViewMatrix	worldview_matrix
+
             }
             fragment_program_ref TextureColorBalanceFRAG
             {
 				param_named diffuse int 0
+				param_named_auto lightPosition		light_position 0
+				param_named_auto sceneAmbient		ambient_light_colour
             }
             texture_unit
             {
-                texture 3.jpg 2d
+                texture 2.jpg 2d
             }
         }
     }

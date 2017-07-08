@@ -325,7 +325,9 @@ namespace ape {
 
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
-      light->setPosition(-20, 80, -50);
+      light->setType(Ogre::Light::LT_DIRECTIONAL);
+      light->setDirection(-2, 8, -5);
+      light->setPosition(-2, 8, -5);
 
       // Attach background to the scene
       backgroundNode = sceneMgr->getRootSceneNode()->createChildSceneNode(
@@ -341,7 +343,7 @@ namespace ape {
           Ogre::TEX_TYPE_2D,
           renderWindow->getWidth(), renderWindow->getHeight(),
           0,
-          Ogre::PF_R8G8B8,
+          Ogre::PF_BYTE_RGB,
           Ogre::TU_RENDERTARGET);
 
       renderTexture = rttTexture->getBuffer()->getRenderTarget();
@@ -406,25 +408,23 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      size_t leftOut = 0;
-      for (int i = 0; i < width; i++) {
-        for (int j = 0; j < height; j++)
-        {
-          std::size_t index = i*height + j;
-          if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2]) {
-            leftOut++;
+      size_t backgroundPixel = 0;
+      for (size_t j = 0; j < height; j++) {
+        for (size_t i = 0; i < width; i++) {
+          std::size_t index = 4*(width*j + i);
+          if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
+            backgroundPixel++;
             continue;
           }
-          meanVec[2] += returnData[index]; //blue
-          meanVec[1] += returnData[index + 1]; //green
-          meanVec[0] += returnData[index + 2]; //red
+          meanVec[2] += (float)returnData[index]; //blue
+          meanVec[1] += (float)returnData[index + 1]; //green
+          meanVec[0] += (float)returnData[index + 2]; //red
         }
       }
-      std::cout << leftOut << std::endl;
       returnBuffer->unlock();
-      meanVec[0] = (meanVec[0] / (width*height)) / 255.0;
-      meanVec[1] = (meanVec[1] / (width*height)) / 255.0;
-      meanVec[2] = (meanVec[2] / (width*height)) / 255.0;
+      meanVec[0] = (meanVec[0] / (width*height-backgroundPixel)) / 255.0;
+      meanVec[1] = (meanVec[1] / (width*height-backgroundPixel)) / 255.0;
+      meanVec[2] = (meanVec[2] / (width*height-backgroundPixel)) / 255.0;
       return meanVec;
     };
 
@@ -439,37 +439,44 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      for (int i = 0; i < width; i++) {
-        for (int j = 0; j < height; j++)
-        {
-          std::size_t index = i*height + j;
-          if (returnData[index] == 0.0 && returnData[index + 1] == 1.0 && returnData[index + 2])
-            continue;
+      size_t backgroundPixel = 0;
+
+      for (size_t j = 0; j < height; j++) {
+        for (size_t i = 0; i < width; i++) {
+            std::size_t index = 4 * (width*j + i);
+            if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
+              backgroundPixel++;
+              continue;
+            }
           varianceVec[2] += POW2(returnData[index] - mean[2]); //blue
           varianceVec[1] += POW2(returnData[index + 1] - mean[1]); //green
           varianceVec[0] += POW2(returnData[index + 2] - mean[0]); //red
         }
       }
       returnBuffer->unlock();
-      varianceVec[0] = (varianceVec[0] / (width*height)) / 255.0;
-      varianceVec[1] = (varianceVec[1] / (width*height)) / 255.0;
-      varianceVec[2] = (varianceVec[2] / (width*height)) / 255.0;
+      varianceVec[0] = (varianceVec[0] / (width*height-backgroundPixel)) / 255.0;
+      varianceVec[1] = (varianceVec[1] / (width*height-backgroundPixel)) / 255.0;
+      varianceVec[2] = (varianceVec[2] / (width*height-backgroundPixel)) / 255.0;
       return varianceVec;
     };
 
     void AppWindow::computeColorBalancingParameter() {
-      renderTexture->update();
-      meanInput = computeMean(rttTexture);
-
-      std::cout << meanInput << std::endl;
-      meanTarget = computeMean(backgroundTexture);
-      varianceInput = computeVariance(rttTexture, meanInput);
-      varianceTarget = computeVariance(backgroundTexture, meanTarget);
-
       Ogre::MaterialPtr textureMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
       Ogre::Technique* technique = textureMaterial->getTechnique(0);
       Ogre::Pass* pass = technique->getPass(0);
       Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+
+      params->setNamedConstant("meanInput", Ogre::Vector3(0,0,0));
+      params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
+      params->setNamedConstant("varianceInput", Ogre::Vector3(1, 1, 1));
+      params->setNamedConstant("varianceTarget", Ogre::Vector3(1, 1, 1));
+
+      renderTexture->update();
+      meanInput = computeMean(rttTexture);
+      meanTarget = computeMean(backgroundTexture);
+      varianceInput = computeVariance(rttTexture, meanInput);
+      varianceTarget = computeVariance(backgroundTexture, meanTarget);
+
       params->setNamedConstant("meanInput", meanInput);
       params->setNamedConstant("meanTarget", meanTarget);
       params->setNamedConstant("varianceInput", varianceInput);
