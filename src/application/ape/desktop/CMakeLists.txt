@@ -23,6 +23,8 @@ add_executable(apeDesktop
         ${HEADER2}
         #sections
         ${APE_SECTION_APPSTATE_SOURCES}
+        #interfaces
+        $<TARGET_OBJECTS:apeInterfaces>
         #components
         ${APE_INTERFACE_SOURCES}
         $<TARGET_OBJECTS:apeImageProcessing>

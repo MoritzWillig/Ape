@@ -4,9 +4,9 @@
 
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
-//FIXME correct include
-#include "../../worldState/component/worldState.h"
+#include <worldState/Surface.h>
 #include <common/callbacks/CustomValueCallback.h>
+#include <visualization/VisualModel.h>
 
 namespace ape {
   namespace visualization {
@@ -68,6 +68,8 @@ namespace ape {
       CustomValueCallback<
           IVisualizationController::SurfaceSelectionHandler,
           void*> surfaceSelectionHandler;
+
+      virtual std::shared_ptr<IVisualModel> loadModel(std::string path) = 0;
 
 
       static std::shared_ptr<IVisualizationController> createInstance(

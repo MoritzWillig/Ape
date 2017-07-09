@@ -8,4 +8,5 @@ set(APE_VISUALIZATION_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/overlay/OgreShapes.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/OgreRay.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/overlay/OgreButton.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/visualModel/OgreVisualModel.cpp
         )

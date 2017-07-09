@@ -1,3 +1,4 @@
+#include <visualModel/OgreVisualModel.h>
 #include "visualization.h"
 
 #include "AppWindow.h"
@@ -14,7 +15,8 @@ namespace ape {
                  textureGenerationRequestHandler),
         ssStage(appWindow, surfaceSelectionHandler),
         wsStage(appWindow, overlayChangeRequestHandler, ssStage, &surfaceNames),
-        stream(stream), viewMatrix() {
+        stream(stream), viewMatrix(), visualModelIdGenerator(), modelOgreLink(),
+        modelSubOgreLink() {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);
 
       appWindow->keyEventHandler.setCallback([](
@@ -112,6 +114,28 @@ namespace ape {
       std::string materialName = appWindow->registerTexture(name,data);
       surfaces.emplace(name, materialName);
       surfaceNames.emplace_back(name);
+    }
+
+    std::shared_ptr<IVisualModel> OGREVisualizationController::loadModel(
+        std::string path) {
+      auto model=appWindow->loadModel(path);
+
+      auto visId=visualModelIdGenerator.getNew();
+      auto visModel=std::make_shared<OgreVisualModel>(visId);
+      modelOgreLink[visId]=model;
+
+      auto ns=model->getNumSubEntities();
+      for (unsigned int i=0; i<ns; i++) {
+        auto se=model->getSubEntity(i);
+
+        auto visSubId=visualModelIdGenerator.getNew();
+        auto visSubModel=std::make_shared<OgreVisualModel>(visSubId);
+        modelSubOgreLink[visSubId]=se;
+
+        visModel->addSubEntity(visSubModel);
+      }
+
+      return visModel;
     }
 
   }

@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <common/generators/Counter.h>
 #include "visualization.h"
 
 #include "AppWindow.h"
@@ -34,6 +35,11 @@ namespace ape {
       imageProcessing::CameraStream* stream;
 
       glm::mat4x4 viewMatrix;
+
+      Counter visualModelIdGenerator;
+
+      std::map<IVisualModel::VisualModelHandle,Ogre::Entity*> modelOgreLink;
+      std::map<IVisualModel::VisualModelHandle,Ogre::SubEntity*> modelSubOgreLink;
     protected:
     public:
       OGREVisualizationController() = delete;
@@ -53,6 +59,8 @@ namespace ape {
       virtual void setProgress(float percent) override;
 
       virtual void registerSurface(std::string name, cv::Mat data) override;
+
+      virtual std::shared_ptr<IVisualModel> loadModel(std::string path) override;
     };
   }
 }

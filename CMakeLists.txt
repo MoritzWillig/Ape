@@ -71,7 +71,11 @@ if(WIN32)
 else()
     set(OGRE_LIBRARIES
             "${Boost_LIBRARIES}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgreMain${suffix}")
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgreMain${suffix}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgrePaging${suffix}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgreProperty${suffix}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgreRTShaderSystem${suffix}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/lib/${prefix}OgreTerrain${suffix}")
     set(OGRE_INCLUDE_DIR
             "${Boost_INCLUDE_DIR}"
             "${CMAKE_CURRENT_SOURCE_DIR}/libs/ogre_src_v1-8-1/customInstall/include")

@@ -2,15 +2,19 @@
 #include <iostream>
 #include <sstream>
 #include "worldFileBasedState.h"
+#include <model/ModelBasedWorldEntity.h>
 
 namespace ape {
   namespace worldState {
 
     WorldFileBasedStateController::WorldFileBasedStateController(
         std::string surfaceDatabasePath,
-        std::string surfaceDatabaseName):
+        std::string surfaceDatabaseName,
+        ape::visualization::IVisualizationController* visualizationController):
         surfaceDatabasePath(surfaceDatabasePath),
-        surfaceDatabaseName(surfaceDatabaseName), surfaces() {
+        surfaceDatabaseName(surfaceDatabaseName), entityHandleGenerator(),
+        visController(visualizationController), surfaces(), world(),
+        entities() {
       loadSurfaceDatabase();
     }
 
@@ -113,6 +117,25 @@ namespace ape {
         currentHandle++;
       }
       return currentHandle;
+    }
+
+    IWorld* WorldFileBasedStateController::loadWorld(std::string path) {
+      auto model=visController->loadModel(path);
+
+      world=ModelBasedWorld();
+
+      auto mEntities=model->getSubEntities();
+      for (auto entity=mEntities->cbegin(); entity!=mEntities->cend(); entity++) {
+          entities.emplace_back(
+            std::make_shared<ModelBasedWorldEntity>(
+                (*entity)->getHandle(),
+                entityHandleGenerator.getNew()
+            )
+        );
+
+        world.addEntity(entities.back().get());
+      }
+      return &world;
     }
 
   }

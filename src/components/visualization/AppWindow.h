@@ -71,6 +71,8 @@ namespace ape {
       };
 
       std::map<std::string,InternalMaterial> materials;
+
+      void castViewPortRay(glm::vec2 position);
     protected:
     public:
       //Default
@@ -122,6 +124,8 @@ namespace ape {
       std::string registerTexture(std::string name, cv::Mat texture);
 
       std::string getTextureName(const std::string surface);
+
+      Ogre::Entity* loadModel(std::string modelFile);
     };
 
   }

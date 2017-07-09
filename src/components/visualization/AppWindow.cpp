@@ -16,7 +16,6 @@
 #define MESH_FOLDER "../../../data/assets/meshes"
 #define TEXTURE_FOLDER "../../../data/assets/surfaces"
 #define FONT_FILE_NAME "FreeSans.otf"
-#define MESH_FILE_NAME "apetown.mesh"
 
 enum QueryFlags
 {
@@ -259,7 +258,7 @@ namespace ape {
       // set the font name to the font resource that you just created.
       textArea->setFontName("MyFont");
       // say something
-      textArea->setCaption("Hello, World!");
+      textArea->setCaption("Hello, ModelBasedWorld!");
 
       // Create an overlay, and add the panel
       Ogre::Overlay* overlay = overlayMgr.create("OverlayName");
@@ -275,16 +274,6 @@ namespace ape {
     void AppWindow::initScene() {
       // Add Cube
       sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-      Ogre::Entity* ogreEntity = sceneMgr->createEntity("world",
-                                                        MESH_FILE_NAME);
-      ogreEntity->addQueryFlags(WORLD_OBJECT);
-
-      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1.5707963268), Ogre::Node::TS_LOCAL);
-#define scale 0.007
-      ogreNode->setPosition(0.07, 0.00, 0.00);
-      ogreNode->setScale(scale, scale, scale);
-      ogreNode->attachObject(ogreEntity);
 
 #ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
@@ -453,26 +442,7 @@ namespace ape {
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
 //      std::cout << "Pressed " << button << " at Position " << mousePosX << " " << mousePosY << std::endl;
-      Ogre::Ray mouseRay = mainCam->getCameraToViewportRay(mousePosX/1024.0f, mousePosY/768.0f);
-
-      Ogre::Vector3 resultVec(0.0f);
-      Ogre::MovableObject* resultObj;
-      size_t subIndex;
-
-      bool found = queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
-//      std::cout << resultObj << " " << subIndex << std::endl;
-
-      if (found)
-      {
-        Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
-        Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
-        subEnt->setMaterial(cubeMat);
-        Ogre::SubMesh* sub = entity->getMesh()->getSubMesh(subIndex);
-        sub->setMaterialName("CubeMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        Ogre::MeshPtr mesh = entity->getMesh();
-        mesh->updateMaterialForAllSubMeshes();
-    //    std::cout << entity->getNumSubEntities() << std::endl;
-      }
+      castViewPortRay(glm::vec2(mousePosX/1024.0f, mousePosY/768.0f));
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
@@ -544,6 +514,53 @@ namespace ape {
 
     std::string AppWindow::getTextureName(const std::string surface) {
       return materials[surface].matPtr->getName();
+    }
+
+    void AppWindow::castViewPortRay(glm::vec2 position) {
+      Ogre::Ray mouseRay =
+          mainCam->getCameraToViewportRay(position.x,position.y);
+
+      Ogre::Vector3 resultVec(0.0f);
+      Ogre::MovableObject* resultObj;
+      size_t subIndex;
+
+      bool found = queryRay->Raycast(
+          mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
+//      std::cout << resultObj << " " << subIndex << std::endl;
+
+      if (found)
+      {
+        Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
+        Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
+        subEnt->setMaterial(cubeMat);
+        Ogre::SubMesh* sub = entity->getMesh()->getSubMesh(subIndex);
+        sub->setMaterialName(
+            "CubeMaterial",
+            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::MeshPtr mesh = entity->getMesh();
+        mesh->updateMaterialForAllSubMeshes();
+        //    std::cout << entity->getNumSubEntities() << std::endl;
+      }
+    }
+
+    Ogre::Entity* AppWindow::loadModel(std::string modelFile) {
+      Ogre::Entity* worldEntity = sceneMgr->createEntity("world",modelFile);
+      worldEntity->addQueryFlags(WORLD_OBJECT);
+
+      //FIXME do not create & attach to node here
+      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      //FIXME we use this only for loading the world, so we can for now
+      // hard-code the transformation...
+      ogreNode->rotate(
+          Ogre::Vector3(1.0, 0.0, 0.0),
+          Ogre::Radian(1.5707963268),
+          Ogre::Node::TS_LOCAL);
+#define scale 0.007
+      ogreNode->setPosition(0.07, 0.00, 0.00);
+      ogreNode->setScale(scale, scale, scale);
+      ogreNode->attachObject(worldEntity);
+
+      return worldEntity;
     }
 
   }

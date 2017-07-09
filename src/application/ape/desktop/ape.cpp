@@ -22,6 +22,7 @@
 
 const std::string surfaceDatabasePath = "../../../data/assets/surfaces";
 const std::string surfaceDatabaseName = "surfaces.txt";
+const std::string meshFileName = "apetown.mesh";
 
 namespace ape {
 
@@ -113,8 +114,8 @@ int main(int argc, char** argv) {
 
   auto wsController=
       ape::worldState::IWorldStateController::createInstance(
-          surfaceDatabasePath,surfaceDatabaseName);
-
+          surfaceDatabasePath,surfaceDatabaseName,visController.get());
+  wsController->loadWorld(meshFileName);
 
   ape::app::desktop::section::appState::AppStateController appStateController(
       ipController.get(),

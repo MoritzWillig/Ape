@@ -1,14 +1,12 @@
 project(ApeWorldStateComponent CXX)
 
-get_directory_property(
-        APE_WORLDSTATE_COMPONENT_DIR DIRECTORY ../../../components/worldState
-        DEFINITION APE_WORLDSTATE_COMPONENT_DIR)
+set(APE_WORLDSTATE_COMPONENT_DIR ../../../components/worldState)
 
 get_directory_property(
-        APE_WORLDSTATE_SOURCES DIRECTORY ../../../components/worldState
+        APE_WORLDSTATE_SOURCES DIRECTORY ${APE_WORLDSTATE_COMPONENT_DIR}
         DEFINITION APE_WORLDSTATE_SOURCES)
 
-#add interface headersQ
+#add interface headers
 include_directories(${APE_COMPONENTS_INCLUDE_DIR})
 
 #add component specific classes
