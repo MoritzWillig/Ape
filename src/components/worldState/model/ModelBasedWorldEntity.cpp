@@ -6,22 +6,28 @@ namespace ape {
     ModelBasedWorldEntity::ModelBasedWorldEntity(
         ape::visualization::IVisualModel::VisualModelHandle visualHandle,
         WorldEntityHandle entityHandle):
-        visualHandle(visualHandle), entityHandle(entityHandle) {
+        visualHandle(visualHandle), entityHandle(entityHandle),
+        surface(-1), surfaceChangedHandler(nullptr, nullptr) {
     }
 
     ISurface::SurfacePersistentHandle ModelBasedWorldEntity::getSurface() {
-      //FIXME implement
-      throw std::runtime_error("Not implemented");
+      return surface;
     }
 
     void ModelBasedWorldEntity::setSurface(
         ISurface::SurfacePersistentHandle surface) {
-      //FIXME implement
-      throw std::runtime_error("Not implemented");
+      this->surface=surface;
+
+      surfaceChangedHandler.callExceptIfNotSet(this);
     }
 
     IWorldEntity::WorldEntityHandle ModelBasedWorldEntity::getHandle() {
       return entityHandle;
+    }
+
+    ape::visualization::IVisualModel::VisualModelHandle
+    ModelBasedWorldEntity::getVisualHandle() {
+      return visualHandle;
     }
 
   }

@@ -80,6 +80,13 @@ namespace ape {
       virtual IWorld* loadWorld(std::string path) override;
 
       virtual void update(float timeStep) override;
+
+      virtual void
+      setSurface(visualization::IVisualModel::VisualModelHandle visualModelHandle,
+                 ISurface::SurfacePersistentHandle surfaceHandle) override;
+
+      virtual ISurface::SurfacePersistentHandle
+      getSurfaceByName(std::string name) override;
     };
 
   }

@@ -37,6 +37,14 @@ namespace ape {
 
       virtual IWorld* loadWorld(std::string path) = 0;
 
+      virtual void
+      setSurface(visualization::IVisualModel::VisualModelHandle visualModelHandle,
+                 ISurface::SurfacePersistentHandle surfaceHandle) = 0;
+
+      virtual ISurface::SurfacePersistentHandle
+      getSurfaceByName(std::string name) = 0;
+
+
       static std::shared_ptr<IWorldStateController> createInstance(
           std::string surfaceDatabasePath,
           std::string surfaceDatabaseName,

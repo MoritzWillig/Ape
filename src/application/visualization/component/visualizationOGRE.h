@@ -61,6 +61,10 @@ namespace ape {
       virtual void registerSurface(std::string name, cv::Mat data) override;
 
       virtual std::shared_ptr<IVisualModel> loadModel(std::string path) override;
+
+      virtual void setSurface(
+          IVisualModel::VisualModelHandle visualHandle,
+          std::string surfaceName) override;
     };
   }
 }

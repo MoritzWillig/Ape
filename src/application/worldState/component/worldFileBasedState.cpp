@@ -51,6 +51,13 @@ namespace ape {
         std::cerr<<"Could not open surface database!"<<std::endl;
         std::cerr<<"Proceeding with empty database."<<std::endl;
       }
+
+      //load existing surfaces into visualization controller
+      auto surfaceHandles=getSurfaceHandles();
+      for (const auto handle: surfaceHandles) {
+        auto surface = getSurface(handle);
+        visController->registerSurface(surface->getName(),surface->getTexture());
+      }
     }
 
     std::string WorldFileBasedStateController::getFileNameFromHandle(
@@ -126,16 +133,50 @@ namespace ape {
 
       auto mEntities=model->getSubEntities();
       for (auto entity=mEntities->cbegin(); entity!=mEntities->cend(); entity++) {
-          entities.emplace_back(
-            std::make_shared<ModelBasedWorldEntity>(
-                (*entity)->getHandle(),
-                entityHandleGenerator.getNew()
-            )
+        auto entityPtr=std::make_shared<ModelBasedWorldEntity>(
+            (*entity)->getHandle(),
+            entityHandleGenerator.getNew()
         );
+        entityPtr->surfaceChangedHandler.setCallback([](
+            void* custom,
+            ModelBasedWorldEntity* entity
+        ) {
+          auto self=(WorldFileBasedStateController*)custom;
+
+          //set new surface in visual representation
+          self->visController->setSurface(
+            entity->getVisualHandle(),
+            self->surfaces[entity->getSurface()]->getName());
+        }, this);
+
+        entities.emplace_back(entityPtr);
 
         world.addEntity(entities.back().get());
       }
       return &world;
+    }
+
+    void WorldFileBasedStateController::setSurface(
+        visualization::IVisualModel::VisualModelHandle visualModelHandle,
+        ISurface::SurfacePersistentHandle surfaceHandle) {
+      for (auto it=entities.begin(); it!=entities.end(); it++) {
+        auto handle=it->get()->getVisualHandle();
+        if (handle==visualModelHandle) {
+          //set surface to model based entity
+          it->get()->setSurface(surfaceHandle);
+          return;
+        }
+      }
+      throw std::runtime_error("entity not found");
+    }
+
+    ISurface::SurfacePersistentHandle
+    WorldFileBasedStateController::getSurfaceByName(std::string name) {
+      for (auto it=surfaces.begin(); it!=surfaces.end(); it++) {
+        if (it->second->getName()==name) {
+          return it->first;
+        }
+      }
     }
 
   }

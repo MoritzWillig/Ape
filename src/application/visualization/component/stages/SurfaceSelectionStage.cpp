@@ -67,7 +67,8 @@ namespace ape {
             dictPosition.x+patchPosition.x, dictPosition.y+patchPosition.y,
             surfaceButtonSize.x, surfaceButtonSize.y,
             Ogre::ColourValue(1.0f,1.0f,1.0f));
-        dictSurfaceButton->textureName.setValue(appWindow->getTextureName(surface));
+        dictSurfaceButton->textureName.setValue(
+            appWindow->getTextureName(surface)->getName());
         //TODO update should be triggered when setting texture
         //or be taken care of by a handle
         dictSurfaceButton->updateOgreObject();
@@ -92,6 +93,27 @@ namespace ape {
           if (action==GLFW_RELEASE) {
             setActive(false);
           }
+          break;
+        case GLFW_KEY_1:
+          //FIXME
+          surfaceSelectionHandler.callExceptIfNotSet(
+              IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
+              surfaces[0]
+          );
+          break;
+        case GLFW_KEY_2:
+          //FIXME
+          surfaceSelectionHandler.callExceptIfNotSet(
+              IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
+              surfaces[1]
+          );
+          break;
+        case GLFW_KEY_3:
+          //FIXME
+          surfaceSelectionHandler.callExceptIfNotSet(
+              IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
+              surfaces[2]
+          );
           break;
         default:
           break;

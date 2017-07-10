@@ -63,13 +63,25 @@ namespace ape {
 
       typedef void (*SurfaceSelectionHandler)
           (void* custom, SurfaceSelectionAction action,
-           ape::worldState::ISurface* surface);
+           std::string surface);
 
       CustomValueCallback<
           IVisualizationController::SurfaceSelectionHandler,
           void*> surfaceSelectionHandler;
 
       virtual std::shared_ptr<IVisualModel> loadModel(std::string path) = 0;
+
+
+      typedef void (*EntitySelectionHandler)(
+          void* custom, IVisualModel::VisualModelHandle visualModel);
+
+      CustomValueCallback<
+          IVisualizationController::EntitySelectionHandler,
+          void*> entitySelectionHandler;
+
+      virtual void setSurface(
+          IVisualModel::VisualModelHandle visualHandle,
+          std::string surfaceName) = 0;
 
 
       static std::shared_ptr<IVisualizationController> createInstance(

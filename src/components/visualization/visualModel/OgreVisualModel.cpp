@@ -5,8 +5,7 @@ namespace ape {
   namespace visualization {
 
     OgreVisualModel::OgreVisualModel(VisualModelHandle handle):
-        handle(), subEntities() {
-
+        handle(handle), subEntities() {
     }
 
     std::vector<std::shared_ptr<IVisualModel>> const *

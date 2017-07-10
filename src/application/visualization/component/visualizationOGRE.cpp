@@ -48,6 +48,31 @@ namespace ape {
         self->tssStage.processMouseButtonEvent(button,action,mods);
         self->ssStage.processMouseButtonEvent(button,action,mods);
       }, this);
+
+      appWindow->entitySelectionEventHandler.setCallback([](
+          void* selfPtr,
+          Ogre::Entity* entity,
+          int subIndex
+      ) -> void {
+        auto self=(OGREVisualizationController*)selfPtr;
+
+        if (entity==nullptr) {
+          self->entitySelectionHandler.callExceptIfNotSet(-1);
+          return;
+        }
+
+        Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
+
+        for (auto it = self->modelSubOgreLink.begin(); it != self->modelSubOgreLink.end(); it++) {
+          if (it->second == subEnt) {
+            self->entitySelectionHandler.callExceptIfNotSet(
+                it->first);
+            return;
+          }
+        }
+
+        throw std::runtime_error("unknown subentity");
+      }, this);
     }
 
     void OGREVisualizationController::setOverlay(Overlay overlay, bool enable) {
@@ -136,6 +161,22 @@ namespace ape {
       }
 
       return visModel;
+    }
+
+    void OGREVisualizationController::setSurface(
+        IVisualModel::VisualModelHandle visualHandle,
+        std::string surfaceName) {
+      auto entity=modelSubOgreLink[visualHandle];
+      auto material = appWindow->getTextureName(surfaceName);
+      entity->setMaterial(material);
+      /*
+      Ogre::SubMesh* subMesh = entity->getMesh()->getSubMesh(subIndex);
+      subMesh->setMaterialName(
+          "CubeMaterial",
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+      Ogre::MeshPtr mesh = entity->getMesh();
+      mesh->updateMaterialForAllSubMeshes();
+      sdafdfsaasdf*/
     }
 
   }

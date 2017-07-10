@@ -22,22 +22,6 @@ enum QueryFlags
   WORLD_OBJECT = 1 << 0,
 };
 
-//FIXME remove
-class FrameListener : public Ogre::FrameListener {
-private:
-  Ogre::RenderWindow* renderWindow;
-public:
-  FrameListener(Ogre::RenderWindow* renderWindow) : renderWindow(
-      renderWindow) {}
-
-  bool frameStarted(const Ogre::FrameEvent& evt) {
-    // Stop render if main window is closed.
-    return !renderWindow->isClosed();
-  }
-
-  bool frameEnded(const Ogre::FrameEvent& evt) { return true; }
-};  // End of FrameListener class
-
 namespace ape {
   namespace visualization {
 
@@ -316,12 +300,13 @@ namespace ape {
         root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
         sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
         backgroundTexture(nullptr), coordAxes(nullptr),
+        mousePosX(-1), mousePosY(-1), queryRay(),
         nameGenerator("ape"), //fixme magic string
         materials(),
         keyEventHandler(nullptr, nullptr),
         mousePositionEventHandler(nullptr, nullptr),
         mouseButtonEventHandler(nullptr, nullptr),
-        movableFound(false)
+        entitySelectionEventHandler(nullptr, nullptr)
         {
       createWindow();
       createRessources();
@@ -512,8 +497,8 @@ namespace ape {
       return materialName;
     }
 
-    std::string AppWindow::getTextureName(const std::string surface) {
-      return materials[surface].matPtr->getName();
+    Ogre::MaterialPtr AppWindow::getTextureName(const std::string surface) {
+      return materials[surface].matPtr;
     }
 
     void AppWindow::castViewPortRay(glm::vec2 position) {
@@ -528,18 +513,11 @@ namespace ape {
           mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
 //      std::cout << resultObj << " " << subIndex << std::endl;
 
-      if (found)
-      {
+      if (found) {
         Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
-        Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
-        subEnt->setMaterial(cubeMat);
-        Ogre::SubMesh* sub = entity->getMesh()->getSubMesh(subIndex);
-        sub->setMaterialName(
-            "CubeMaterial",
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        Ogre::MeshPtr mesh = entity->getMesh();
-        mesh->updateMaterialForAllSubMeshes();
-        //    std::cout << entity->getNumSubEntities() << std::endl;
+        entitySelectionEventHandler.callExceptIfNotSet(entity,subIndex);
+      } else {
+        entitySelectionEventHandler.callExceptIfNotSet(nullptr,-1);
       }
     }
 
