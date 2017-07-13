@@ -29,9 +29,8 @@ void main()
 	vec3 color = vec3(ambient + diffuse);
 	
 	vec3 quot = varianceTarget / varianceInput;
-    //vec3 color = texture2D(diffuse, oUV0).rgb - meanInput;        
+    color = color.rgb - meanInput;        
     color = color.rgb * quot;
 	color = color + meanTarget;
 	gl_FragColor = vec4(color, 1.0);
-	//gl_FragColor = vec4(lightPosition);
 }

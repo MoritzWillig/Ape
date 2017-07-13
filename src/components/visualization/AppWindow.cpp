@@ -448,15 +448,15 @@ namespace ape {
               backgroundPixel++;
               continue;
             }
-          varianceVec[2] += POW2(returnData[index] - mean[2]); //blue
-          varianceVec[1] += POW2(returnData[index + 1] - mean[1]); //green
-          varianceVec[0] += POW2(returnData[index + 2] - mean[0]); //red
+          varianceVec[2] += POW2((returnData[index] / 255.0 - mean[2])); //blue
+          varianceVec[1] += POW2((returnData[index + 1] / 255.0 - mean[1])); //green
+          varianceVec[0] += POW2((returnData[index + 2] / 255.0 - mean[0])); //red
         }
       }
       returnBuffer->unlock();
-      varianceVec[0] = (varianceVec[0] / (width*height-backgroundPixel)) / 255.0;
-      varianceVec[1] = (varianceVec[1] / (width*height-backgroundPixel)) / 255.0;
-      varianceVec[2] = (varianceVec[2] / (width*height-backgroundPixel)) / 255.0;
+      varianceVec[0] = (varianceVec[0] / (width*height-backgroundPixel));
+      varianceVec[1] = (varianceVec[1] / (width*height-backgroundPixel));
+      varianceVec[2] = (varianceVec[2] / (width*height-backgroundPixel));
       return varianceVec;
     };
 
@@ -477,6 +477,11 @@ namespace ape {
       varianceInput = computeVariance(rttTexture, meanInput);
       varianceTarget = computeVariance(backgroundTexture, meanTarget);
 
+      std::cout << "Input Mean: \t" << meanInput << std::endl;
+      std::cout << "Target Mean: \t" << meanTarget << std::endl;
+      std::cout << "Input Variance: \t" << varianceInput << std::endl;
+      std::cout << "Target Variance: \t" << varianceTarget << std::endl;
+      std::cout << varianceTarget / varianceInput << std::endl;
       params->setNamedConstant("meanInput", meanInput);
       params->setNamedConstant("meanTarget", meanTarget);
       params->setNamedConstant("varianceInput", varianceInput);
