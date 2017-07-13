@@ -31,9 +31,9 @@ material TextureColorBalance
 				param_named_auto lightPosition		light_position 0
 				param_named_auto sceneAmbient		ambient_light_colour
             }
-            texture_unit
+            texture_unit DiffuseMap
             {
-                texture 2.jpg 2d
+
             }
         }
     }

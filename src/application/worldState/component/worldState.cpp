@@ -7,11 +7,13 @@ namespace ape {
 
     std::shared_ptr<IWorldStateController> IWorldStateController::createInstance(
         std::string surfaceDatabasePath,
-        std::string surfaceDatabaseName
+        std::string surfaceDatabaseName,
+        ape::visualization::IVisualizationController* visualizationController
     ) {
       return std::make_shared<WorldFileBasedStateController>(
           surfaceDatabasePath,
-          surfaceDatabaseName);
+          surfaceDatabaseName,
+          visualizationController);
     }
 
   }

@@ -23,6 +23,7 @@
 
 #include <imageProcessing/CameraStream.h>
 #include <common/callbacks/CustomValueCallback.h>
+#include <worldState/Surface.h>
 
 namespace ape {
   namespace visualization {
@@ -66,7 +67,6 @@ namespace ape {
 
       int mousePosX;
       int mousePosY;
-      bool movableFound;
       ape::visualization::OgreRay* queryRay;
 
       //FIXME magic numbers
@@ -82,6 +82,8 @@ namespace ape {
       };
 
       std::map<std::string,InternalMaterial> materials;
+
+      void castViewPortRay(glm::vec2 position);
     protected:
     public:
       //Default
@@ -128,11 +130,21 @@ namespace ape {
       CustomValueCallback<MousePositionEventHandler,void*> mousePositionEventHandler;
       CustomValueCallback<MouseButtonEventHandler,void*> mouseButtonEventHandler;
 
+      typedef void (*SubEntitySelectionEventHandler)(void* custom,
+                                                     Ogre::Entity* entity,
+                                                     int subIndex);
+      CustomValueCallback<SubEntitySelectionEventHandler,void*>
+          entitySelectionEventHandler;
+
       void setProjectionMatrix(const glm::mat3x3 projectionMatrix);
 
       std::string registerTexture(std::string name, cv::Mat texture);
 
-      std::string getTextureName(const std::string surface);
+      Ogre::MaterialPtr getTextureName(const std::string surface);
+
+
+
+      Ogre::Entity* loadModel(std::string modelFile);
     };
 
   }

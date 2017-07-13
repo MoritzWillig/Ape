@@ -48,6 +48,7 @@ namespace ape {
             AppStateController()=delete;
 
             AppStateController(
+                ape::worldState::IWorldStateController* wsController,
                 ape::imageProcessing::IImageProcessingController* ipController,
                 ape::visualization::IVisualizationController* visController);
 

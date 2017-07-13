@@ -6,7 +6,9 @@ namespace ape {
   namespace visualization {
 
     IVisualizationController::IVisualizationController():
-        overlayChangeRequestHandler(nullptr,nullptr) {
+        overlayChangeRequestHandler(nullptr,nullptr),
+        surfaceSelectionHandler(nullptr,nullptr),
+        entitySelectionHandler(nullptr,nullptr) {
     }
 
     std::shared_ptr<IVisualizationController> IVisualizationController::createInstance(

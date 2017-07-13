@@ -13,12 +13,13 @@ namespace ape {
         namespace appState {
 
           AppStateController::AppStateController(
+              ape::worldState::IWorldStateController* wsController,
               ape::imageProcessing::IImageProcessingController* ipController,
               ape::visualization::IVisualizationController* visController):
               onLoadingCompleteSignal(this),
               lsState(ipController,visController, &onLoadingCompleteSignal),
               mmState(ipController,visController),
-              wsState(ipController,visController),
+              wsState(wsController,ipController,visController),
               tsState(ipController,visController),
               activeState(&lsState), requestedState(&lsState) {
             lsState.setActive(true);

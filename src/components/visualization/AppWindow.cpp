@@ -17,28 +17,11 @@
 #define TEXTURE_FOLDER "../../../data/assets/surfaces"
 #define SHADER_FOLDER "../../../data/assets/shader"
 #define FONT_FILE_NAME "FreeSans.otf"
-#define MESH_FILE_NAME "apetown.mesh"
 
 enum QueryFlags
 {
   WORLD_OBJECT = 1 << 0,
 };
-
-//FIXME remove
-class FrameListener : public Ogre::FrameListener {
-private:
-  Ogre::RenderWindow* renderWindow;
-public:
-  FrameListener(Ogre::RenderWindow* renderWindow) : renderWindow(
-      renderWindow) {}
-
-  bool frameStarted(const Ogre::FrameEvent& evt) {
-    // Stop render if main window is closed.
-    return !renderWindow->isClosed();
-  }
-
-  bool frameEnded(const Ogre::FrameEvent& evt) { return true; }
-};  // End of FrameListener class
 
 class RenderTargetListener : public Ogre::RenderTargetListener {
   private:
@@ -280,7 +263,7 @@ namespace ape {
       // set the font name to the font resource that you just created.
       textArea->setFontName("MyFont");
       // say something
-      textArea->setCaption("Hello, World!");
+      textArea->setCaption("Hello, ModelBasedWorld!");
 
       // Create an overlay, and add the panel
       Ogre::Overlay* overlay = overlayMgr.create("OverlayName");
@@ -296,16 +279,6 @@ namespace ape {
     void AppWindow::initScene() {
       // Add Cube
       sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-      Ogre::Entity* ogreEntity = sceneMgr->createEntity("world",
-                                                        MESH_FILE_NAME);
-      ogreEntity->addQueryFlags(WORLD_OBJECT);
-
-      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
-      ogreNode->rotate( Ogre::Vector3(1.0, 0.0, 0.0),  Ogre::Radian(1.5707963268), Ogre::Node::TS_LOCAL);
-#define scale 0.007
-      ogreNode->setPosition(0.075, 0.00, 0.00);
-      ogreNode->setScale(scale, scale, scale);
-      ogreNode->attachObject(ogreEntity);
 
 #ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
@@ -370,12 +343,13 @@ namespace ape {
         root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
         sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
         backgroundTexture(nullptr), coordAxes(nullptr),
+        mousePosX(-1), mousePosY(-1), queryRay(),
         nameGenerator("ape"), //fixme magic string
         materials(),
         keyEventHandler(nullptr, nullptr),
         mousePositionEventHandler(nullptr, nullptr),
         mouseButtonEventHandler(nullptr, nullptr),
-        movableFound(false)
+        entitySelectionEventHandler(nullptr, nullptr)
         {
       createWindow();
       createRessources();
@@ -461,15 +435,18 @@ namespace ape {
     };
 
     void AppWindow::computeColorBalancingParameter() {
-      Ogre::MaterialPtr textureMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
-      Ogre::Technique* technique = textureMaterial->getTechnique(0);
-      Ogre::Pass* pass = technique->getPass(0);
-      Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+      for (auto mapEntry : materials) {
+        Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+        Ogre::Technique* technique = textureMaterial->getTechnique(0);
+        Ogre::Pass* pass = technique->getPass(0);
+        Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
 
-      params->setNamedConstant("meanInput", Ogre::Vector3(0,0,0));
-      params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
-      params->setNamedConstant("varianceInput", Ogre::Vector3(1, 1, 1));
-      params->setNamedConstant("varianceTarget", Ogre::Vector3(1, 1, 1));
+        params->setNamedConstant("meanInput", Ogre::Vector3(0, 0, 0));
+        params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
+        params->setNamedConstant("varianceInput", Ogre::Vector3(1, 1, 1));
+        params->setNamedConstant("varianceTarget", Ogre::Vector3(1, 1, 1));
+      }
+
 
       renderTexture->update();
       meanInput = computeMean(rttTexture);
@@ -477,15 +454,23 @@ namespace ape {
       varianceInput = computeVariance(rttTexture, meanInput);
       varianceTarget = computeVariance(backgroundTexture, meanTarget);
 
-      std::cout << "Input Mean: \t" << meanInput << std::endl;
+     /std::cout << "Input Mean: \t" << meanInput << std::endl;
       std::cout << "Target Mean: \t" << meanTarget << std::endl;
       std::cout << "Input Variance: \t" << varianceInput << std::endl;
       std::cout << "Target Variance: \t" << varianceTarget << std::endl;
       std::cout << varianceTarget / varianceInput << std::endl;
-      params->setNamedConstant("meanInput", meanInput);
-      params->setNamedConstant("meanTarget", meanTarget);
-      params->setNamedConstant("varianceInput", varianceInput);
-      params->setNamedConstant("varianceTarget", varianceTarget);
+
+      for (auto mapEntry : materials) {
+        Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+        Ogre::Technique* technique = textureMaterial->getTechnique(0);
+        Ogre::Pass* pass = technique->getPass(0);
+        Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+
+        params->setNamedConstant("meanInput", meanInput);
+        params->setNamedConstant("meanTarget", meanTarget);
+        params->setNamedConstant("varianceInput", varianceInput);
+        params->setNamedConstant("varianceTarget", varianceTarget);
+      }
     }
 
 
@@ -589,18 +574,7 @@ namespace ape {
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
-      Ogre::Ray mouseRay = mainCam->getCameraToViewportRay(mousePosX/1024.0f, mousePosY/768.0f);
-
-      Ogre::Vector3 resultVec(0.0f);
-      Ogre::MovableObject* resultObj;
-      size_t subIndex;
-
-      if (queryRay->Raycast(mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex))
-      {
-        Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
-        Ogre::SubEntity* subEnt = entity->getSubEntity(subIndex);
-        subEnt->setMaterialName("TextureColorBalance");
-      }
+      castViewPortRay(glm::vec2(mousePosX/1024.0f, mousePosY/768.0f));
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
@@ -651,14 +625,9 @@ namespace ape {
       }
       buffer->unlock();
 
-      Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
-          materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      material->getTechnique(0)->getPass(0)->createTextureUnitState(
-          ogreTexture->getName());
-      material->setDiffuse(1.0, 1.0, 1.0, 0.5);
-      material->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
-      material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-      material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+      Ogre::MaterialPtr baseMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
+      Ogre::MaterialPtr material = baseMaterial->clone(materialName);
+      material->getTechnique(0)->getPass(0)->getTextureUnitState("DiffuseMap")->setTextureName(textureName);
       material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
 
       InternalMaterial iMat;
@@ -669,8 +638,47 @@ namespace ape {
       return materialName;
     }
 
-    std::string AppWindow::getTextureName(const std::string surface) {
-      return materials[surface].matPtr->getName();
+    Ogre::MaterialPtr AppWindow::getTextureName(const std::string surface) {
+      return materials[surface].matPtr;
+    }
+
+    void AppWindow::castViewPortRay(glm::vec2 position) {
+      Ogre::Ray mouseRay =
+          mainCam->getCameraToViewportRay(position.x,position.y);
+
+      Ogre::Vector3 resultVec(0.0f);
+      Ogre::MovableObject* resultObj;
+      size_t subIndex;
+
+      bool found = queryRay->Raycast(
+          mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
+
+      if (found) {
+        Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
+        entitySelectionEventHandler.callExceptIfNotSet(entity,subIndex);
+      } else {
+        entitySelectionEventHandler.callExceptIfNotSet(nullptr,-1);
+      }
+    }
+
+    Ogre::Entity* AppWindow::loadModel(std::string modelFile) {
+      Ogre::Entity* worldEntity = sceneMgr->createEntity("world",modelFile);
+      worldEntity->addQueryFlags(WORLD_OBJECT);
+
+      //FIXME do not create & attach to node here
+      Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
+      //FIXME we use this only for loading the world, so we can for now
+      // hard-code the transformation...
+      ogreNode->rotate(
+          Ogre::Vector3(1.0, 0.0, 0.0),
+          Ogre::Radian(1.5707963268),
+          Ogre::Node::TS_LOCAL);
+#define scale 0.007
+      ogreNode->setPosition(0.07, 0.00, 0.00);
+      ogreNode->setScale(scale, scale, scale);
+      ogreNode->attachObject(worldEntity);
+
+      return worldEntity;
     }
 
   }

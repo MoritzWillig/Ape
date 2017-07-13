@@ -6,20 +6,13 @@
 #include <opencv2/core/mat.hpp>
 
 #include <common/signals/Signal.h>
+#include <worldState/Surface.h>
+#include <worldState/WorldEntity.h>
+#include <worldState/World.h>
+#include "../../visualization/component/visualization.h"
 
 namespace ape {
   namespace worldState {
-
-    class ISurface {
-    private:
-    protected:
-    public:
-      typedef int SurfacePersistentHandle;
-
-      virtual std::string getName() = 0;
-      virtual ValueSignal<SurfacePersistentHandle> getPersistentHandle() = 0;
-      virtual cv::Mat getTexture() = 0;
-    };
 
     class IWorldStateController {
     private:
@@ -42,9 +35,20 @@ namespace ape {
 
       virtual void update(float timeStep) = 0;
 
+      virtual IWorld* loadWorld(std::string path) = 0;
+
+      virtual void
+      setSurface(visualization::IVisualModel::VisualModelHandle visualModelHandle,
+                 ISurface::SurfacePersistentHandle surfaceHandle) = 0;
+
+      virtual ISurface::SurfacePersistentHandle
+      getSurfaceByName(std::string name) = 0;
+
+
       static std::shared_ptr<IWorldStateController> createInstance(
           std::string surfaceDatabasePath,
-          std::string surfaceDatabaseName
+          std::string surfaceDatabaseName,
+          ape::visualization::IVisualizationController* visualizationController
       );
     };
   }

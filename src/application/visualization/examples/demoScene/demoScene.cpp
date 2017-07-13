@@ -130,7 +130,7 @@ void createPanel() {
   // set the font name to the font resource that you just created.
   textArea->setFontName("MyFont");
   // say something
-  textArea->setCaption("Hello, World!");
+  textArea->setCaption("Hello, ModelBasedWorld!");
 
   // Create an overlay, and add the panel
   Ogre::Overlay* overlay = overlayMgr.create("OverlayName");
@@ -202,7 +202,7 @@ void createManualObject() {
     }
     mObject->end();
     // Here I have finished my ManualObject construction.
-    // It is possible to add more begin()-end() thing, in order to use 
+    // It is possible to add more begin()-end() thing, in order to use
     // different rendering operation types, or different materials in 1 ManualObject.
     mObject->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_LIST);
     {

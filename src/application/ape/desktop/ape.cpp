@@ -22,6 +22,7 @@
 
 const std::string surfaceDatabasePath = "../../../data/assets/surfaces";
 const std::string surfaceDatabaseName = "surfaces.txt";
+const std::string meshFileName = "apetown.mesh";
 
 namespace ape {
 
@@ -113,10 +114,11 @@ int main(int argc, char** argv) {
 
   auto wsController=
       ape::worldState::IWorldStateController::createInstance(
-          surfaceDatabasePath,surfaceDatabaseName);
-
+          surfaceDatabasePath,surfaceDatabaseName,visController.get());
+  wsController->loadWorld(meshFileName);
 
   ape::app::desktop::section::appState::AppStateController appStateController(
+      wsController.get(),
       ipController.get(),
       visController.get()
   );
@@ -148,13 +150,6 @@ int main(int argc, char** argv) {
         break;
     }
   },&appStateController);
-
-  //load existing surfaces into visualization controller
-  auto surfaceHandles=wsController->getSurfaceHandles();
-  for (const auto handle: surfaceHandles) {
-    auto surface = wsController->getSurface(handle);
-    visController->registerSurface(surface->getName(),surface->getTexture());
-  }
 
   //application loop
   //FIXME refactor into separate class
