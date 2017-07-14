@@ -503,19 +503,21 @@ namespace ape {
     };
 
     void AppWindow::computeColorBalancingParameter() {
-      for (auto mapEntry : materials) {
-        Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
-        Ogre::Technique* technique = textureMaterial->getTechnique(0);
-        Ogre::Pass* pass = technique->getPass(0);
-        Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
-
-        params->setNamedConstant("meanInput", Ogre::Vector3(0, 0, 0));
-        params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
-        params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
-      }
-     
-      if (frameCounter % 10 == 0){
+      if (frameCounter % 10 == 0) {
         frameCounter = 0;
+        std::cout << "FrameCounter is 10" << std::endl;
+
+        for (auto mapEntry : materials) {
+          Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+          Ogre::Technique* technique = textureMaterial->getTechnique(0);
+          Ogre::Pass* pass = technique->getPass(0);
+          Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+
+          params->setNamedConstant("meanInput", Ogre::Vector3(0, 0, 0));
+          params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
+          params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
+        }     
+
         renderTexture->update();
         meanInput = computeMean(rttTexture);
         meanTarget = computeMean(backgroundTexture);
@@ -538,8 +540,8 @@ namespace ape {
           params->setNamedConstant("meanTarget", meanTarget);
           params->setNamedConstant("quotient", varianceTarget / varianceInput);
         }
-        frameCounter++;
       }
+      frameCounter++;
     }
 
 
