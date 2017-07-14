@@ -367,79 +367,61 @@ namespace ape {
       glfwTerminate();
     }
 
-    void computeLog(Ogre::Image image) {
-      Ogre::PixelBox pixelBox = image.getPixelBox();
-      Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (image.getWidth()*j + i);
-          data[index] += (float)Ogre::Math::LogN(data[index], 10); //blue
-          data[index] += (float)Ogre::Math::LogN(data[index + 1], 10); //green
-          data[index] += (float)Ogre::Math::LogN(data[index + 2], 10); //red
-        }
-      }
-    }
+   void BGRtoLAlphaBeta(Ogre::Image image) {
+     float oneOverRootTwo = 1 / sqrt(2);
+     float oneOverRootThree = 1 / sqrt(3);
+     float oneOverRootSix = 1 / sqrt(6);
+     Ogre::PixelBox pixelBox = image.getPixelBox();
+     Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
+     for (size_t j = 0; j < image.getHeight(); j++) {
+       for (size_t i = 0; i < image.getWidth(); i++) {
+         std::size_t index = 4 * (image.getWidth()*j + i);
 
-    void computePow(Ogre::Image image) {
-      Ogre::PixelBox pixelBox = image.getPixelBox();
-      Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (image.getWidth()*j + i);
-          data[index] += (float)Ogre::Math::Pow(data[index], 10); //blue
-          data[index] += (float)Ogre::Math::Pow(data[index + 1], 10); //green
-          data[index] += (float)Ogre::Math::Pow(data[index + 2], 10); //red
-        }
-      }
-    }
+         float B = (float)data[index]; //blue
+         float G = (float)data[index + 1]; //green
+         float R = (float)data[index + 2]; //red
 
-    void convertRGBToLMS(Ogre::Image image) {
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (image.getWidth()*j + i);
+         float L = 0.3811 * R + 0.5783 * G + 0.0402 * B;
+         float M = 0.1967 * R + 1.1834 * G + 0.0782 * B;
+         float S = 0.0241 * R + 0.1288 * G + 0.8444 * B;
 
-        }
-      }
-    }
+         L = Ogre::Math::LogN(L, 10);
+         M = Ogre::Math::LogN(M, 10);
+         S = Ogre::Math::LogN(S, 10);
 
-    void convertLMStoLAlpahBeta(Ogre::Image image) {
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (image.getWidth()*j + i);
+         float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
+         float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
+         float beta = oneOverRootTwo * L - oneOverRootTwo * M;
 
-        }
-      }
-    }
+         data[index] = l;
+         data[index + 1] = alpha;
+         data[index + 2] = beta;
+       }
+     }
+   }
 
-    void convertLAlpahBetatoLMS(Ogre::Image image) {
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (width*j + i);
+   void BGRtoLAlphaBeta(Ogre::ColourValue& color) {
+     float oneOverRootTwo = 1 / sqrt(2);
+     float oneOverRootThree = 1 / sqrt(3);
+     float oneOverRootSix = 1 / sqrt(6);
 
-        }
-      }
-    }
+     float L = 0.3811 * color.r + 0.5783 * color.g + 0.0402 * color.b;
+     float M = 0.1967 * color.r + 1.1834 * color.g + 0.0782 * color.b;
+     float S = 0.0241 * color.r + 0.1288 * color.g + 0.8444 * color.b;
 
-    void convertLMStoRGB(Ogre::Image image) {
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (image.getWidth()*j + i);
+     L = Ogre::Math::LogN(L, 10);
+     M = Ogre::Math::LogN(M, 10);
+     S = Ogre::Math::LogN(S, 10);
 
-        }
-      }
-    }
+     float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
+     float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
+     float beta = oneOverRootTwo * L - oneOverRootTwo * M;
 
-   void convertRGBtoLAlphaBeta(Ogre::Image image) {
-      convertRGBToLMS(image);
-      computeLog(image);
-      convertLMStoLAlpahBeta(image);
-    }
+     color.r = l;
+     color.g = alpha;
+     color.b = beta;
+   }
 
-    void convertLAlphaBetatoRGB(Ogre::Image image) {
-      convertLAlpahBetatoLMS(image);
-      computePow(image);
-      convertLMStoRGB(image);
-    }
 
     Ogre::Vector3 computeMean(Ogre::TexturePtr texture) {
       Ogre::Vector3 meanVec(0,0,0);
@@ -450,9 +432,11 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      Ogre::Image transImage;
-      texture->convertToImage(transImage);
-      convertRGBtoLAlphaBeta(transImage, width, height);
+      Ogre::Image imageTrans;
+      texture->convertToImage(imageTrans);
+      BGRtoLAlphaBeta(imageTrans);
+      Ogre::PixelBox pixelBox = imageTrans.getPixelBox();
+      Ogre::uint8 * dataTrans = static_cast<Ogre::uint8*>(pixelBox.data);
 
       size_t backgroundPixel = 0;
       for (size_t j = 0; j < height; j++) {
@@ -462,9 +446,6 @@ namespace ape {
             backgroundPixel++;
             continue;
           }
-         // meanVec[2] += (float)returnData[index]; //blue
-         // meanVec[1] += (float)returnData[index + 1]; //green
-         // meanVec[0] += (float)returnData[index + 2]; //red
           meanVec[2] += (float)dataTrans[index]; //blue
           meanVec[1] += (float)dataTrans[index + 1]; //green
           meanVec[0] += (float)dataTrans[index + 2]; //red
@@ -488,7 +469,11 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      Ogre::uint8* dataTrans = convertRGBtoLAlphaBeta(returnData, width, height);
+      Ogre::Image imageTrans;
+      texture->convertToImage(imageTrans);
+      BGRtoLAlphaBeta(imageTrans);
+      Ogre::PixelBox pixelBox = imageTrans.getPixelBox();
+      Ogre::uint8 * dataTrans = static_cast<Ogre::uint8*>(pixelBox.data);
 
       size_t backgroundPixel = 0;
       for (size_t j = 0; j < height; j++) {
@@ -498,9 +483,6 @@ namespace ape {
               backgroundPixel++;
               continue;
             }
-         // varianceVec[2] += POW2((returnData[index] / 255.0 - mean[2])); //blue
-         // varianceVec[1] += POW2((returnData[index + 1] / 255.0 - mean[1])); //green
-         // varianceVec[0] += POW2((returnData[index + 2] / 255.0 - mean[0])); //red
           varianceVec[2] += POW2((dataTrans[index] / 255.0 - mean[2])); //blue
           varianceVec[1] += POW2((dataTrans[index + 1] / 255.0 - mean[1])); //green
           varianceVec[0] += POW2((dataTrans[index + 2] / 255.0 - mean[0])); //red
