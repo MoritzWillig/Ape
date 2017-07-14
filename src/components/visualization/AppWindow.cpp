@@ -278,7 +278,7 @@ namespace ape {
 
     void AppWindow::initScene() {
       // Add Cube
-      sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+      sceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
 
 #ifdef DEBUG_BUILD
       Ogre::SceneNode* debugNode = sceneMgr->getRootSceneNode()->
@@ -294,8 +294,8 @@ namespace ape {
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
       light->setType(Ogre::Light::LT_DIRECTIONAL);
-      light->setDirection(-2, 8, -5);
-      light->setPosition(-2, 8, -5);
+      light->setDirection(2, -8, 5);
+      light->setPosition(2, -8, 5);
 
       // Attach background to the scene
       backgroundNode = sceneMgr->getRootSceneNode()->createChildSceneNode(
@@ -334,17 +334,18 @@ namespace ape {
       m_InputManager = OIS::InputManager::createInputSystem( pl );
     }*/
 
-    AppWindow::AppWindow():
-        root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
-        sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
-        backgroundTexture(nullptr), coordAxes(nullptr),
-        mousePosX(-1), mousePosY(-1), queryRay(),
-        nameGenerator("ape"), //fixme magic string
-        materials(),
-        keyEventHandler(nullptr, nullptr),
-        mousePositionEventHandler(nullptr, nullptr),
-        mouseButtonEventHandler(nullptr, nullptr),
-        entitySelectionEventHandler(nullptr, nullptr)
+    AppWindow::AppWindow() :
+          root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
+          sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
+          backgroundTexture(nullptr), coordAxes(nullptr),
+          mousePosX(-1), mousePosY(-1), queryRay(),
+          nameGenerator("ape"), //fixme magic string
+          materials(),
+          keyEventHandler(nullptr, nullptr),
+          mousePositionEventHandler(nullptr, nullptr),
+          mouseButtonEventHandler(nullptr, nullptr),
+          entitySelectionEventHandler(nullptr, nullptr),
+          computeColorBalancing(false)
         {
       createWindow();
       createRessources();
@@ -462,7 +463,6 @@ namespace ape {
       Ogre::HardwarePixelBufferSharedPtr returnBuffer = texture->getBuffer();
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
-      std::cout << meanVec << std::endl;
 
       size_t pixelCounter = 0;
       for (size_t j = 0; j < height; j++) {
@@ -480,7 +480,6 @@ namespace ape {
           pixelCounter++;
         }
       }
-      std::cout << width*height - pixelCounter << std::endl;
       returnBuffer->unlock();
       meanVec[0] = meanVec[0] / pixelCounter;
       meanVec[1] = meanVec[1] / pixelCounter;
@@ -522,7 +521,19 @@ namespace ape {
     };
 
     void AppWindow::computeColorBalancingParameter() {
-      if (frameCounter % 2 == 0) {
+      if (!computeColorBalancing) {
+        for (auto mapEntry : materials) {
+          Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+          Ogre::Technique* technique = textureMaterial->getTechnique(0);
+          Ogre::Pass* pass = technique->getPass(0);
+          Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+
+          params->setNamedConstant("meanInput", Ogre::Vector3(0, 0, 0));
+          params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
+          params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
+        }
+      }
+      else if (frameCounter % 2 == 0) {
         frameCounter = 0;
 
         for (auto mapEntry : materials) {

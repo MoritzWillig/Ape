@@ -27,6 +27,7 @@ material TextureColorBalance
             }
             fragment_program_ref TextureColorBalanceFRAG
             {
+				param_named diffuseSampler int 0
 				param_named_auto lightPosition		light_position 0
 				param_named_auto sceneAmbient		ambient_light_colour
             }

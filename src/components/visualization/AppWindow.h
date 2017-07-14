@@ -36,14 +36,14 @@ namespace ape {
       void createPanel();
 
       void createRessources();
-	     void createBackgroundTexture();
+	    void createBackgroundTexture();
       void createCoordinateAxes();
       void createRenderTexture();
 
-	     void updateBackgroundTexture(
+	    void updateBackgroundTexture(
           cv::Mat frame, unsigned int width, unsigned int height);
       void computeColorBalancingParameter();
-	     void initScene();
+	    void initScene();
 
       Ogre::Root* root;
       Ogre::RenderWindow* renderWindow;
@@ -51,8 +51,8 @@ namespace ape {
       Ogre::SceneManager* sceneMgr;
       Ogre::Camera* mainCam;
       Ogre::Viewport* vp;
-	     Ogre::Rectangle2D* rect;
-	     Ogre::TexturePtr backgroundTexture;
+	    Ogre::Rectangle2D* rect;
+	    Ogre::TexturePtr backgroundTexture;
       Ogre::TexturePtr rttTexture;
       Ogre::SceneNode* backgroundNode;
       Ogre::ManualObject* coordAxes;
@@ -64,6 +64,9 @@ namespace ape {
       Ogre::Vector3 meanTarget;
       Ogre::Vector3 varianceInput;
       Ogre::Vector3 varianceTarget;
+
+      //Flags
+      bool computeColorBalancing;
 
       int mousePosX;
       int mousePosY;

@@ -44,6 +44,8 @@ namespace ape {
       //cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
       setProcessingContext(ProcessingContext::Context::Stream);
+      detectorParams->adaptiveThreshWinSizeMax = 50;
+      detectorParams->adaptiveThreshWinSizeStep = 5;
       detectorParams->doCornerRefinement = true; 
       detectorParams->cornerRefinementMaxIterations = 60;
       detectorParams->cornerRefinementMinAccuracy = 0.01;
@@ -179,6 +181,9 @@ namespace ape {
 
         tvec = lastTvec + diffTvec;
         rvec = lastRvec + diffRvec;
+
+        lastRvec = rvec;
+        lastTvec = tvec;
 
         viewMatrix = convertVectorsToViewMatrix(
           rvec, tvec);
