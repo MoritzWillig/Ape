@@ -367,61 +367,70 @@ namespace ape {
       glfwTerminate();
     }
 
-   void BGRtoLAlphaBeta(Ogre::Image image) {
-     float oneOverRootTwo = 1 / sqrt(2);
-     float oneOverRootThree = 1 / sqrt(3);
-     float oneOverRootSix = 1 / sqrt(6);
-     Ogre::PixelBox pixelBox = image.getPixelBox();
-     Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
-     for (size_t j = 0; j < image.getHeight(); j++) {
-       for (size_t i = 0; i < image.getWidth(); i++) {
-         std::size_t index = 4 * (image.getWidth()*j + i);
+    void BGRtoLAlphaBeta(Ogre::Image image) {
+      float oneOverRootTwo = 1 / sqrt(2);
+      float oneOverRootThree = 1 / sqrt(3);
+      float oneOverRootSix = 1 / sqrt(6);
+      Ogre::PixelBox pixelBox = image.getPixelBox();
+      Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (image.getWidth()*j + i);
 
-         float B = (float)data[index]; //blue
-         float G = (float)data[index + 1]; //green
-         float R = (float)data[index + 2]; //red
+          float B = (float)data[index]; //blue
+          float G = (float)data[index + 1]; //green
+          float R = (float)data[index + 2]; //red
 
-         float L = 0.3811 * R + 0.5783 * G + 0.0402 * B;
-         float M = 0.1967 * R + 1.1834 * G + 0.0782 * B;
-         float S = 0.0241 * R + 0.1288 * G + 0.8444 * B;
+          float L = 0.3811 * R + 0.5783 * G + 0.0402 * B;
+          float M = 0.1967 * R + 1.1834 * G + 0.0782 * B;
+          float S = 0.0241 * R + 0.1288 * G + 0.8444 * B;
 
-         L = Ogre::Math::LogN(L, 10);
-         M = Ogre::Math::LogN(M, 10);
-         S = Ogre::Math::LogN(S, 10);
+          L = Ogre::Math::LogN(L, 10);
+          M = Ogre::Math::LogN(M, 10);
+          S = Ogre::Math::LogN(S, 10);
 
-         float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
-         float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
-         float beta = oneOverRootTwo * L - oneOverRootTwo * M;
+          float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
+          float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
+          float beta = oneOverRootTwo * L - oneOverRootTwo * M;
 
-         data[index] = l;
-         data[index + 1] = alpha;
-         data[index + 2] = beta;
-       }
-     }
-   }
+          data[index] = l;
+          data[index + 1] = alpha;
+          data[index + 2] = beta;
+        }
+      }
+    }
 
-   void BGRtoLAlphaBeta(Ogre::ColourValue& color) {
-     float oneOverRootTwo = 1 / sqrt(2);
-     float oneOverRootThree = 1 / sqrt(3);
-     float oneOverRootSix = 1 / sqrt(6);
+    void BGRtoLAlphaBeta(Ogre::ColourValue& color) {
+      float oneOverRootTwo = 1 / sqrt(2);
+      float oneOverRootThree = 1 / sqrt(3);
+      float oneOverRootSix = 1 / sqrt(6);
 
-     float L = 0.3811 * color.r + 0.5783 * color.g + 0.0402 * color.b;
-     float M = 0.1967 * color.r + 1.1834 * color.g + 0.0782 * color.b;
-     float S = 0.0241 * color.r + 0.1288 * color.g + 0.8444 * color.b;
+      float L = 0.3811 * color.r + 0.5783 * color.g + 0.0402 * color.b;
+      float M = 0.1967 * color.r + 1.1834 * color.g + 0.0782 * color.b;
+      float S = 0.0241 * color.r + 0.1288 * color.g + 0.8444 * color.b;
 
-     L = Ogre::Math::LogN(L, 10);
-     M = Ogre::Math::LogN(M, 10);
-     S = Ogre::Math::LogN(S, 10);
+      // Workaround to fix undefined log of 0
+      if (L == 0)
+        L = 1 / 255.f;
+      if (M == 0)
+        M = 1 / 255.f;
+      if (S == 0)
+        S = 1 / 255.f;
 
-     float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
-     float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
-     float beta = oneOverRootTwo * L - oneOverRootTwo * M;
+      L = std::log10(L);
+      M = std::log10(M);
+      S = std::log10(S);
 
-     color.r = l;
-     color.g = alpha;
-     color.b = beta;
-   }
+      float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
+      float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
+      float beta = oneOverRootTwo * L - oneOverRootTwo * M;
 
+      color.r = l;
+      color.g = alpha;
+      color.b = beta;
+    }
+
+    int frameCounter = 0;
 
     Ogre::Vector3 computeMean(Ogre::TexturePtr texture) {
       Ogre::Vector3 meanVec(0,0,0);
@@ -431,30 +440,31 @@ namespace ape {
       Ogre::HardwarePixelBufferSharedPtr returnBuffer = texture->getBuffer();
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
+      std::cout << meanVec << std::endl;
 
-      Ogre::Image imageTrans;
-      texture->convertToImage(imageTrans);
-      BGRtoLAlphaBeta(imageTrans);
-      Ogre::PixelBox pixelBox = imageTrans.getPixelBox();
-      Ogre::uint8 * dataTrans = static_cast<Ogre::uint8*>(pixelBox.data);
-
-      size_t backgroundPixel = 0;
+      size_t pixelCounter = 0;
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
           std::size_t index = 4*(width*j + i);
+
           if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
-            backgroundPixel++;
             continue;
           }
-          meanVec[2] += (float)dataTrans[index]; //blue
-          meanVec[1] += (float)dataTrans[index + 1]; //green
-          meanVec[0] += (float)dataTrans[index + 2]; //red
+          Ogre::ColourValue color((float)returnData[index + 2] / 255.0f, (float)returnData[index + 1] / 255.0f, (float)returnData[index] / 255.0f);
+          BGRtoLAlphaBeta(color);
+          if (i == 1 && j == 0)
+            std::cout << meanVec << std::endl;
+            //std::cout << "r: " << color.r << "g: " << color.g << "b: " << color.b << std::endl;
+          meanVec[2] += color.b; //blue
+          meanVec[1] += color.g; //green
+          meanVec[0] += color.r; //red
+          pixelCounter++;
         }
       }
       returnBuffer->unlock();
-      meanVec[0] = (meanVec[0] / (width*height-backgroundPixel)) / 255.0;
-      meanVec[1] = (meanVec[1] / (width*height-backgroundPixel)) / 255.0;
-      meanVec[2] = (meanVec[2] / (width*height-backgroundPixel)) / 255.0;
+      meanVec[0] = meanVec[0] / pixelCounter;
+      meanVec[1] = meanVec[1] / pixelCounter;
+      meanVec[2] = meanVec[2] / pixelCounter;
       return meanVec;
     };
 
@@ -469,29 +479,26 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      Ogre::Image imageTrans;
-      texture->convertToImage(imageTrans);
-      BGRtoLAlphaBeta(imageTrans);
-      Ogre::PixelBox pixelBox = imageTrans.getPixelBox();
-      Ogre::uint8 * dataTrans = static_cast<Ogre::uint8*>(pixelBox.data);
-
-      size_t backgroundPixel = 0;
+      size_t pixelCounter = 0;
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
             std::size_t index = 4 * (width*j + i);
+
             if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
-              backgroundPixel++;
               continue;
             }
-          varianceVec[2] += POW2((dataTrans[index] / 255.0 - mean[2])); //blue
-          varianceVec[1] += POW2((dataTrans[index + 1] / 255.0 - mean[1])); //green
-          varianceVec[0] += POW2((dataTrans[index + 2] / 255.0 - mean[0])); //red
+            Ogre::ColourValue color((float)returnData[index + 2], (float)returnData[index + 1], (float)returnData[index]);
+            BGRtoLAlphaBeta(color);
+            varianceVec[2] += POW2((color.b - mean[2])); //blue
+            varianceVec[1] += POW2((color.g - mean[1])); //green
+            varianceVec[0] += POW2((color.r - mean[0])); //red
+            pixelCounter++;
         }
       }
       returnBuffer->unlock();
-      varianceVec[0] = (varianceVec[0] / (width*height-backgroundPixel));
-      varianceVec[1] = (varianceVec[1] / (width*height-backgroundPixel));
-      varianceVec[2] = (varianceVec[2] / (width*height-backgroundPixel));
+      varianceVec[0] = varianceVec[0] / pixelCounter;
+      varianceVec[1] = varianceVec[1] / pixelCounter;
+      varianceVec[2] = varianceVec[2] / pixelCounter;
       return varianceVec;
     };
 
@@ -506,29 +513,32 @@ namespace ape {
         params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
         params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
       }
+     
+      if (frameCounter % 10 == 0){
+        frameCounter = 0;
+        renderTexture->update();
+        meanInput = computeMean(rttTexture);
+        meanTarget = computeMean(backgroundTexture);
+        varianceInput = computeVariance(rttTexture, meanInput);
+        varianceTarget = computeVariance(backgroundTexture, meanTarget);
 
+        for (auto mapEntry : materials) {
+          Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+          Ogre::Technique* technique = textureMaterial->getTechnique(0);
+          Ogre::Pass* pass = technique->getPass(0);
+          Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
 
-      renderTexture->update();
-      meanInput = computeMean(rttTexture);
-      meanTarget = computeMean(backgroundTexture);
-      varianceInput = computeVariance(rttTexture, meanInput);
-      varianceTarget = computeVariance(backgroundTexture, meanTarget);
+          std::cout << "Input Mean: \t\t" << meanInput << std::endl;
+          std::cout << "Target Mean: \t\t" << meanTarget << std::endl;
+          std::cout << "Input Variance: \t" << varianceInput << std::endl;
+          std::cout << "Target Variance: \t" << varianceTarget << std::endl;
+          std::cout << "Quotient: \t\t" << varianceTarget / varianceInput << std::endl;
 
-      std::cout << "Input Mean: \t" << meanInput << std::endl;
-      std::cout << "Target Mean: \t" << meanTarget << std::endl;
-      std::cout << "Input Variance: \t" << varianceInput << std::endl;
-      std::cout << "Target Variance: \t" << varianceTarget << std::endl;
-      std::cout << varianceTarget / varianceInput << std::endl;
-
-      for (auto mapEntry : materials) {
-        Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
-        Ogre::Technique* technique = textureMaterial->getTechnique(0);
-        Ogre::Pass* pass = technique->getPass(0);
-        Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
-
-        params->setNamedConstant("meanInput", meanInput);
-        params->setNamedConstant("meanTarget", meanTarget);
-        params->setNamedConstant("quotient", varianceTarget / varianceInput);
+          params->setNamedConstant("meanInput", meanInput);
+          params->setNamedConstant("meanTarget", meanTarget);
+          params->setNamedConstant("quotient", varianceTarget / varianceInput);
+        }
+        frameCounter++;
       }
     }
 
