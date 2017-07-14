@@ -287,14 +287,9 @@ namespace ape {
       debugNode->setScale(20.0, 20.0, 20.0);
       debugNode->attachObject(coordAxes);
 #endif
-
-
-      // Create a material using the texture
-      Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().load("2.jpg", "General");
-      cubeMat = Ogre::MaterialManager::getSingleton().create(
-        "CubeMaterial", // name
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      cubeMat->getTechnique(0)->getPass(0)->createTextureUnitState()->setTexture(texture);
+      cv::Mat white(cv::Mat(16, 16, CV_8UC3));
+      white = cv::Scalar(255, 255, 255);
+      registerTexture("BaseWhite", white);      
 
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
@@ -372,6 +367,79 @@ namespace ape {
       glfwTerminate();
     }
 
+    void computeLog(Ogre::Image image) {
+      Ogre::PixelBox pixelBox = image.getPixelBox();
+      Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (image.getWidth()*j + i);
+          data[index] += (float)Ogre::Math::LogN(data[index], 10); //blue
+          data[index] += (float)Ogre::Math::LogN(data[index + 1], 10); //green
+          data[index] += (float)Ogre::Math::LogN(data[index + 2], 10); //red
+        }
+      }
+    }
+
+    void computePow(Ogre::Image image) {
+      Ogre::PixelBox pixelBox = image.getPixelBox();
+      Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (image.getWidth()*j + i);
+          data[index] += (float)Ogre::Math::Pow(data[index], 10); //blue
+          data[index] += (float)Ogre::Math::Pow(data[index + 1], 10); //green
+          data[index] += (float)Ogre::Math::Pow(data[index + 2], 10); //red
+        }
+      }
+    }
+
+    void convertRGBToLMS(Ogre::Image image) {
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (image.getWidth()*j + i);
+
+        }
+      }
+    }
+
+    void convertLMStoLAlpahBeta(Ogre::Image image) {
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (image.getWidth()*j + i);
+
+        }
+      }
+    }
+
+    void convertLAlpahBetatoLMS(Ogre::Image image) {
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (width*j + i);
+
+        }
+      }
+    }
+
+    void convertLMStoRGB(Ogre::Image image) {
+      for (size_t j = 0; j < image.getHeight(); j++) {
+        for (size_t i = 0; i < image.getWidth(); i++) {
+          std::size_t index = 4 * (image.getWidth()*j + i);
+
+        }
+      }
+    }
+
+   void convertRGBtoLAlphaBeta(Ogre::Image image) {
+      convertRGBToLMS(image);
+      computeLog(image);
+      convertLMStoLAlpahBeta(image);
+    }
+
+    void convertLAlphaBetatoRGB(Ogre::Image image) {
+      convertLAlpahBetatoLMS(image);
+      computePow(image);
+      convertLMStoRGB(image);
+    }
 
     Ogre::Vector3 computeMean(Ogre::TexturePtr texture) {
       Ogre::Vector3 meanVec(0,0,0);
@@ -382,6 +450,10 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
+      Ogre::Image transImage;
+      texture->convertToImage(transImage);
+      convertRGBtoLAlphaBeta(transImage, width, height);
+
       size_t backgroundPixel = 0;
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
@@ -390,9 +462,12 @@ namespace ape {
             backgroundPixel++;
             continue;
           }
-          meanVec[2] += (float)returnData[index]; //blue
-          meanVec[1] += (float)returnData[index + 1]; //green
-          meanVec[0] += (float)returnData[index + 2]; //red
+         // meanVec[2] += (float)returnData[index]; //blue
+         // meanVec[1] += (float)returnData[index + 1]; //green
+         // meanVec[0] += (float)returnData[index + 2]; //red
+          meanVec[2] += (float)dataTrans[index]; //blue
+          meanVec[1] += (float)dataTrans[index + 1]; //green
+          meanVec[0] += (float)dataTrans[index + 2]; //red
         }
       }
       returnBuffer->unlock();
@@ -413,8 +488,9 @@ namespace ape {
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
       Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      size_t backgroundPixel = 0;
+      Ogre::uint8* dataTrans = convertRGBtoLAlphaBeta(returnData, width, height);
 
+      size_t backgroundPixel = 0;
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
             std::size_t index = 4 * (width*j + i);
@@ -422,9 +498,12 @@ namespace ape {
               backgroundPixel++;
               continue;
             }
-          varianceVec[2] += POW2((returnData[index] / 255.0 - mean[2])); //blue
-          varianceVec[1] += POW2((returnData[index + 1] / 255.0 - mean[1])); //green
-          varianceVec[0] += POW2((returnData[index + 2] / 255.0 - mean[0])); //red
+         // varianceVec[2] += POW2((returnData[index] / 255.0 - mean[2])); //blue
+         // varianceVec[1] += POW2((returnData[index + 1] / 255.0 - mean[1])); //green
+         // varianceVec[0] += POW2((returnData[index + 2] / 255.0 - mean[0])); //red
+          varianceVec[2] += POW2((dataTrans[index] / 255.0 - mean[2])); //blue
+          varianceVec[1] += POW2((dataTrans[index + 1] / 255.0 - mean[1])); //green
+          varianceVec[0] += POW2((dataTrans[index + 2] / 255.0 - mean[0])); //red
         }
       }
       returnBuffer->unlock();
@@ -443,8 +522,7 @@ namespace ape {
 
         params->setNamedConstant("meanInput", Ogre::Vector3(0, 0, 0));
         params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
-        params->setNamedConstant("varianceInput", Ogre::Vector3(1, 1, 1));
-        params->setNamedConstant("varianceTarget", Ogre::Vector3(1, 1, 1));
+        params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
       }
 
 
@@ -454,7 +532,7 @@ namespace ape {
       varianceInput = computeVariance(rttTexture, meanInput);
       varianceTarget = computeVariance(backgroundTexture, meanTarget);
 
-     /std::cout << "Input Mean: \t" << meanInput << std::endl;
+      std::cout << "Input Mean: \t" << meanInput << std::endl;
       std::cout << "Target Mean: \t" << meanTarget << std::endl;
       std::cout << "Input Variance: \t" << varianceInput << std::endl;
       std::cout << "Target Variance: \t" << varianceTarget << std::endl;
@@ -468,8 +546,7 @@ namespace ape {
 
         params->setNamedConstant("meanInput", meanInput);
         params->setNamedConstant("meanTarget", meanTarget);
-        params->setNamedConstant("varianceInput", varianceInput);
-        params->setNamedConstant("varianceTarget", varianceTarget);
+        params->setNamedConstant("quotient", varianceTarget / varianceInput);
       }
     }
 
@@ -605,8 +682,8 @@ namespace ape {
 
       Ogre::TexturePtr ogreTexture = Ogre::TextureManager::getSingleton().createManual(
           textureName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-          Ogre::TEX_TYPE_2D, texture.cols, texture.rows, 0,// number of mipmaps
-          Ogre::PF_BYTE_RGBA, Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+          Ogre::TEX_TYPE_2D, texture.cols, texture.rows, 0,
+          Ogre::PF_BYTE_RGB, Ogre::TU_DEFAULT);
 
       auto buffer=ogreTexture->getBuffer();
       buffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
@@ -664,6 +741,7 @@ namespace ape {
     Ogre::Entity* AppWindow::loadModel(std::string modelFile) {
       Ogre::Entity* worldEntity = sceneMgr->createEntity("world",modelFile);
       worldEntity->addQueryFlags(WORLD_OBJECT);
+      worldEntity->setMaterial(materials["BaseWhite"].matPtr);
 
       //FIXME do not create & attach to node here
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();

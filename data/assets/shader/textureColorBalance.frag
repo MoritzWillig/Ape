@@ -1,7 +1,6 @@
 uniform vec3 meanInput;
 uniform vec3 meanTarget;
-uniform vec3 varianceInput;
-uniform vec3 varianceTarget;
+uniform vec3 quotient;
 uniform sampler2D diffuse;
 uniform vec4 lightPosition, sceneAmbient;
 
@@ -28,9 +27,7 @@ void main()
 	
 	vec3 color = vec3(ambient + diffuse);
 	
-	vec3 quot = varianceTarget / varianceInput;
-    color = color.rgb - meanInput;        
-    color = color.rgb * quot;
-	color = color + meanTarget;
+	// Apply color balancing
+
 	gl_FragColor = vec4(color, 1.0);
 }

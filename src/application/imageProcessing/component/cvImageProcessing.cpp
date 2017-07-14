@@ -142,7 +142,7 @@ namespace ape {
 
       marker.setValue(ids.size() > 0);
 
-      if (marker) {
+      if (ids.size() > 3) {
 
         cv::Mat rvec, tvec;
 
@@ -164,6 +164,10 @@ namespace ape {
         cv::aruco::drawAxis(
           frame, cameraIntrinsics_, distCoeffs_, rvec, tvec, markerLength);
 #endif
+        transformation.setValue(viewMatrix);
+      }
+      else {
+        glm::mat4x4 viewMatrix(0.0);
         transformation.setValue(viewMatrix);
       }
     }

@@ -33,7 +33,8 @@ material TextureColorBalance
             }
             texture_unit DiffuseMap
             {
-
+				filtering trilinear
+				tex_coord_set 0
             }
         }
     }
