@@ -37,11 +37,11 @@ namespace ape {
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-		    //cvCameraStream = new OpenCVCameraStream();
+		  cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
           "../../../data/dummy/cameraStream/board01.flv");
       stream->setSize(640,480);
-      cvCameraStream=stream;
+      //cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
       setProcessingContext(ProcessingContext::Context::Stream);
       detectorParams->doCornerRefinement = true; 
@@ -101,6 +101,7 @@ namespace ape {
       return viewMatrix;
     }
 
+    int emptyFrames = 0;
     void CvImageProcessingController::updateTransformation() {
       searchedMarkerSignal.set();
 
@@ -143,7 +144,7 @@ namespace ape {
       marker.setValue(ids.size() > 0);
 
       if (ids.size() > 3) {
-
+        emptyFrames = 0;
         cv::Mat rvec, tvec;
 
         cv::aruco::estimatePoseBoard(
@@ -154,6 +155,11 @@ namespace ape {
         viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
           tvec, rvec
         ));
+        
+        diffTvec = cv::Vec3d(tvec) - lastTvec;
+        diffRvec = cv::Vec3d(rvec) - lastRvec;
+        lastTvec = tvec;
+        lastRvec = rvec;
 
         auto smoothedViewParams=viewSmoother.getSmoothedValue();
 
@@ -164,6 +170,19 @@ namespace ape {
         cv::aruco::drawAxis(
           frame, cameraIntrinsics_, distCoeffs_, rvec, tvec, markerLength);
 #endif
+        transformation.setValue(viewMatrix);
+      }
+      else if(emptyFrames < 4){
+        std::cout << "Lost tracking" << std::endl;
+        emptyFrames++;
+        cv::Vec3d tvec, rvec;
+
+        tvec = lastTvec + diffTvec;
+        rvec = lastRvec + diffRvec;
+
+        viewMatrix = convertVectorsToViewMatrix(
+          rvec, tvec);
+
         transformation.setValue(viewMatrix);
       }
       else {

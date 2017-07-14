@@ -47,7 +47,8 @@ namespace ape {
       float markerLength;
       std::vector<int> ids;
       std::vector<std::vector< cv::Point2f > > corners, rejected;
-
+      cv::Vec3d lastTvec, lastRvec;
+      cv::Vec3d diffTvec, diffRvec;
       cv::Ptr<cv::aruco::DetectorParameters> detectorParams;
       glm::mat4x4 viewMatrix;
 
