@@ -5,7 +5,7 @@
 
 
 #include <cmath>
-#include <overlay/Shapes.h>
+#include <overlay/OgreButton.h>
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
 
@@ -18,7 +18,10 @@ namespace ape {
 
     class WorldScreenStage: public Stage {
     private:
+      glm::vec2 lastMousePosition;
+
       shapes::Container overlay;
+      std::shared_ptr<shapes::OgreButton> texSynthButton;
 
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,
@@ -62,6 +65,10 @@ namespace ape {
 
       virtual void processKeyEvent(
           int key, int scancode, int action, int mods) override;
+
+      void processMouseButtonEvent(int button,int action, int mods) override;
+
+      void processMousePositionEvent(double x, double y) override;
     };
 
   }

@@ -28,7 +28,7 @@ namespace ape {
                   return;
                 }
 
-                //std::cout<<"Selected entity handle: "<<visualModelHandle<<std::endl;
+                std::cout<<"Selected entity handle: "<<visualModelHandle<<std::endl;
                 self->selectedEntity=visualModelHandle;
 
                 if (self->selectedEntity<0) {

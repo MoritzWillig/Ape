@@ -17,28 +17,23 @@ namespace ape {
             void*>& overlayChangeRequestHandler,
         SurfaceSelectionStage& surfaceSelectionStage,
         std::vector<std::string>* surfaceNames):
-        Stage(appWindow), overlay(),
+        lastMousePosition(-1,-1), Stage(appWindow), overlay(), texSynthButton(),
         overlayChangeRequestHandler(overlayChangeRequestHandler),
         surfaceSelectionStage(surfaceSelectionStage),
         surfaceNames(surfaceNames) {
-      std::vector<glm::vec2> circle;
       auto circlePosX=0.875;
       auto circlePosY=0.875;
       auto r=0.10;
       int numPts=20;
 
-      circle.emplace_back(circlePosX,circlePosY);
-      for (auto i=0; i<numPts+1; i++) {
-        circle.emplace_back(
-            circlePosX+(std::cos((i/(float)numPts)*M_PI*2.0)*r),
-            circlePosY+(std::sin((i/(float)numPts)*M_PI*2.0)*r)
-        );
-      }
-
       //texture synthesis button
-      auto texSynth=std::make_shared<shapes::OgrePolygon2D>(
-          appWindow, circle, Ogre::ColourValue(0.8f,0.0f,0.0f));
-      overlay.childs.emplace_back(texSynth);
+      texSynthButton=std::make_shared<shapes::OgreButton>(
+          appWindow,
+          circlePosX-r, circlePosY+r, r*2.0, r*2.0,
+          Ogre::ColourValue(1.0f,1.0f,1.0f));
+      texSynthButton->textureName.setValue("texSelect_ico");
+      texSynthButton->updateOgreObject();
+      overlay.childs.emplace_back(texSynthButton);
 
       setActive(false);
     }
@@ -80,6 +75,35 @@ namespace ape {
           surfaceSelectionStage.setActive(true);
         default:
           break;
+      }
+    }
+
+    void WorldScreenStage::processMousePositionEvent(double x, double y) {
+      Stage::processMousePositionEvent(x, y);
+
+      lastMousePosition.x=(float)x;
+      lastMousePosition.y=(float)y;
+
+      if (!active) {
+        return;
+      }
+
+    }
+
+    void WorldScreenStage::processMouseButtonEvent(int button,
+                                                        int action,
+                                                        int mods) {
+      Stage::processMouseButtonEvent(button, action, mods);
+
+      if (!active) {
+        return;
+      }
+
+      if ((button==GLFW_MOUSE_BUTTON_LEFT) && (action==GLFW_RELEASE)) {
+        if (texSynthButton->hit(lastMousePosition)) {
+          overlayChangeRequestHandler.callExceptIfNotSet(
+              IVisualizationController::Overlay::TextureSynthesisSelection);
+        }
       }
     }
 
