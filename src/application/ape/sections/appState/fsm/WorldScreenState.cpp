@@ -28,6 +28,7 @@ namespace ape {
                   return;
                 }
 
+                //std::cout<<"Selected entity handle: "<<visualModelHandle<<std::endl;
                 self->selectedEntity=visualModelHandle;
 
                 if (self->selectedEntity<0) {
@@ -48,6 +49,12 @@ namespace ape {
                     std::string surfaceName
                 ) -> void {
                   auto self=(WorldScreenState*)custom;
+
+                  //TODO we should unregister the callback handler
+                  //this only hides incorrect behaviour
+                  if (self->selectedEntity<0) {
+                    return;
+                  }
 
                   switch (action) {
                     case visualization::IVisualizationController::SurfaceSelectionAction::SELECT_TEMPORARY:
