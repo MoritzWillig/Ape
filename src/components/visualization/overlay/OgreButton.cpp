@@ -32,9 +32,9 @@ namespace ape {
       bool OgreButton::hit(glm::vec2 position) {
         return (
             (position.x >= this->position.x) &&
-                (position.y >= this->position.y) &&
+                (position.y >= this->position.y - size.y) &&
                 (position.x <= this->position.x + size.x) &&
-                (position.y <= this->position.y + size.y)
+                (position.y <= this->position.y)
         );
       }
 
