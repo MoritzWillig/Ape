@@ -25,7 +25,17 @@ namespace ape {
                       glm::vec2(1,0),
                       glm::vec2(1,1),
                       glm::vec2(0,1)}),
-              color) {
+              color),
+      position(left, top), size(width,height) {
+      }
+
+      bool OgreButton::hit(glm::vec2 position) {
+        return (
+            (position.x >= this->position.x) &&
+                (position.y >= this->position.y) &&
+                (position.x <= this->position.x + size.x) &&
+                (position.y <= this->position.y + size.y)
+        );
       }
 
     }

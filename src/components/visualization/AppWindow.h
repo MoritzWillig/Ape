@@ -28,7 +28,7 @@
 namespace ape {
   namespace visualization {
 
-    class AppWindow 
+    class AppWindow
     {
     private:
       bool createWindow();
@@ -37,6 +37,7 @@ namespace ape {
 
       void createRessources();
 	    void createBackgroundTexture();
+      void loadIconMaterial(std::string icoName, std::string matName);
       void createCoordinateAxes();
       void createRenderTexture();
 
@@ -68,8 +69,10 @@ namespace ape {
       //Flags
       bool computeColorBalancing;
 
-      int mousePosX;
-      int mousePosY;
+      glm::vec2 windowSize;
+
+      float mousePosX;
+      float mousePosY;
       ape::visualization::OgreRay* queryRay;
 
       //FIXME magic numbers

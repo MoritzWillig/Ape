@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <overlay/Shapes.h>
+#include <overlay/OgreButton.h>
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
 #include <common/signals/Signal.h>
@@ -18,6 +19,7 @@ namespace ape {
       IVisualizationController* visController;
 
       shapes::Container overlay;
+      std::vector<std::shared_ptr<shapes::OgreButton>> buttons;
 
       ape::worldState::ISurface* selectedItem;
       ape::worldState::ISurface* hoveredItem;

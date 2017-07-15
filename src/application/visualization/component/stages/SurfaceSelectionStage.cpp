@@ -1,5 +1,4 @@
 
-#include <overlay/OgreButton.h>
 #include "SurfaceSelectionStage.h"
 
 
@@ -12,7 +11,7 @@ namespace ape {
         CustomValueCallback<
             IVisualizationController::SurfaceSelectionHandler,
             void*>& surfaceSelectionHandler):
-        visController(visController), Stage(appWindow), overlay(),
+        visController(visController), Stage(appWindow), overlay(), buttons(),
         selectedItem(nullptr), hoveredItem(nullptr), scrollPosition(0),
         surfaceSelectionHandler(surfaceSelectionHandler),
         lastMousePosition(), dictPosition(0,0), dictSize(1.0,1.0),
@@ -59,6 +58,7 @@ namespace ape {
 
     void SurfaceSelectionStage::updateShapes() {
       overlay.childs.clear();
+      buttons.clear();
 
       glm::vec2 patchPosition(0.0,-surfaceButtonPadding);
 
@@ -83,6 +83,8 @@ namespace ape {
         dictSurfaceButton->updateOgreObject();
         overlay.childs.emplace_back(dictSurfaceButton);
 
+        buttons.emplace_back(dictSurfaceButton);
+
         //TODO update visual if surface is hovered or selected
 
         patchPosition.x+=surfaceButtonSize.x+surfaceButtonPadding;
@@ -104,25 +106,23 @@ namespace ape {
           }
           break;
         case GLFW_KEY_1:
-          //FIXME
-          surfaceSelectionHandler.callExceptIfNotSet(
-              IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
-              surfaces[0]
-          );
-          break;
         case GLFW_KEY_2:
-          //FIXME
-          surfaceSelectionHandler.callExceptIfNotSet(
-              IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
-              surfaces[1]
-          );
-          break;
         case GLFW_KEY_3:
-          //FIXME
-          surfaceSelectionHandler.callExceptIfNotSet(
-              IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
-              surfaces[2]
-          );
+        case GLFW_KEY_4:
+        case GLFW_KEY_5:
+        case GLFW_KEY_6:
+        case GLFW_KEY_7:
+        case GLFW_KEY_8:
+        case GLFW_KEY_9:
+          if (action==GLFW_RELEASE) {
+            auto idx = key - GLFW_KEY_1;
+            if (idx < visController->getSurfaceNames()->size()) {
+              surfaceSelectionHandler.callExceptIfNotSet(
+                  IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
+                  surfaces[idx]
+              );
+            }
+          }
           break;
         default:
           break;
@@ -154,7 +154,14 @@ namespace ape {
       }
 
       if ((button==GLFW_MOUSE_BUTTON_LEFT) && (action==GLFW_RELEASE)) {
-        //TODO send selection permanent, change "selected"
+        for (auto i=0; i<buttons.size(); i++) {
+          if (buttons[i]->hit(lastMousePosition)) {
+            surfaceSelectionHandler.callExceptIfNotSet(
+                IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
+                surfaces[i]
+            );
+          }
+        }
       }
     }
 

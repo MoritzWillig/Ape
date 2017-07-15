@@ -79,7 +79,9 @@ namespace ape {
         throw std::runtime_error("Could not initialize glfw");
       }
 
-      glfwWindow = glfwCreateWindow(1024, 768, "My Title", NULL, NULL);
+      glfwWindow = glfwCreateWindow(
+          (int)windowSize.x,
+          (int)windowSize.y, "My Title", NULL, NULL);
       if (!glfwWindow)
       {
         //FIXME this needs to be called because createWindow is called from
@@ -107,7 +109,9 @@ namespace ape {
 
       // setup main window; hardcode some defaults for the sake of presentation
       Ogre::NameValuePairList opts;
-      opts["resolution"] = "1024x768";
+      opts["resolution"] =
+          std::to_string((int)windowSize.x)+"x"+
+              std::to_string((int)windowSize.y);
       opts["fullscreen"] = "false";
       opts["vsync"] = "true";
 #ifdef WIN32
@@ -117,7 +121,8 @@ namespace ape {
       opts["externalWindowHandle"] =
         Ogre::StringConverter::toString(glfwGetX11Window(glfwWindow));
 #endif
-      renderWindow = root->createRenderWindow("title", 1024, 768, false, &opts);
+      renderWindow = root->createRenderWindow(
+          "title", (int)windowSize.x, (int)windowSize.y, false, &opts);
       setWindowHint("");
 
       glfwSetKeyCallback(glfwWindow, glfw_key_callback);
@@ -198,21 +203,8 @@ namespace ape {
           Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
       );
 
-      //load icon set
-      Ogre::TexturePtr mt =
-          Ogre::TextureManager::getSingleton().load("close_en.png", "General");
-      Ogre::MaterialPtr mM = Ogre::MaterialManager::getSingleton().create(
-          "close_ico", "General");
-      mM->getTechnique(0)->getPass(0)->createTextureUnitState(mt->getName());
-      mM->getTechnique(0)->getPass(0)->setSceneBlending(
-          Ogre::SceneBlendType::SBT_ADD);
-      /*mM->getTechnique(0)->getPass(0)->setSceneBlending(
-          Ogre::SceneBlendFactor::SBF_SOURCE_ALPHA,
-          Ogre::SceneBlendFactor::SBF_ONE
-      );
-      mM->getTechnique(0)->getPass(0)->setSceneBlendingOperation(
-          Ogre::SceneBlendOperation::SBO_ADD);*/
-      mM->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
+      loadIconMaterial("close_en.png","close_ico");
+      loadIconMaterial("mv_button.png","ok_ico");
 
 
       Ogre::MaterialPtr ovMaterial = Ogre::MaterialManager::getSingleton().create(
@@ -243,6 +235,24 @@ namespace ape {
       Ogre::AxisAlignedBox aabInf;
       aabInf.setInfinite();
       rect->setBoundingBox(aabInf);
+    }
+
+    void AppWindow::loadIconMaterial(std::string icoName, std::string matName) {
+      //load icon set
+      Ogre::TexturePtr mt =
+          Ogre::TextureManager::getSingleton().load(icoName, "General");
+      Ogre::MaterialPtr mM = Ogre::MaterialManager::getSingleton().create(
+          matName, "General");
+      mM->getTechnique(0)->getPass(0)->createTextureUnitState(mt->getName());
+      mM->getTechnique(0)->getPass(0)->setSceneBlending(
+          Ogre::SceneBlendType::SBT_ADD);
+      /*mM->getTechnique(0)->getPass(0)->setSceneBlending(
+          Ogre::SceneBlendFactor::SBF_SOURCE_ALPHA,
+          Ogre::SceneBlendFactor::SBF_ONE
+      );
+      mM->getTechnique(0)->getPass(0)->setSceneBlendingOperation(
+          Ogre::SceneBlendOperation::SBO_ADD);*/
+      mM->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
     }
 
     void AppWindow::createCoordinateAxes() {
@@ -366,7 +376,7 @@ namespace ape {
           mousePositionEventHandler(nullptr, nullptr),
           mouseButtonEventHandler(nullptr, nullptr),
           entitySelectionEventHandler(nullptr, nullptr),
-          computeColorBalancing(false)
+          computeColorBalancing(false), windowSize(1024.0f, 768.0f)
         {
       createWindow();
       createRessources();
@@ -682,14 +692,16 @@ namespace ape {
     }
 
     void AppWindow::processMousePositionEvent(double x, double y) {
-      mousePositionEventHandler.callExceptIfNotSet(x, y);
-      mousePosX = x;
-      mousePosY = y;
+      mousePosX = x / windowSize.x;
+      mousePosY = y / windowSize.y;
+      mousePositionEventHandler.callExceptIfNotSet(
+          2.0 * (mousePosX - 0.5),
+          2.0 * (0.5 - mousePosY));
     }
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
-      castViewPortRay(glm::vec2(mousePosX/1024.0f, mousePosY/768.0f));
+      castViewPortRay(glm::vec2(mousePosX, mousePosY));
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {

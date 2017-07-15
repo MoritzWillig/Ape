@@ -8,6 +8,8 @@ namespace ape {
 
       class OgreButton: public OgrePolygon2D {
       private:
+        glm::vec2 position;
+        glm::vec2 size;
       protected:
       public:
         //Default
@@ -35,6 +37,8 @@ namespace ape {
 
         // Destructor
         virtual ~OgreButton() = default;
+
+        bool hit(glm::vec2 position);
       };
 
     }
