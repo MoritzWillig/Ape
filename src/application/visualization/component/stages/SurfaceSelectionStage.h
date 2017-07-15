@@ -74,7 +74,7 @@ namespace ape {
       virtual void processMousePositionEvent(
           double x, double y) override;
       virtual void processMouseButtonEvent(
-          int button, int action, int mods) override;
+          int button, int action, int mods, bool& cancel) override;
 
       std::vector<std::string> surfaces;
 

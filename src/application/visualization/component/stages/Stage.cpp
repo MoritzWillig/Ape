@@ -20,7 +20,7 @@ namespace ape {
     }
 
     void Stage::processMouseButtonEvent(
-        int button, int action, int mods) {
+        int button, int action, int mods, bool& cancel) {
     }
 
   }

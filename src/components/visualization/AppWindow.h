@@ -74,6 +74,7 @@ namespace ape {
       float mousePosX;
       float mousePosY;
       ape::visualization::OgreRay* queryRay;
+      bool hitTestEnabled;
 
       //FIXME magic numbers
       int textureWidth = 640;
@@ -148,7 +149,9 @@ namespace ape {
 
       Ogre::MaterialPtr getTextureName(const std::string surface);
 
-
+      //TODO the hit test should be triggered by a controller
+      //and not be appWindow itself in any appState
+      void enableHitTest(bool enabled);
 
       Ogre::Entity* loadModel(std::string modelFile);
     };

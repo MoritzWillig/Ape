@@ -59,6 +59,8 @@ namespace ape {
       // Destructor
       virtual ~WorldScreenStage() = default;
 
+      bool isActive();
+
       void setActive(bool active);
 
       void update(float delta);
@@ -66,7 +68,7 @@ namespace ape {
       virtual void processKeyEvent(
           int key, int scancode, int action, int mods) override;
 
-      void processMouseButtonEvent(int button,int action, int mods) override;
+      void processMouseButtonEvent(int button,int action, int mods, bool& cancel) override;
 
       void processMousePositionEvent(double x, double y) override;
     };

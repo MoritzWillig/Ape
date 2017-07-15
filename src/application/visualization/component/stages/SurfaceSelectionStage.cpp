@@ -146,20 +146,29 @@ namespace ape {
 
     void SurfaceSelectionStage::processMouseButtonEvent(int button,
                                                                  int action,
-                                                                 int mods) {
-      Stage::processMouseButtonEvent(button, action, mods);
+                                                                 int mods,
+                                                        bool& cancel) {
+      Stage::processMouseButtonEvent(button, action, mods, cancel);
 
       if (!active) {
         return;
       }
 
-      if ((button==GLFW_MOUSE_BUTTON_LEFT) && (action==GLFW_RELEASE)) {
+      if ((button==GLFW_MOUSE_BUTTON_LEFT)) {
         for (auto i=0; i<buttons.size(); i++) {
           if (buttons[i]->hit(lastMousePosition)) {
-            surfaceSelectionHandler.callExceptIfNotSet(
-                IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
-                surfaces[i]
-            );
+            if (action==GLFW_RELEASE) {
+              surfaceSelectionHandler.callExceptIfNotSet(
+                  IVisualizationController::SurfaceSelectionAction::SELECT_PERMANENT,
+                  surfaces[i]
+              );
+            }
+
+            //the mouse event is always consumed if it was performed in the
+            //area of any button. This prevents to select objects under the
+            //button in the world screen stage
+            cancel=true;
+            break;
           }
         }
       }

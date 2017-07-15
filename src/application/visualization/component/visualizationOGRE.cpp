@@ -49,10 +49,23 @@ namespace ape {
           void* selfPtr, int button, int action, int mods
       ) -> void {
         auto self=(OGREVisualizationController*)selfPtr;
-        self->wsStage.processMouseButtonEvent(button,action,mods);
-        self->ldcStage.processMouseButtonEvent(button,action,mods);
-        self->tssStage.processMouseButtonEvent(button,action,mods);
-        self->ssStage.processMouseButtonEvent(button,action,mods);
+        bool canceled=false;
+        self->ssStage.processMouseButtonEvent(button,action,mods,canceled);
+        if (!canceled) {
+          self->tssStage.processMouseButtonEvent(button,action,mods,canceled);
+        }
+        if (!canceled) {
+          self->ldcStage.processMouseButtonEvent(button,action,mods,canceled);
+        }
+        if (!canceled) {
+          self->wsStage.processMouseButtonEvent(button,action,mods,canceled);
+        }
+
+        //FIXME aaahhhhhhhhhhhhh. See comment for enableHitTest
+        //handle hit test by world state stage -> we would not need
+        //this call, but it would be prevented because if the event would be
+        //canceled it would not be propagated into the wsStage
+        self->appWindow->enableHitTest(self->wsStage.isActive() && !canceled);
       }, this);
 
       appWindow->entitySelectionEventHandler.setCallback([](

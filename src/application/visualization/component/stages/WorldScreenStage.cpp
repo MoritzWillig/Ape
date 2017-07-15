@@ -38,9 +38,14 @@ namespace ape {
       setActive(false);
     }
 
+    bool WorldScreenStage::isActive() {
+      return active;
+    }
+
     void WorldScreenStage::setActive(bool active) {
       this->active=active;
       overlay.setVisible(active);
+      appWindow->enableHitTest(active);
 
       //if we leave this stage, we disable all "sub-stages"
       if (!active) {
@@ -92,8 +97,8 @@ namespace ape {
 
     void WorldScreenStage::processMouseButtonEvent(int button,
                                                         int action,
-                                                        int mods) {
-      Stage::processMouseButtonEvent(button, action, mods);
+                                                        int mods, bool& cancel) {
+      Stage::processMouseButtonEvent(button, action, mods, cancel);
 
       if (!active) {
         return;

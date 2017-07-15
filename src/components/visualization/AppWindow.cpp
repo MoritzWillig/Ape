@@ -369,7 +369,7 @@ namespace ape {
           root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
           sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
           backgroundTexture(nullptr), coordAxes(nullptr),
-          mousePosX(-1), mousePosY(-1), queryRay(),
+          mousePosX(-1), mousePosY(-1), queryRay(), hitTestEnabled(false),
           nameGenerator("ape"), //fixme magic string
           materials(),
           keyEventHandler(nullptr, nullptr),
@@ -701,7 +701,9 @@ namespace ape {
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
-      castViewPortRay(glm::vec2(mousePosX, mousePosY));
+      if ((hitTestEnabled) && (action==GLFW_PRESS) && (button==GLFW_MOUSE_BUTTON_LEFT)) {
+        castViewPortRay(glm::vec2(mousePosX, mousePosY));
+      }
     }
 
     void AppWindow::setProjectionMatrix(const glm::mat3x3 projectionMatrix) {
@@ -790,6 +792,10 @@ namespace ape {
       } else {
         entitySelectionEventHandler.callExceptIfNotSet(nullptr,-1);
       }
+    }
+
+    void AppWindow::enableHitTest(bool enabled) {
+      hitTestEnabled=enabled;
     }
 
     Ogre::Entity* AppWindow::loadModel(std::string modelFile) {

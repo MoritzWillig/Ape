@@ -37,7 +37,7 @@ namespace ape {
       virtual void processMousePositionEvent(
           double x, double y);
       virtual void processMouseButtonEvent(
-          int button, int action, int mods);
+          int button, int action, int mods, bool& cancel);
     };
 
   }

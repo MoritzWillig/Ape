@@ -171,8 +171,9 @@ namespace ape {
 
     void TextureSynthesisSelectionStage::processMouseButtonEvent(int button,
                                                                  int action,
-                                                                 int mods) {
-      Stage::processMouseButtonEvent(button, action, mods);
+                                                                 int mods,
+                                                                 bool& cancel) {
+      Stage::processMouseButtonEvent(button, action, mods, cancel);
 
       if (!active) {
         return;
