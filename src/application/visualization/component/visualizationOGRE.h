@@ -65,6 +65,8 @@ namespace ape {
       virtual void setSurface(
           IVisualModel::VisualModelHandle visualHandle,
           std::string surfaceName) override;
+
+      virtual const std::vector<std::string>* getSurfaceNames() const override;
     };
   }
 }

@@ -15,6 +15,8 @@ namespace ape {
 
     class SurfaceSelectionStage: public Stage {
     private:
+      IVisualizationController* visController;
+
       shapes::Container overlay;
 
       ape::worldState::ISurface* selectedItem;
@@ -34,6 +36,7 @@ namespace ape {
       SurfaceSelectionStage() = delete;
 
       SurfaceSelectionStage(
+          IVisualizationController* visController,
           AppWindow* appWindow,
           CustomValueCallback<
               IVisualizationController::SurfaceSelectionHandler,

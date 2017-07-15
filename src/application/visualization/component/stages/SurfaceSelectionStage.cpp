@@ -7,12 +7,13 @@ namespace ape {
   namespace visualization {
 
     SurfaceSelectionStage::SurfaceSelectionStage(
+        IVisualizationController* visController,
         AppWindow* appWindow,
         CustomValueCallback<
             IVisualizationController::SurfaceSelectionHandler,
             void*>& surfaceSelectionHandler):
-        Stage(appWindow), overlay(), selectedItem(nullptr),
-        hoveredItem(nullptr), scrollPosition(0),
+        visController(visController), Stage(appWindow), overlay(),
+        selectedItem(nullptr), hoveredItem(nullptr), scrollPosition(0),
         surfaceSelectionHandler(surfaceSelectionHandler),
         lastMousePosition(), dictPosition(0,0), dictSize(1.0,1.0),
         surfaceButtonSize(0.09,0.09), surfaceButtonPadding(0.05),
@@ -29,6 +30,12 @@ namespace ape {
         selectedItem=nullptr;
         hoveredItem=nullptr;
 
+        //update surfaces from vis controller
+        auto surfaceNames=visController->getSurfaceNames();
+        surfaces.clear();
+        for (const auto surfaceName: *surfaceNames) {
+          surfaces.emplace_back(surfaceName);
+        }
         updateShapes();
 
         overlay.setVisible(true);

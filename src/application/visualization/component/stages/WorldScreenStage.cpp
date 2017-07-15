@@ -77,10 +77,6 @@ namespace ape {
               IVisualizationController::Overlay::Menu);
           break;
         case GLFW_KEY_S:
-          surfaceSelectionStage.surfaces.clear();
-          for (const auto surfaceName: *surfaceNames) {
-            surfaceSelectionStage.surfaces.emplace_back(surfaceName);
-          }
           surfaceSelectionStage.setActive(true);
         default:
           break;

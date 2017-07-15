@@ -83,6 +83,8 @@ namespace ape {
           IVisualModel::VisualModelHandle visualHandle,
           std::string surfaceName) = 0;
 
+      virtual const std::vector<std::string>* getSurfaceNames() const = 0;
+
 
       static std::shared_ptr<IVisualizationController> createInstance(
           imageProcessing::CameraStream* stream

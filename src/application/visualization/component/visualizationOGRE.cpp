@@ -13,7 +13,7 @@ namespace ape {
         surfaces(), surfaceNames(), ldcStage(appWindow),
         tssStage(appWindow,overlayChangeRequestHandler,
                  textureGenerationRequestHandler),
-        ssStage(appWindow, surfaceSelectionHandler),
+        ssStage(this, appWindow, surfaceSelectionHandler),
         wsStage(appWindow, overlayChangeRequestHandler, ssStage, &surfaceNames),
         stream(stream), viewMatrix(), visualModelIdGenerator(), modelOgreLink(),
         modelSubOgreLink() {
@@ -175,15 +175,11 @@ namespace ape {
       auto entity=modelSubOgreLink[visualHandle];
       auto material = appWindow->getTextureName(surfaceName);
       entity->setMaterialName(material->getName());
-      /*
-      Ogre::SubMesh* subMesh = entity->getMesh()->getSubMesh(subIndex);
-      subMesh->setMaterialName(
-          "CubeMaterial",
-          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      Ogre::MeshPtr mesh = entity->getMesh();
-      mesh->updateMaterialForAllSubMeshes();
-      sdafdfsaasdf*/
     }
+
+    const std::vector<std::string>* OGREVisualizationController::getSurfaceNames() const {
+      return &surfaceNames;
+    };
 
   }
 }
