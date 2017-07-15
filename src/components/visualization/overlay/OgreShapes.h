@@ -19,11 +19,17 @@ namespace ape {
       protected:
         AppWindow* appWindow;
         std::vector<glm::vec2> shape;
+        std::vector<glm::vec2> texCoords;
 
         Ogre::ManualObject* ogreObject;
       public:
         OgrePolygon2D(AppWindow* appWindow,
                       std::vector<glm::vec2> shape,
+                      Ogre::ColourValue colour);
+
+        OgrePolygon2D(AppWindow* appWindow,
+                      std::vector<glm::vec2> shape,
+                      std::vector<glm::vec2> texCoords,
                       Ogre::ColourValue colour);
 
         virtual ~OgrePolygon2D();

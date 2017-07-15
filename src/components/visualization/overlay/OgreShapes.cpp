@@ -8,10 +8,22 @@ namespace ape {
 
       OgrePolygon2D::OgrePolygon2D(AppWindow* appWindow,
                                    std::vector<glm::vec2> shape,
+                                   Ogre::ColourValue colour):
+          OgrePolygon2D(appWindow, shape,shape, colour) {
+      }
+
+      OgrePolygon2D::OgrePolygon2D(AppWindow* appWindow,
+                                   std::vector<glm::vec2> shape,
+                                   std::vector<glm::vec2> texCoords,
                                    Ogre::ColourValue colour) :
-          appWindow(appWindow), shape(shape),
+          appWindow(appWindow), shape(shape), texCoords(texCoords),
           ogreObject(nullptr),
           colour(colour), textureName() {
+
+        if (shape.size()!=texCoords.size()) {
+          throw std::runtime_error("Number of texture coordinates does not match the number of vertices");
+        }
+
         regenerateOgreObject();
         updateOgreObject();
       }
@@ -40,9 +52,11 @@ namespace ape {
           ogreObject->setMaterialName(0,textureName.getValue());
         }
 
-        for (auto vertex: shape) {
+        for (auto i=0; i<shape.size(); i++) {
+          auto vertex=shape[i];
+          auto texCoord=texCoords[i];
           ogreObject->position(vertex.x, vertex.y, 0.0f);
-          ogreObject->textureCoord(vertex.x, vertex.y);
+          ogreObject->textureCoord(texCoord.x, texCoord.y);
         }
 
         for(unsigned int i=0; i<shape.size(); i++) {

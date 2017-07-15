@@ -20,6 +20,11 @@ namespace ape {
                       glm::vec2(left+width,top),
                       glm::vec2(left+width,top-height),
                       glm::vec2(left      ,top-height)}),
+              std::vector<glm::vec2>({
+                      glm::vec2(0,0),
+                      glm::vec2(1,0),
+                      glm::vec2(1,1),
+                      glm::vec2(0,1)}),
               color) {
       }
 
