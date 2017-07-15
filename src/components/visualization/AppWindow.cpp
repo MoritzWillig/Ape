@@ -24,17 +24,17 @@ enum QueryFlags
 };
 
 class RenderTargetListener : public Ogre::RenderTargetListener {
-  private:
-    Ogre::SceneNode* backgroundNode;
-  public:
-    RenderTargetListener(Ogre::SceneNode* backgroundNode) : backgroundNode(backgroundNode) {}
-  void RenderTargetListener::preRenderTargetUpdate(const Ogre::RenderTargetEvent& rte)
-  {
+private:
+  Ogre::SceneNode* backgroundNode;
+public:
+  RenderTargetListener(Ogre::SceneNode* backgroundNode) : backgroundNode(
+      backgroundNode) {}
+
+  void preRenderTargetUpdate(const Ogre::RenderTargetEvent& rte) {
     backgroundNode->setVisible(false);
   }
 
-  void RenderTargetListener::postRenderTargetUpdate(const Ogre::RenderTargetEvent& rte)
-  {
+  void postRenderTargetUpdate(const Ogre::RenderTargetEvent& rte) {
     backgroundNode->setVisible(true);
   }
 };
@@ -289,7 +289,7 @@ namespace ape {
 #endif
       cv::Mat white(cv::Mat(16, 16, CV_8UC3));
       white = cv::Scalar(255, 255, 255);
-      registerTexture("BaseWhite", white);      
+      registerTexture("BaseWhite", white);
 
       // Set Lighting
       Ogre::Light* light = sceneMgr->createLight("MainLight");
@@ -545,7 +545,7 @@ namespace ape {
           params->setNamedConstant("meanInput", Ogre::Vector3(0, 0, 0));
           params->setNamedConstant("meanTarget", Ogre::Vector3(0, 0, 0));
           params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
-        }     
+        }
 
         renderTexture->update();
         meanInput = computeMean(rttTexture);
@@ -722,6 +722,10 @@ namespace ape {
       Ogre::MaterialPtr baseMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
       Ogre::MaterialPtr material = baseMaterial->clone(materialName);
       material->getTechnique(0)->getPass(0)->getTextureUnitState("DiffuseMap")->setTextureName(textureName);
+      /*Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
+          materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+      material->getTechnique(0)->getPass(0)->createTextureUnitState(
+          ogreTexture->getName());*/
       material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
 
       InternalMaterial iMat;

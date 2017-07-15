@@ -19,6 +19,12 @@ namespace ape {
         modelSubOgreLink() {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);
 
+      ssStage.dictPosition=glm::vec2(-1.0,-0.2);
+      ssStage.dictSize=glm::vec2(2.0,0.8);
+      ssStage.surfaceButtonSize=glm::vec2(0.20,0.25);
+      ssStage.surfaceButtonPadding=0.025;
+      ssStage.updateShapes();
+
       appWindow->keyEventHandler.setCallback([](
           void* selfPtr, int key, int scancode, int action, int mods
       ) -> void {

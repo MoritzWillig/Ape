@@ -29,6 +29,8 @@ namespace ape {
         selectedItem=nullptr;
         hoveredItem=nullptr;
 
+        updateShapes();
+
         overlay.setVisible(true);
       } else {
         overlay.setVisible(false);

@@ -37,16 +37,16 @@ namespace ape {
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-		  cvCameraStream = new OpenCVCameraStream();
+		  //cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
           "../../../data/dummy/cameraStream/board01.flv");
       stream->setSize(640,480);
       //cvCameraStream=stream;
-      lazyCameraStream = new LazyCameraStream(cvCameraStream);
+      lazyCameraStream = new LazyCameraStream(stream);
       setProcessingContext(ProcessingContext::Context::Stream);
       detectorParams->adaptiveThreshWinSizeMax = 50;
       detectorParams->adaptiveThreshWinSizeStep = 5;
-      detectorParams->doCornerRefinement = true; 
+      detectorParams->doCornerRefinement = true;
       detectorParams->cornerRefinementMaxIterations = 60;
       detectorParams->cornerRefinementMinAccuracy = 0.01;
     }
@@ -157,7 +157,7 @@ namespace ape {
         viewSmoother.recordValue(ViewParameters<cv::Vec3d,cv::Vec3d>(
           tvec, rvec
         ));
-        
+
         diffTvec = cv::Vec3d(tvec) - lastTvec;
         diffRvec = cv::Vec3d(rvec) - lastRvec;
         lastTvec = tvec;
