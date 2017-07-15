@@ -3,6 +3,7 @@
 //
 
 #include <glm/gtx/string_cast.hpp>
+#include <overlay/OgreButton.h>
 #include "TextureSynthesisSelectionStage.h"
 
 
@@ -22,6 +23,19 @@ namespace ape {
         textureGenerationRequestHandler(textureGenerationRequestHandler),
         vertex1(), vertex2(), lastMousePosition(), generationFinishedHandler(),
         selectionState(SelectionState::CapturingP1) {
+
+      auto abortButton=std::make_shared<ape::visualization::shapes::OgreButton>(
+          appWindow,
+          0.79,
+          0.99,
+          0.2,
+          0.2,
+          Ogre::ColourValue(1.0,1.0,1.0,1.0f)
+      );
+      abortButton->textureName.setValue("close_ico");
+      abortButton->updateOgreObject();
+
+      overlay.childs.push_back(abortButton);
       setActive(false);
     }
 

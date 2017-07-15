@@ -198,6 +198,23 @@ namespace ape {
           Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE // usage; should be TU_DYNAMIC_WRITE_ONLY_DISCARDABLE for textures updated very often (e.g. each frame)
       );
 
+      //load icon set
+      Ogre::TexturePtr mt =
+          Ogre::TextureManager::getSingleton().load("close_en.png", "General");
+      Ogre::MaterialPtr mM = Ogre::MaterialManager::getSingleton().create(
+          "close_ico", "General");
+      mM->getTechnique(0)->getPass(0)->createTextureUnitState(mt->getName());
+      mM->getTechnique(0)->getPass(0)->setSceneBlending(
+          Ogre::SceneBlendType::SBT_ADD);
+      /*mM->getTechnique(0)->getPass(0)->setSceneBlending(
+          Ogre::SceneBlendFactor::SBF_SOURCE_ALPHA,
+          Ogre::SceneBlendFactor::SBF_ONE
+      );
+      mM->getTechnique(0)->getPass(0)->setSceneBlendingOperation(
+          Ogre::SceneBlendOperation::SBO_ADD);*/
+      mM->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
+
+
       Ogre::MaterialPtr ovMaterial = Ogre::MaterialManager::getSingleton().create(
           "OverlayButton", "General");
       ovMaterial->setDiffuse(1.0, 1.0, 1.0, 1.0);
