@@ -12,11 +12,13 @@
 #include <imageProcessing/CameraStream.h>
 
 
+//FIXME hardcoded strings entfernen ...
 #define FONT_FOLDER "../../../data/assets/fonts"
 #define MESH_FOLDER "../../../data/assets/meshes"
 #define TEXTURE_FOLDER "../../../data/assets/surfaces"
 #define SHADER_FOLDER "../../../data/assets/shader"
 #define FONT_FILE_NAME "FreeSans.otf"
+#define ICON_FOLDER "../../../data/assets/icons"
 
 enum QueryFlags
 {
@@ -150,6 +152,8 @@ namespace ape {
           MESH_FOLDER, "FileSystem", "General");
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
           TEXTURE_FOLDER, "FileSystem", "General");
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          ICON_FOLDER, "FileSystem", "General");
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
         SHADER_FOLDER, "FileSystem", "General");
 
