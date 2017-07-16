@@ -808,11 +808,21 @@ namespace ape {
           Ogre::Vector3(1.0, 0.0, 0.0),
           Ogre::Radian(1.5707963268),
           Ogre::Node::TS_LOCAL);
-#define scale 0.007
-      ogreNode->setPosition(0.07, 0.00, 0.00);
-      ogreNode->setScale(scale, scale, scale);
-      ogreNode->attachObject(worldEntity);
 
+#define APETOWN_1
+//#define APETOWN_2
+#ifdef APETOWN_1
+      double const f = 1.5;
+      ogreNode->setPosition(0.07, 0.00, 0.00);
+      ogreNode->setScale(0.007 * f, 0.002 * f, 0.007 * f);
+      ogreNode->attachObject(worldEntity);
+#endif
+#ifdef APETOWN_2
+      double const f = 2.0;
+      ogreNode->setPosition(0.04, 0.04, 0.00);
+      ogreNode->setScale(0.04 * f, 0.007 * f, 0.04 * f);
+      ogreNode->attachObject(worldEntity);
+#endif
       return worldEntity;
     }
 
