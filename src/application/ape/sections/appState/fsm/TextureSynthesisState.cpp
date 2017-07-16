@@ -79,8 +79,10 @@ namespace ape {
               auto handle = wsController->createSurface(
                   "genSurface_"+std::to_string(counter.getNew()),tile);
 
-              //update at visController?
-              //visController->registerSurface("name...",tile);
+              //update visController
+              auto surface=wsController->getSurface(handle);
+              visController->registerSurface(surface->getName(),surface->getTexture());
+
               return handle;
             }
 

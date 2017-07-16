@@ -68,13 +68,15 @@ namespace ape {
     ISurface::SurfacePersistentHandle
     WorldFileBasedStateController::createSurface(std::string name, cv::Mat texture) {
       ISurface::SurfacePersistentHandle handle=createNewHandle();
+      auto surface=std::make_shared<SurfaceImplementation>(
+          surfaceDatabasePath+getFileNameFromHandle(handle),
+          handle,
+          name
+      );
+      surface->setTexture(texture);
       surfaces.emplace(
           handle,
-          std::make_shared<SurfaceImplementation>(
-              surfaceDatabasePath+getFileNameFromHandle(handle),
-              handle,
-              name
-          )
+          surface
       );
 
       return handle;
