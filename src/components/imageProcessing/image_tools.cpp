@@ -27,7 +27,7 @@ namespace ape {
 #define THRES_A 0.8f
 // convergence threshold
 #define THRES_B 0.15f
-#define AUTOWB_MAX_ITERS 1000
+#define AUTOWB_MAX_ITERS 100
 
     // TODO: how to use the gainIncrement??
     void robustAWB(cv::Mat & image, float T, float gainIncrement)
@@ -45,9 +45,8 @@ namespace ape {
           else if (std::abs(x) < THRES_B)
               return 0.0f;
           else
-            return sign(x);
+            return 0.5f * sign(x);
       };
-
 
       // gains for blue, green and red channels
       cv::Vec3f gains(1.0f, 1.0f, 1.0f);
@@ -68,7 +67,7 @@ namespace ape {
             }
           }
 
-
+//#define DEBUG_GREY_PIXELS
 #ifdef DEBUG_GREY_PIXELS
         cv::Mat grays(image.rows, image.cols, CV_8UC3);
 #endif
@@ -77,8 +76,20 @@ namespace ape {
         image.convertTo(imageFloat, CV_32FC3);
 
         // convert to YUV
-        cv::Mat yuvImage;
-        cv::cvtColor(imageFloat, yuvImage, CV_BGR2YCrCb);
+        cv::Mat yuvImage(image.rows, image.cols, CV_32FC3);
+        for (int y = 0; y < image.rows; ++y) {
+          for (int x = 0; x < image.cols; ++x) {
+
+              unsigned char b = image.at<cv::Vec3b>(y, x)[0];
+              unsigned char g = image.at<cv::Vec3b>(y, x)[1];
+              unsigned char r = image.at<cv::Vec3b>(y, x)[2];
+              cv::Vec3f & yuv = yuvImage.at<cv::Vec3f>(y, x);
+
+              yuv[0] =  0.299f*r + 0.587f*g + 0.114f*b;
+              yuv[1] = -0.299f*r - 0.587f*g + 0.886f*b;
+              yuv[2] =  0.701f*r - 0.587f*g - 0.114f*b;
+          }
+        }
 
         // estimate illumination: find grey points in the image which satisfy
         // (|U| + |V|) / Y < T
@@ -112,7 +123,6 @@ namespace ape {
         }
         avgU /= (float) count;
         avgV /= (float) count;
-        std::cout << "Avg u: " << avgU << " avg v: " << avgV << std::endl;
 
 #ifdef DEBUG_GREY_PIXELS
         std::stringstream fn;
@@ -147,9 +157,10 @@ namespace ape {
             std::cout << "Converged after " << j << " iterations." << std::endl;
             return;
         }
-
         gains[c] = gains[c] + gainIncrement * KVal;
-        std::cout << "Iter: " << j << " phi: " << phi << " Gains: " << gains << std::endl;
+        std::cout << "Iter: " << j
+          << " u_avg: " << avgU << " v_avg: " << avgV
+          << " gains: " << gains << std::endl;
       } // end iteration
     }
 

@@ -47,6 +47,7 @@ namespace ape {
       detectorParams->adaptiveThreshWinSizeMax = 50;
       detectorParams->adaptiveThreshWinSizeStep = 5;
       detectorParams->doCornerRefinement = true;
+      //detectorParams->cornerRefinementMethod = true;
       detectorParams->cornerRefinementMaxIterations = 60;
       detectorParams->cornerRefinementMinAccuracy = 0.01;
     }
