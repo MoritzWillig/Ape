@@ -20,7 +20,7 @@ namespace ape {
               lsState(ipController,visController, &onLoadingCompleteSignal),
               mmState(ipController,visController),
               wsState(wsController,ipController,visController),
-              tsState(ipController,visController),
+              tsState(ipController,visController, wsController),
               activeState(&lsState), requestedState(&lsState) {
             lsState.setActive(true);
           };

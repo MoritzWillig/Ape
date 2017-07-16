@@ -3,6 +3,7 @@
 //
 
 #include "TextureSynthesisState.h"
+#include "../../../../worldState/component/worldState.h"
 
 namespace ape {
   namespace app {
@@ -13,8 +14,10 @@ namespace ape {
 
             TextureSynthesisState::TextureSynthesisState(
                 ape::imageProcessing::IImageProcessingController* ipController,
-                ape::visualization::IVisualizationController* visController):
-                ipController(ipController), visController(visController) {
+                ape::visualization::IVisualizationController* visController,
+                ape::worldState::IWorldStateController* wsController):
+                ipController(ipController), visController(visController),
+                wsController(wsController), counter() {
             }
 
             void TextureSynthesisState::onActivation() {
@@ -38,7 +41,7 @@ namespace ape {
                 std::cout<<"Generated texture!"<<std::endl;
                 //FIXME save image
 
-                textureGenerationFinishedHandler->call(id);
+                textureGenerationFinishedHandler->callExceptIfNotSet(id);
               },this);
             }
 
@@ -55,16 +58,30 @@ namespace ape {
             void TextureSynthesisState::update(float delta) {
             }
 
-            unsigned int TextureSynthesisState::generateTile(
+            ape::worldState::ISurface::SurfacePersistentHandle
+            TextureSynthesisState::generateTile(
                 glm::vec2 vertex1, glm::vec2 vertex2) {
               auto min = glm::min(vertex1, vertex2);
               auto max = glm::max(vertex1, vertex2);
+
+              //convert screen space into camera texture space
+              auto cs=ipController->getCameraStream();
+              min.x=(float)(min.x+1.0)*0.5f*cs->getFrameWidth();
+              min.y=(float)(min.y+1.0)*0.5f*cs->getFrameHeight();
+              max.x=(float)(max.x+1.0)*0.5f*cs->getFrameWidth();
+              max.y=(float)(max.y+1.0)*0.5f*cs->getFrameHeight();
+
               cv::Rect roi((int)min.x,(int)min.y,(int)(max.x-min.x),(int)(max.y-min.y));
               auto region=ipController->extractTextureFromStream(roi);
               auto tile=ipController->createTile(512,512,region);
 
-              //FIXME pass actual texture id
-              return 12345;
+              //register at world state controller
+              auto handle = wsController->createSurface(
+                  "genSurface_"+std::to_string(counter.getNew()),tile);
+
+              //update at visController?
+              //visController->registerSurface("name...",tile);
+              return handle;
             }
 
           }

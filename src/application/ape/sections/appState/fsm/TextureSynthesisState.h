@@ -3,9 +3,11 @@
 // Created by moritz on 03.06.17.
 //
 
+#include <common/generators/Counter.h>
 #include "State.h"
 #include "../../../../imageProcessing/component/imageProcessing.h"
 #include "../../../../visualization/component/visualization.h"
+#include "../../../../worldState/component/worldState.h"
 
 namespace ape {
   namespace app {
@@ -18,18 +20,23 @@ namespace ape {
             private:
               ape::imageProcessing::IImageProcessingController* ipController;
               ape::visualization::IVisualizationController* visController;
+              ape::worldState::IWorldStateController* wsController;
+
+              Counter counter;
             protected:
               virtual void onActivation() override;
               virtual void onDeactivation() override;
 
-              unsigned int generateTile(glm::vec2 vertex1, glm::vec2 vertex2);
+              ape::worldState::ISurface::SurfacePersistentHandle
+                generateTile(glm::vec2 vertex1, glm::vec2 vertex2);
             public:
               //Default
               TextureSynthesisState() = delete;
 
               TextureSynthesisState(
                   ape::imageProcessing::IImageProcessingController* ipController,
-                  ape::visualization::IVisualizationController* visController
+                  ape::visualization::IVisualizationController* visController,
+                  ape::worldState::IWorldStateController* wsController
               );
 
               // Copy constructor
