@@ -29,7 +29,6 @@ namespace ape {
 #define THRES_B 0.15f
 #define AUTOWB_MAX_ITERS 100
 
-    // TODO: how to use the gainIncrement??
     void robustAWB(cv::Mat & image, float T, float gainIncrement)
     {
       // Define helper functions sign(x) and K(x) as described in paper
