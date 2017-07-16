@@ -9,7 +9,7 @@ varying vec3 N;
 varying vec3 v;
 
 float log10(float a){
-    return log(a)/log(10);
+    return log(a)/log(10.0);
 }
 
 vec3 RGBtoLAlphaBeta(vec3 color) {
