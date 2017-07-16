@@ -37,12 +37,12 @@ namespace ape {
         detectorParams(cv::aruco::DetectorParameters::create()),
         viewMatrix(), textureExtraction(), processingContext() {
       //these can throw ...
-		  //cvCameraStream = new OpenCVCameraStream();
+		  cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
           "../../../data/dummy/cameraStream/board01.flv");
       stream->setSize(640,480);
       //cvCameraStream=stream;
-      lazyCameraStream = new LazyCameraStream(stream);
+      lazyCameraStream = new LazyCameraStream(cvCameraStream);
       setProcessingContext(ProcessingContext::Context::Stream);
       detectorParams->adaptiveThreshWinSizeMax = 50;
       detectorParams->adaptiveThreshWinSizeStep = 5;
