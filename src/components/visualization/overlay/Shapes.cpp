@@ -16,6 +16,18 @@ namespace ape {
         return nullptr;
       }
 
+      Shape::Shape():
+        visible(true) {
+      }
+
+      bool Shape::isVisible() {
+        return visible;
+      }
+
+      void Shape::setVisible(bool visible) {
+        this->visible=visible;
+
+      }
     }
   }
 }

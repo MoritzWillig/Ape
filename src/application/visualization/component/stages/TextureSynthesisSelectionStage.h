@@ -5,7 +5,7 @@
 
 
 #include <cmath>
-#include <overlay/Shapes.h>
+#include <overlay/OgreButton.h>
 #include <OGRE/OgrePolygon.h>
 #include <AppWindow.h>
 #include <common/signals/Signal.h>
@@ -21,6 +21,7 @@ namespace ape {
     class TextureSynthesisSelectionStage: public Stage {
     private:
       shapes::Container overlay;
+      std::shared_ptr<ape::visualization::shapes::OgreButton> abortButton;
 
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,

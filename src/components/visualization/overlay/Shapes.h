@@ -11,11 +11,16 @@ namespace ape {
 
       class Shape {
       private:
+        bool visible;
       protected:
       public:
+        Shape();
+
         virtual ~Shape() = default;
 
-        virtual void setVisible(bool visible) = 0;
+        bool isVisible();
+
+        virtual void setVisible(bool visible);
 
         virtual Ogre::MovableObject* getOgreObject() = 0;
       };

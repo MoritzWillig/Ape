@@ -18,13 +18,13 @@ namespace ape {
         CustomValueCallback<
             IVisualizationController::TextureGenerationRequestHandler,
             void*>& textureGenerationRequestHandler):
-        Stage(appWindow), overlay(),
+        Stage(appWindow), overlay(), abortButton(),
         overlayChangeRequestHandler(overlayChangeRequestHandler),
         textureGenerationRequestHandler(textureGenerationRequestHandler),
         vertex1(), vertex2(), lastMousePosition(), generationFinishedHandler(),
         selectionState(SelectionState::CapturingP1) {
 
-      auto abortButton=std::make_shared<ape::visualization::shapes::OgreButton>(
+      abortButton=std::make_shared<ape::visualization::shapes::OgreButton>(
           appWindow,
           0.79,
           0.99,
@@ -177,6 +177,14 @@ namespace ape {
 
       if (!active) {
         return;
+      }
+
+      if ((button==GLFW_MOUSE_BUTTON_LEFT) && (action==GLFW_RELEASE)) {
+        if ((abortButton->isVisible()) && abortButton->hit(lastMousePosition)) {
+          overlayChangeRequestHandler.callExceptIfNotSet(
+              IVisualizationController::Overlay::WorldScreen);
+          return;
+        }
       }
 
       switch (selectionState) {
