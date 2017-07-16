@@ -1,3 +1,5 @@
 0|Fabric
 1|Rock
 2|Wood Texture
+3|Ziegeln Rot
+4|Schiefer
