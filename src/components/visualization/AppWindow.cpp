@@ -244,14 +244,11 @@ namespace ape {
       Ogre::MaterialPtr mM = Ogre::MaterialManager::getSingleton().create(
           matName, "General");
       mM->getTechnique(0)->getPass(0)->createTextureUnitState(mt->getName());
+
       mM->getTechnique(0)->getPass(0)->setSceneBlending(
-          Ogre::SceneBlendType::SBT_ADD);
-      /*mM->getTechnique(0)->getPass(0)->setSceneBlending(
-          Ogre::SceneBlendFactor::SBF_SOURCE_ALPHA,
-          Ogre::SceneBlendFactor::SBF_ONE
-      );
-      mM->getTechnique(0)->getPass(0)->setSceneBlendingOperation(
-          Ogre::SceneBlendOperation::SBO_ADD);*/
+          Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA);
+      mM->setDepthWriteEnabled(false);
+      mM->setLightingEnabled(false);
       mM->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
     }
 
