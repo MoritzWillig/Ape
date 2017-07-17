@@ -19,7 +19,6 @@ namespace ape {
       cv::cvtColor(image, image, CV_YCrCb2BGR);
     }
 
-//#define DEBUG_GREY_PIXELS
 #define CH_B 0
 #define CH_G 1
 #define CH_R 2
@@ -27,9 +26,9 @@ namespace ape {
 #define THRES_A 0.8f
 // convergence threshold
 #define THRES_B 0.15f
-#define AUTOWB_MAX_ITERS 100
 
-    void robustAWB(cv::Mat & image, float T, float gainIncrement)
+    void robustAWB(cv::Mat & image, float T, float gainIncrement,
+      std::size_t maxIters)
     {
       // Define helper functions sign(x) and K(x) as described in paper
       auto sign = [] (float x) -> float {
@@ -51,7 +50,7 @@ namespace ape {
       cv::Vec3f gains(1.0f, 1.0f, 1.0f);
       cv::Mat orig = image.clone();
 
-      for (int j = 0; j < AUTOWB_MAX_ITERS; ++j)
+      for (int j = 0; j < maxIters; ++j)
       {
           // apply gain
           for (int y = 0; y < image.rows; ++y) {
