@@ -1,4 +1,6 @@
 # Ape
+<img src="./data/assets/icons/ape_c.png" width="200" height="200" alt="Ape Logo" />
+
 Use your camera to capture real-world surfaces. Interact with your virtual world by applying the collection of captured surfaces to in-game objects and structures.  
 
 ## Setup the repository
