@@ -206,6 +206,7 @@ namespace ape {
 
       loadIconMaterial("close_en.png","close_ico");
       loadIconMaterial("mv_button.png","texSelect_ico");
+      loadIconMaterial("selMat.png","texSelect_material");
 
 
       Ogre::MaterialPtr ovMaterial = Ogre::MaterialManager::getSingleton().create(

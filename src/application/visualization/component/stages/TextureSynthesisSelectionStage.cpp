@@ -56,7 +56,7 @@ namespace ape {
           0.0,
           Ogre::ColourValue(0.5,0.5,0.8,0.2f)
       );
-      //selectionButton->textureName.setValue("selectionLayoutMaterial");
+      selectionButton->textureName.setValue("texSelect_material");
       overlay.childs.push_back(selectionButton);
 
 
