@@ -154,6 +154,8 @@ namespace ape {
       void enableHitTest(bool enabled);
 
       Ogre::Entity* loadModel(std::string modelFile);
+
+      void closeWindow();
     };
 
   }

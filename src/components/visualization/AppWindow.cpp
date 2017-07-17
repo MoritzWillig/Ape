@@ -79,6 +79,7 @@ namespace ape {
         throw std::runtime_error("Could not initialize glfw");
       }
 
+      glfwWindowHint(GLFW_DECORATED, 0);
       glfwWindow = glfwCreateWindow(
           (int)windowSize.x,
           (int)windowSize.y, "My Title", NULL, NULL);
@@ -824,6 +825,10 @@ namespace ape {
       ogreNode->attachObject(worldEntity);
 #endif
       return worldEntity;
+    }
+
+    void AppWindow::closeWindow() {
+      glfwSetWindowShouldClose(glfwWindow,GLFW_TRUE);
     }
 
   }
