@@ -76,7 +76,7 @@ void main()
 	// Diffuse term
 	vec3 diffuse = _NdotL * diffuseTex;
 
-	vec3 color = vec3(ambient + 0.8 * diffuse);
+	vec3 color = vec3(2.0 * ambient + 0.6 * diffuse);
 
 	// Apply color balancing
     color = RGBtoLAlphaBeta(color);

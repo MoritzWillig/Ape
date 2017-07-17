@@ -815,13 +815,13 @@ namespace ape {
 #ifdef APETOWN_1
       double const f = 1.5;
       ogreNode->setPosition(0.07, 0.00, 0.00);
-      ogreNode->setScale(0.007 * f, 0.002 * f, 0.007 * f);
+      ogreNode->setScale(0.007 * f, 0.007 * f, 0.007 * f);
       ogreNode->attachObject(worldEntity);
 #endif
 #ifdef APETOWN_2
       double const f = 2.0;
       ogreNode->setPosition(0.04, 0.04, 0.00);
-      ogreNode->setScale(0.04 * f, 0.007 * f, 0.04 * f);
+      ogreNode->setScale(0.04 * f, 0.04 * f, 0.04 * f);
       ogreNode->attachObject(worldEntity);
 #endif
       return worldEntity;
