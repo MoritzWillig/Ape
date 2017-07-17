@@ -52,8 +52,8 @@ namespace ape {
           appWindow,
           -0.25,
           0.25,
-          0.5,
-          0.5,
+          0.0,
+          0.0,
           Ogre::ColourValue(0.5,0.5,0.8,0.2f)
       );
       //selectionButton->textureName.setValue("selectionLayoutMaterial");
@@ -65,6 +65,9 @@ namespace ape {
 
     void TextureSynthesisSelectionStage::setActive(bool active) {
       this->active=active;
+
+      selectionButton->setSize(glm::vec2());
+      selectionButton->updateOgreObject();
 
       if (this->active) {
         vertex1.reset();
