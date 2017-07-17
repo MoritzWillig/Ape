@@ -38,6 +38,30 @@ namespace ape {
         );
       }
 
+      void OgreButton::setPosition(glm::vec2 position) {
+        this->position=position;
+      }
+
+      void OgreButton::setSize(glm::vec2 size) {
+        this->size=size;
+      }
+
+      void OgreButton::generateShape() {
+        this->shape=std::vector<glm::vec2>(
+            {
+                glm::vec2(position.x       ,position.y),
+                glm::vec2(position.x+size.x,position.y),
+                glm::vec2(position.x+size.x,position.y-size.y),
+                glm::vec2(position.x       ,position.y-size.y)
+            });
+        //texCoords do not change
+      }
+
+      void OgreButton::updateOgreObject() {
+        generateShape();
+        OgrePolygon2D::updateOgreObject();
+      }
+
     }
   }
 }

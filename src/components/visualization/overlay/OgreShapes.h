@@ -34,7 +34,7 @@ namespace ape {
 
         virtual ~OgrePolygon2D();
 
-        void updateOgreObject();
+        virtual void updateOgreObject();
 
         virtual void setVisible(bool visible) override;
 

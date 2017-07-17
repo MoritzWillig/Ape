@@ -77,7 +77,7 @@ namespace ape {
             surfaceButtonSize.x, surfaceButtonSize.y,
             Ogre::ColourValue(1.0f,1.0f,1.0f));
         dictSurfaceButton->textureName.setValue(
-            appWindow->getTextureName(surface)->getName());
+            appWindow->getButtonMaterial(surface)->getName());
         //TODO update should be triggered when setting texture
         //or be taken care of by a handle
         dictSurfaceButton->updateOgreObject();

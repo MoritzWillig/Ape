@@ -35,6 +35,14 @@ namespace ape {
       texSynthButton->updateOgreObject();
       overlay.childs.emplace_back(texSynthButton);
 
+      closeButton=std::make_shared<shapes::OgreButton>(
+          appWindow,
+          -0.99, 0.99, 0.2, 0.2,
+          Ogre::ColourValue(1.0f,1.0f,1.0f));
+      closeButton->textureName.setValue("close_ico");
+      closeButton->updateOgreObject();
+      overlay.childs.emplace_back(closeButton);
+
       setActive(false);
     }
 
@@ -78,6 +86,8 @@ namespace ape {
           break;
         case GLFW_KEY_S:
           surfaceSelectionStage.setActive(true);
+        case GLFW_KEY_ESCAPE:
+          this->appWindow->closeWindow();
         default:
           break;
       }
@@ -108,6 +118,10 @@ namespace ape {
         if (texSynthButton->hit(lastMousePosition)) {
           overlayChangeRequestHandler.callExceptIfNotSet(
               IVisualizationController::Overlay::TextureSynthesisSelection);
+        }
+
+        if (closeButton->hit(lastMousePosition)) {
+          this->appWindow->closeWindow();
         }
       }
     }
