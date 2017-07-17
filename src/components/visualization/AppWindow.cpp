@@ -294,12 +294,24 @@ namespace ape {
       // say something
       textArea->setCaption("Color balancing disabled");
 
+      supplTextArea = static_cast<Ogre::TextAreaOverlayElement*>(
+          overlayMgr.createOverlayElement("TextArea", "TextAreaName2"));
+      supplTextArea->setMetricsMode(Ogre::GMM_PIXELS);
+      supplTextArea->setPosition(100, 30);
+      supplTextArea->setDimensions(300, 120);
+      supplTextArea->setCharHeight(26);
+      // set the font name to the font resource that you just created.
+      supplTextArea->setFontName("MyFont");
+      // say something
+      supplTextArea->setCaption("");
+
       // Create an overlay, and add the panel
       Ogre::Overlay* overlay = overlayMgr.create("OverlayName");
       overlay->add2D(panel);
 
       // Add the text area to the panel
       panel->addChild(textArea);
+      panel->addChild(supplTextArea);
 
       // Show the overlay
       overlay->show();
@@ -682,6 +694,10 @@ namespace ape {
                  std::string((hint=="")?"":" - ")+
                  hint;
       glfwSetWindowTitle(glfwWindow,title.c_str());
+    }
+
+    void AppWindow::setTextInfo(std::string info) {
+      supplTextArea->setCaption(info);
     }
 
     void
