@@ -52,8 +52,8 @@ namespace ape {
           appWindow,
           -0.25,
           0.25,
-          0.5,
-          0.5,
+          0.0,
+          0.0,
           Ogre::ColourValue(0.5,0.5,0.8,0.2f)
       );
       //selectionButton->textureName.setValue("selectionLayoutMaterial");
@@ -66,15 +66,20 @@ namespace ape {
     void TextureSynthesisSelectionStage::setActive(bool active) {
       this->active=active;
 
+      selectionButton->setSize(glm::vec2());
+      selectionButton->updateOgreObject();
+
       if (this->active) {
         vertex1.reset();
         vertex2.reset();
         selectionState = SelectionState::CapturingP1;
 
         overlay.setVisible(true);
+        appWindow->setTextInfo("");
         performStateTransition(SelectionState::CapturingP1);
       } else {
         overlay.setVisible(false);
+        appWindow->setTextInfo("");
       }
     }
 
@@ -100,22 +105,23 @@ namespace ape {
         case SelectionState::CapturingP1:
           selectionButton->setVisible(false);
           selectionButton->updateOgreObject();
-          std::cout<<"Click to select first edge"<<std::endl;
+          std::cout<<"Click to select the first edge of the texture"<<std::endl;
+          appWindow->setTextInfo("Click to select the first edge");
           break;
         case SelectionState::CapturingP2:
-          std::cout<<"Click to select second edge"<<std::endl;
-          //FIXME display currently selected area
+          std::cout<<"Click to select second edge of the texture"<<std::endl;
+          appWindow->setTextInfo("Click to select the second edge");
           break;
         case SelectionState::Waiting:
           std::cout<<"Press ENTER to proceed"<<std::endl;
           std::cout<<"This will generate a texture from "
                  <<glm::to_string(vertex1.getValue())<<" | "
                  <<glm::to_string(vertex2.getValue())<< std::endl;
-          //FIXME add currently selected area
-          //FIXME add edit handlers
+          appWindow->setTextInfo("Click the button to confirm your selection");
           break;
         case SelectionState::Generating: {
           std::cout<<"Generating"<<std::endl;
+          appWindow->setTextInfo("Generating");
 
           generationFinishedHandler.setCallback([](void* custom, int textureId) {
             auto self=(TextureSynthesisSelectionStage*)custom;
@@ -137,6 +143,7 @@ namespace ape {
         case SelectionState::Confirmation:
           selectionButton->setVisible(false);
           std::cout<<"Generation successful. Press any key to proceed"<<std::endl;
+          appWindow->setTextInfo("Generation successful");
           //FIXME show result - "name" field + "ok"/"_abort" button
           break;
       }

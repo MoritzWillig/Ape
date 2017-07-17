@@ -67,6 +67,7 @@ namespace ape {
       Ogre::Vector3 varianceTarget;
 
       Ogre::TextAreaOverlayElement* textArea;
+      Ogre::TextAreaOverlayElement* supplTextArea;
 
       //Flags
       bool computeColorBalancing;
@@ -125,6 +126,8 @@ namespace ape {
       std::string createName();
 
       void setWindowHint(std::string hint);
+
+      void setTextInfo(std::string info);
 
       void processKeyEvent(int key, int scancode, int action, int mods);
 
