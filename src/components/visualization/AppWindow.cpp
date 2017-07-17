@@ -534,7 +534,7 @@ namespace ape {
             if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
               continue;
             }
-            Ogre::ColourValue color((float)returnData[index + 2], (float)returnData[index + 1], (float)returnData[index]);
+            Ogre::ColourValue color((float)returnData[index + 2] / 255.0f, (float)returnData[index + 1] / 255.0f, (float)returnData[index] / 255.0f);
             RGBtoLAlphaBeta(color);
             varianceVec[2] += POW2((color.b - mean[2])); //blue
             varianceVec[1] += POW2((color.g - mean[1])); //green
@@ -562,7 +562,7 @@ namespace ape {
           params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
         }
       }
-      else if (frameCounter % 10 == 0) {
+      else if (frameCounter % 15 == 0) {
         frameCounter = 0;
 
         for (auto mapEntry : materials) {
