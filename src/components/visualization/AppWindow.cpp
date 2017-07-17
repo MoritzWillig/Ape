@@ -822,8 +822,9 @@ namespace ape {
           Ogre::Radian(1.5707963268),
           Ogre::Node::TS_LOCAL);
 
-#define APETOWN_1
-//#define APETOWN_2
+
+//#define APETOWN_1
+#define APETOWN_2
 #ifdef APETOWN_1
       double const f = 1.5;
       ogreNode->setPosition(0.07, 0.00, 0.00);
@@ -831,9 +832,9 @@ namespace ape {
       ogreNode->attachObject(worldEntity);
 #endif
 #ifdef APETOWN_2
-      double const f = 2.0;
+      double const f = 1.0f;
       ogreNode->setPosition(0.04, 0.04, 0.00);
-      ogreNode->setScale(0.04 * f, 0.04 * f, 0.04 * f);
+      ogreNode->setScale(0.005 * f, 0.004 * f, 0.0004 * f);
       ogreNode->attachObject(worldEntity);
 #endif
       return worldEntity;
