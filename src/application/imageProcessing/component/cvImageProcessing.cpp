@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <opencv2/imgproc.hpp>
 #include <textureSynthesis/TextureSynthesis.h>
+#include <image_tools.h>
 
 #include "smoothing/MeanSmoother.h"
 
@@ -263,6 +264,8 @@ namespace ape {
     cv::Mat CvImageProcessingController::createTile(int width, int height,
                                                     cv::Mat source) {
       cv::Mat result;
+
+      robustAWB(source);
       TextureSynthesis textureSynthesis(
           source, width, height);
       //FIXME magic numbers, yay!

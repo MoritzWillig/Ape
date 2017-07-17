@@ -86,6 +86,7 @@ namespace ape {
           break;
         case GLFW_KEY_S:
           surfaceSelectionStage.setActive(true);
+          break;
         case GLFW_KEY_ESCAPE:
           this->appWindow->closeWindow();
         default:
