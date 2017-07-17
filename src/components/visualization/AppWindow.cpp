@@ -725,8 +725,8 @@ namespace ape {
       // Set CameraProjection Matrix based on calibration parameters
       float znear = 0.001f;
       float zfar = 200.0f;
-      int camWidth = 1920;
-      int camHeight = 1080;
+      int camWidth = 640;
+      int camHeight = 480;
 
       double fx = projectionMatrix[0][0];
       double fy = projectionMatrix[1][1];
