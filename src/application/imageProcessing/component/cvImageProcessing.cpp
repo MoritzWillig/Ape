@@ -146,7 +146,7 @@ namespace ape {
 
       marker.setValue(ids.size() > 0);
 
-      if (ids.size() > 3) {
+      if (ids.size() > 1) {
         emptyFrames = 0;
         cv::Mat rvec, tvec;
 
