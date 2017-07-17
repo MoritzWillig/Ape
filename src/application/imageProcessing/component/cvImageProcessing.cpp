@@ -42,7 +42,7 @@ namespace ape {
 		  cvCameraStream = new OpenCVCameraStream();
       auto stream= new FileCameraStream(
           "../../../data/dummy/cameraStream/board01.flv");
-      stream->setSize(640,480);
+      stream->setSize(1920,1080);
       //cvCameraStream=stream;
       lazyCameraStream = new LazyCameraStream(cvCameraStream);
       setProcessingContext(ProcessingContext::Context::Stream);

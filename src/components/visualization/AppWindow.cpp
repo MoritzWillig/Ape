@@ -386,7 +386,7 @@ namespace ape {
           mousePositionEventHandler(nullptr, nullptr),
           mouseButtonEventHandler(nullptr, nullptr),
           entitySelectionEventHandler(nullptr, nullptr),
-          computeColorBalancing(false), windowSize(1024.0f, 768.0f)
+          computeColorBalancing(false), windowSize(1920.0f, 1080.0f)
         {
       createWindow();
       createRessources();
@@ -724,8 +724,8 @@ namespace ape {
       // Set CameraProjection Matrix based on calibration parameters
       float znear = 0.001f;
       float zfar = 200.0f;
-      int camWidth = 640;
-      int camHeight = 480;
+      int camWidth = 1920;
+      int camHeight = 1080;
 
       double fx = projectionMatrix[0][0];
       double fy = projectionMatrix[1][1];
