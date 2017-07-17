@@ -186,7 +186,7 @@ namespace ape {
         IVisualModel::VisualModelHandle visualHandle,
         std::string surfaceName) {
       auto entity=modelSubOgreLink[visualHandle];
-      auto material = appWindow->getTextureName(surfaceName);
+      auto material = appWindow->getSurfaceMaterial(surfaceName);
       entity->setMaterialName(material->getName());
     }
 

@@ -552,7 +552,7 @@ namespace ape {
     void AppWindow::computeColorBalancingParameter() {
       if (!computeColorBalancing) {
         for (auto mapEntry : materials) {
-          Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+          Ogre::MaterialPtr textureMaterial = mapEntry.second.surfaceMatPtr;
           Ogre::Technique* technique = textureMaterial->getTechnique(0);
           Ogre::Pass* pass = technique->getPass(0);
           Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
@@ -566,7 +566,7 @@ namespace ape {
         frameCounter = 0;
 
         for (auto mapEntry : materials) {
-          Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+          Ogre::MaterialPtr textureMaterial = mapEntry.second.surfaceMatPtr;
           Ogre::Technique* technique = textureMaterial->getTechnique(0);
           Ogre::Pass* pass = technique->getPass(0);
           Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
@@ -583,7 +583,7 @@ namespace ape {
         varianceTarget = computeVariance(backgroundTexture, meanTarget);
 
         for (auto mapEntry : materials) {
-          Ogre::MaterialPtr textureMaterial = mapEntry.second.matPtr;
+          Ogre::MaterialPtr textureMaterial = mapEntry.second.surfaceMatPtr;
           Ogre::Technique* technique = textureMaterial->getTechnique(0);
           Ogre::Pass* pass = technique->getPass(0);
           Ogre::GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
@@ -728,8 +728,8 @@ namespace ape {
     std::string
     AppWindow::registerTexture(std::string name, cv::Mat texture) {
       auto textureName = nameGenerator.generate();
-      auto materialName= textureName+"_material";
-
+      auto surfaceMaterialName= textureName+"_surface_material";
+      auto buttonMaterialName = textureName + "_button_material";
       Ogre::TexturePtr ogreTexture = Ogre::TextureManager::getSingleton().createManual(
           textureName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
           Ogre::TEX_TYPE_2D, texture.cols, texture.rows, 0,
@@ -753,7 +753,7 @@ namespace ape {
       buffer->unlock();
 
       Ogre::MaterialPtr baseMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
-      Ogre::MaterialPtr material = baseMaterial->clone(materialName);
+      Ogre::MaterialPtr material = baseMaterial->clone(surfaceMaterialName);
       material->getTechnique(0)->getPass(0)->getTextureUnitState("DiffuseMap")->setTextureName(textureName);
       /*Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
           materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -761,16 +761,28 @@ namespace ape {
           ogreTexture->getName());*/
       material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
 
+      Ogre::MaterialPtr buttonMaterial = Ogre::MaterialManager::getSingleton().create(buttonMaterialName, "General");
+      buttonMaterial->getTechnique(0)->getPass(0)->createTextureUnitState(textureName);
+      buttonMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+      buttonMaterial->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
+
+
+
       InternalMaterial iMat;
-      iMat.matPtr=material;
+      iMat.buttonMatPtr = buttonMaterial;
+      iMat.surfaceMatPtr = material;
       iMat.texPtr=ogreTexture;
       materials[name]=iMat;
 
-      return materialName;
+      return surfaceMaterialName;
     }
 
-    Ogre::MaterialPtr AppWindow::getTextureName(const std::string surface) {
-      return materials[surface].matPtr;
+    Ogre::MaterialPtr AppWindow::getSurfaceMaterial(const std::string surface) {
+      return materials[surface].surfaceMatPtr;
+    }
+
+    Ogre::MaterialPtr AppWindow::getButtonMaterial(const std::string surface) {
+      return materials[surface].buttonMatPtr;
     }
 
     void AppWindow::castViewPortRay(glm::vec2 position) {
@@ -799,7 +811,7 @@ namespace ape {
     Ogre::Entity* AppWindow::loadModel(std::string modelFile) {
       Ogre::Entity* worldEntity = sceneMgr->createEntity("world",modelFile);
       worldEntity->addQueryFlags(WORLD_OBJECT);
-      worldEntity->setMaterial(materials["BaseWhite"].matPtr);
+      worldEntity->setMaterial(materials["BaseWhite"].surfaceMatPtr);
 
       //FIXME do not create & attach to node here
       Ogre::SceneNode* ogreNode = sceneMgr->getRootSceneNode()->createChildSceneNode();

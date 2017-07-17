@@ -84,7 +84,8 @@ namespace ape {
       Ogre::NameGenerator nameGenerator;
 
       struct InternalMaterial {
-        Ogre::MaterialPtr matPtr;
+        Ogre::MaterialPtr surfaceMatPtr;
+        Ogre::MaterialPtr buttonMatPtr;
         Ogre::TexturePtr texPtr;
       };
 
@@ -147,8 +148,8 @@ namespace ape {
 
       std::string registerTexture(std::string name, cv::Mat texture);
 
-      Ogre::MaterialPtr getTextureName(const std::string surface);
-
+      Ogre::MaterialPtr getSurfaceMaterial(const std::string surface);
+      Ogre::MaterialPtr getButtonMaterial(const std::string surface);
       //TODO the hit test should be triggered by a controller
       //and not be appWindow itself in any appState
       void enableHitTest(bool enabled);
