@@ -283,16 +283,16 @@ namespace ape {
       panel->setDimensions(300, 120);
 
       // Create a text area
-      Ogre::TextAreaOverlayElement* textArea = static_cast<Ogre::TextAreaOverlayElement*>(
+      textArea = static_cast<Ogre::TextAreaOverlayElement*>(
           overlayMgr.createOverlayElement("TextArea", "TextAreaName"));
       textArea->setMetricsMode(Ogre::GMM_PIXELS);
-      textArea->setPosition(0, 0);
+      textArea->setPosition(100, 0);
       textArea->setDimensions(300, 120);
       textArea->setCharHeight(26);
       // set the font name to the font resource that you just created.
       textArea->setFontName("MyFont");
       // say something
-      textArea->setCaption("Hello, ModelBasedWorld!");
+      textArea->setCaption("Color balancing enabled");
 
       // Create an overlay, and add the panel
       Ogre::Overlay* overlay = overlayMgr.create("OverlayName");
@@ -842,6 +842,18 @@ namespace ape {
 
     void AppWindow::closeWindow() {
       glfwSetWindowShouldClose(glfwWindow,GLFW_TRUE);
+    }
+
+    void AppWindow::setColorBalancing(bool enabled) {
+      computeColorBalancing=enabled;
+
+      textArea->setCaption(
+          std::string("Color balancing ")+
+              (computeColorBalancing?"enabled":"disabled"));
+    }
+
+    bool AppWindow::getColorBalancing() {
+      return computeColorBalancing;
     }
 
   }

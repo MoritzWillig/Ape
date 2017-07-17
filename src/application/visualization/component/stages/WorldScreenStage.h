@@ -23,6 +23,7 @@ namespace ape {
       shapes::Container overlay;
       std::shared_ptr<shapes::OgreButton> texSynthButton;
       std::shared_ptr<shapes::OgreButton> closeButton;
+      std::shared_ptr<shapes::OgreButton> colorBalancingButton;
 
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,

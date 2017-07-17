@@ -66,6 +66,8 @@ namespace ape {
       Ogre::Vector3 varianceInput;
       Ogre::Vector3 varianceTarget;
 
+      Ogre::TextAreaOverlayElement* textArea;
+
       //Flags
       bool computeColorBalancing;
 
@@ -157,6 +159,10 @@ namespace ape {
       Ogre::Entity* loadModel(std::string modelFile);
 
       void closeWindow();
+
+      bool getColorBalancing();
+
+      void setColorBalancing(bool enabled);
     };
 
   }

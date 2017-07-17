@@ -43,6 +43,16 @@ namespace ape {
       closeButton->updateOgreObject();
       overlay.childs.emplace_back(closeButton);
 
+      colorBalancingButton=std::make_shared<shapes::OgreButton>(
+          appWindow,
+          0.55, 0.99, 0.2, 0.2,
+          Ogre::ColourValue(1.0f,1.0f,1.0f));
+      colorBalancingButton->textureName.setValue("texSelect_ico");
+      colorBalancingButton->updateOgreObject();
+      overlay.childs.emplace_back(colorBalancingButton);
+
+
+
       setActive(false);
     }
 
@@ -86,6 +96,7 @@ namespace ape {
           break;
         case GLFW_KEY_S:
           surfaceSelectionStage.setActive(true);
+          break;
         case GLFW_KEY_ESCAPE:
           this->appWindow->closeWindow();
         default:
@@ -122,6 +133,10 @@ namespace ape {
 
         if (closeButton->hit(lastMousePosition)) {
           this->appWindow->closeWindow();
+        }
+
+        if (colorBalancingButton->hit(lastMousePosition)) {
+          appWindow->setColorBalancing(!appWindow->getColorBalancing());
         }
       }
     }
