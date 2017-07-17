@@ -8,13 +8,15 @@ namespace ape {
   namespace visualization {
 
     OGREVisualizationController::OGREVisualizationController(
+        imageProcessing::IImageProcessingController* ipController,
         imageProcessing::CameraStream* stream):
         appWindow(new AppWindow()), percent(0.0),
         surfaces(), surfaceNames(), ldcStage(appWindow),
         tssStage(appWindow,overlayChangeRequestHandler,
                  textureGenerationRequestHandler),
         ssStage(this, appWindow, surfaceSelectionHandler),
-        wsStage(appWindow, overlayChangeRequestHandler, ssStage, &surfaceNames),
+        wsStage(appWindow, ipController,
+                overlayChangeRequestHandler, ssStage, &surfaceNames),
         stream(stream), viewMatrix(), visualModelIdGenerator(), modelOgreLink(),
         modelSubOgreLink() {
       overlayChangeRequestHandler.setCallback(nullptr,nullptr);

@@ -109,7 +109,8 @@ int main(int argc, char** argv) {
 
   //setup visualization
   auto visController=
-      ape::visualization::IVisualizationController::createInstance(camStream);
+      ape::visualization::IVisualizationController::createInstance(
+          ipController.get(), camStream);
   visController->setProjectionMatrix(camMatrix);
 
   auto wsController=

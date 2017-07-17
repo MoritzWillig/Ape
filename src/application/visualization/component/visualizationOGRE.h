@@ -44,7 +44,10 @@ namespace ape {
     public:
       OGREVisualizationController() = delete;
 
-      OGREVisualizationController(imageProcessing::CameraStream* stream);
+      //TODO if we require the ipController we can get the stream from there
+      OGREVisualizationController(
+          imageProcessing::IImageProcessingController* ipController,
+          imageProcessing::CameraStream* stream);
 
       virtual void setOverlay(Overlay overlay, bool enable) override;
 

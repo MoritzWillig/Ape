@@ -28,6 +28,8 @@ namespace ape {
       LazyCameraStream* lazyCameraStream;
       bool cameraFrozen;
 
+      bool whiteBalanceEnabled;
+
       Signal searchedMarkerSignal;
       SignalOrDefault<bool> marker;
       SignalOrDefault<glm::mat4x4> transformation;
@@ -100,6 +102,8 @@ namespace ape {
           const cv::Rect regionOfInterest)  override;
 
       virtual cv::Mat createTile(int width, int height, cv::Mat source) override;
+
+      virtual void setWhiteBalance(bool enabled) override;
 
     };
 

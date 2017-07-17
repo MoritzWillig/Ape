@@ -4,6 +4,7 @@
 
 #include <imageProcessing/CameraStream.h>
 #include "glm/glm.hpp"
+#include "../../imageProcessing/component/imageProcessing.h"
 #include <worldState/Surface.h>
 #include <common/callbacks/CustomValueCallback.h>
 #include <visualization/VisualModel.h>
@@ -87,6 +88,7 @@ namespace ape {
 
 
       static std::shared_ptr<IVisualizationController> createInstance(
+          imageProcessing::IImageProcessingController* ipController,
           imageProcessing::CameraStream* stream
       );
     };

@@ -12,12 +12,14 @@ namespace ape {
 
     WorldScreenStage::WorldScreenStage(
         AppWindow* appWindow,
+        ape::imageProcessing::IImageProcessingController* ipController,
         CustomValueCallback<
             IVisualizationController::OverlayChangeRequestHandler,
             void*>& overlayChangeRequestHandler,
         SurfaceSelectionStage& surfaceSelectionStage,
         std::vector<std::string>* surfaceNames):
-        lastMousePosition(-1,-1), Stage(appWindow), overlay(), texSynthButton(),
+        Stage(appWindow), lastMousePosition(-1,-1), ipController(ipController),
+        overlay(), texSynthButton(),
         overlayChangeRequestHandler(overlayChangeRequestHandler),
         surfaceSelectionStage(surfaceSelectionStage),
         surfaceNames(surfaceNames) {
@@ -136,7 +138,9 @@ namespace ape {
         }
 
         if (colorBalancingButton->hit(lastMousePosition)) {
+          ipController->setWhiteBalance(!appWindow->getColorBalancing());
           appWindow->setColorBalancing(!appWindow->getColorBalancing());
+
         }
       }
     }
