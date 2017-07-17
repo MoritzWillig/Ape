@@ -698,7 +698,7 @@ namespace ape {
 
     void AppWindow::processMouseButtonEvent(int button, int action, int mods) {
       mouseButtonEventHandler.callExceptIfNotSet(button, action, mods);
-      if ((hitTestEnabled) && (action==GLFW_PRESS) && (button==GLFW_MOUSE_BUTTON_LEFT)) {
+      if ((hitTestEnabled) && (action==GLFW_RELEASE) && (button==GLFW_MOUSE_BUTTON_LEFT)) {
         castViewPortRay(glm::vec2(mousePosX, mousePosY));
       }
     }
