@@ -562,7 +562,7 @@ namespace ape {
           params->setNamedConstant("quotient", Ogre::Vector3(1, 1, 1));
         }
       }
-      else if (frameCounter % 2 == 0) {
+      else if (frameCounter % 10 == 0) {
         frameCounter = 0;
 
         for (auto mapEntry : materials) {

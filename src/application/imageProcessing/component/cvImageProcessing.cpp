@@ -269,7 +269,7 @@ namespace ape {
       TextureSynthesis textureSynthesis(
           source, width, height);
       //FIXME magic numbers, yay!
-      textureSynthesis.generateTexture(5,result);
+      textureSynthesis.generateTexture(15,result);
       return result;
     }
 
