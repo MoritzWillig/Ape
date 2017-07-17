@@ -80,8 +80,8 @@ namespace ape {
       bool hitTestEnabled;
 
       //FIXME magic numbers
-      int textureWidth = 640;
-      int textureHeight = 480;
+      int textureWidth = 1920;
+      int textureHeight = 1080;
       float coordAxesLength = 0.026;
 
       Ogre::NameGenerator nameGenerator;
