@@ -5,8 +5,6 @@
 namespace ape {
   namespace imageProcessing {
 
-    void equalizeHistogram(cv::Mat & image);
-
     // Performs automatic white balancing on the given image.
     //
     // Based on:

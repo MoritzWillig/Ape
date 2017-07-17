@@ -365,17 +365,6 @@ namespace ape {
       renderTexture->addListener(new RenderTargetListener(backgroundNode));
     }
 
-/*    void AppWindow::initInputHandler() {
-      Ogre::OIS
-      OIS::ParamList pl;
-      size_t windowHnd = 0;
-      std::ostringstream windowHndStr;
-      m_win->getCustomAttribute("WINDOW", &windowHnd);
-      windowHndStr << windowHnd;
-      pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
-      m_InputManager = OIS::InputManager::createInputSystem( pl );
-    }*/
-
     AppWindow::AppWindow() :
           root(nullptr), renderWindow(nullptr), glfwWindow(nullptr),
           sceneMgr(nullptr), mainCam(nullptr), vp(nullptr), rect(nullptr),
@@ -410,10 +399,15 @@ namespace ape {
       glfwTerminate();
     }
 
-    void RGBtoLAlphaBeta(Ogre::Image image) {
-      float oneOverRootTwo = 1 / sqrt(2);
-      float oneOverRootThree = 1 / sqrt(3);
-      float oneOverRootSix = 1 / sqrt(6);
+    //FIXME move to math defines.h
+    constexpr float m_1_sqrt_2 = 1.0f / std::sqrt(2.0f);
+    constexpr float m_1_sqrt_3 = 1.0f / std::sqrt(3.0f);
+    constexpr float m_1_sqrt_6 = 1.0f / std::sqrt(6.0f);
+    #define POW2(x) ((x)*(x))
+
+    // FIXME move to image conversion class
+    void RGBtoLAlphaBeta(Ogre::Image image)
+    {
       Ogre::PixelBox pixelBox = image.getPixelBox();
       Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
       for (size_t j = 0; j < image.getHeight(); j++) {
@@ -428,13 +422,9 @@ namespace ape {
           float M = 0.1967 * R + 1.1834 * G + 0.0782 * B;
           float S = 0.0241 * R + 0.1288 * G + 0.8444 * B;
 
-         // L = Ogre::Math::LogN(L, 10);
-          //M = Ogre::Math::LogN(M, 10);
-         // S = Ogre::Math::LogN(S, 10);
-
-          float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
-          float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
-          float beta = oneOverRootTwo * L - oneOverRootTwo * M;
+          float l     = m_1_sqrt_3 * L + m_1_sqrt_3 * M + m_1_sqrt_3 * S;
+          float alpha = m_1_sqrt_6 * L + m_1_sqrt_6 * M - 2 * m_1_sqrt_6 * S;
+          float beta  = m_1_sqrt_2 * L - m_1_sqrt_2 * M;
 
           data[index] = l;
           data[index + 1] = alpha;
@@ -443,11 +433,8 @@ namespace ape {
       }
     }
 
-    void RGBtoLAlphaBeta(Ogre::ColourValue& color) {
-      float oneOverRootTwo = 0.70710678118; // 1 / sqrt(2);
-      float oneOverRootThree = 0.57735026919; //1 / sqrt(3);
-      float oneOverRootSix = 0.40824829046; // 1 / sqrt(6);
-
+    void RGBtoLAlphaBeta(Ogre::ColourValue& color)
+    {
       float L = 0.3811 * color.r + 0.5783 * color.g + 0.0402 * color.b;
       float M = 0.1967 * color.r + 0.7244 * color.g + 0.0782 * color.b;
       float S = 0.0241 * color.r + 0.1288 * color.g + 0.8444 * color.b;
@@ -464,23 +451,20 @@ namespace ape {
       M = std::log(M);
       S = std::log(S);
 
-      float l = oneOverRootThree * L + oneOverRootThree * M + oneOverRootThree * S;
-      float alpha = oneOverRootSix * L + oneOverRootSix * M - 2 * oneOverRootSix * S;
-      float beta = oneOverRootTwo * L - oneOverRootTwo * M;
+      float l     = m_1_sqrt_3 * L + m_1_sqrt_3 * M + m_1_sqrt_3 * S;
+      float alpha = m_1_sqrt_6 * L + m_1_sqrt_6 * M - 2 * m_1_sqrt_6 * S;
+      float beta  = m_1_sqrt_2 * L - m_1_sqrt_2 * M;
 
       color.r = l;
       color.g = alpha;
       color.b = beta;
     }
 
-    void LAlphaBetaToRGB(Ogre::ColourValue& color) {
-      float rootTwoOverTwo = 0.70710678118; //sqrt(2) / 2;
-      float rootThreeOverThree = 0.57735026919; // sqrt(3) / 3;
-      float rootSixOverSix = 0.40824829046; // sqrt(6) / 6;
-
-      float L = rootThreeOverThree * color.r + rootSixOverSix * color.g + rootTwoOverTwo * color.b;
-      float M = rootThreeOverThree * color.r + rootSixOverSix * color.g - rootTwoOverTwo * color.b;
-      float S = rootThreeOverThree * color.r - 2 * rootSixOverSix * color.g;
+    void LAlphaBetaToRGB(Ogre::ColourValue& color)
+    {
+      float L = m_1_sqrt_3 * color.r + m_1_sqrt_6 * color.g + m_1_sqrt_2 * color.b;
+      float M = m_1_sqrt_3 * color.r + m_1_sqrt_6 * color.g - m_1_sqrt_2 * color.b;
+      float S = m_1_sqrt_3 * color.r - 2 * m_1_sqrt_6 * color.g;
 
       L = std::exp(L);
       M = std::exp(M);
@@ -497,70 +481,74 @@ namespace ape {
 
     int frameCounter = 0;
 
-    Ogre::Vector3 computeMean(Ogre::TexturePtr texture) {
+    Ogre::Vector3 computeMean(Ogre::TexturePtr texture)
+    {
       Ogre::Vector3 meanVec(0,0,0);
       size_t width = texture->getWidth();
       size_t height = texture->getHeight();
       Ogre::Image::Box imageBox;
       Ogre::HardwarePixelBufferSharedPtr returnBuffer = texture->getBuffer();
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
-      Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
+      Ogre::uint8 * pixels = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      size_t pixelCounter = 0;
+      size_t count = 0;
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
           std::size_t index = 4*(width*j + i);
 
-          if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
+          if (pixels[index] == 0 && pixels[index + 1] == 255
+            && pixels[index + 2] == 0) {
             continue;
           }
-          Ogre::ColourValue color((float)returnData[index + 2] / 255.0f, (float)returnData[index + 1] / 255.0f, (float)returnData[index] / 255.0f);
+          Ogre::ColourValue color((float)pixels[index + 2] / 255.0f,
+            (float)pixels[index + 1] / 255.0f, (float)pixels[index] / 255.0f);
           RGBtoLAlphaBeta(color);
           meanVec[2] += color.b; //blue
           meanVec[1] += color.g; //green
           meanVec[0] += color.r; //red
-          pixelCounter++;
+          count++;
         }
       }
       returnBuffer->unlock();
-      meanVec[0] = meanVec[0] / pixelCounter;
-      meanVec[1] = meanVec[1] / pixelCounter;
-      meanVec[2] = meanVec[2] / pixelCounter;
+      meanVec[0] = meanVec[0] / count;
+      meanVec[1] = meanVec[1] / count;
+      meanVec[2] = meanVec[2] / count;
       return meanVec;
-    };
+    }
 
-#define POW2(x) ((x)*(x))
-
-    Ogre::Vector3 computeVariance(Ogre::TexturePtr texture, Ogre::Vector3 mean) {
-      Ogre::Vector3 varianceVec(0, 0, 0);
+    Ogre::Vector3 computeVariance(Ogre::TexturePtr texture, Ogre::Vector3 mean)
+    {
+      Ogre::Vector3 variance(0, 0, 0);
       size_t width = texture->getWidth();
       size_t height = texture->getHeight();
       Ogre::Image::Box imageBox;
       Ogre::HardwarePixelBufferSharedPtr returnBuffer = texture->getBuffer();
       const Ogre::PixelBox& returnBufferPixelBox = returnBuffer->lock(imageBox, Ogre::HardwareBuffer::HBL_NORMAL);
-      Ogre::uint8 * returnData = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
+      Ogre::uint8 * pixels = static_cast<Ogre::uint8*>(returnBufferPixelBox.data);
 
-      size_t pixelCounter = 0;
+      size_t count = 0;
       for (size_t j = 0; j < height; j++) {
         for (size_t i = 0; i < width; i++) {
             std::size_t index = 4 * (width*j + i);
-            if (returnData[index] == 0 && returnData[index + 1] == 255 && returnData[index + 2] == 0) {
+            if (pixels[index] == 0 && pixels[index + 1] == 255
+              && pixels[index + 2] == 0) {
               continue;
             }
-            Ogre::ColourValue color((float)returnData[index + 2], (float)returnData[index + 1], (float)returnData[index]);
+            Ogre::ColourValue color((float)pixels[index + 2],
+              (float)pixels[index + 1], (float)pixels[index]);
             RGBtoLAlphaBeta(color);
-            varianceVec[2] += POW2((color.b - mean[2])); //blue
-            varianceVec[1] += POW2((color.g - mean[1])); //green
-            varianceVec[0] += POW2((color.r - mean[0])); //red
-            pixelCounter++;
+            variance[2] += POW2((color.b - mean[2])); //blue
+            variance[1] += POW2((color.g - mean[1])); //green
+            variance[0] += POW2((color.r - mean[0])); //red
+            count++;
         }
       }
       returnBuffer->unlock();
-      varianceVec[0] = std::sqrt(varianceVec[0] / pixelCounter);
-      varianceVec[1] = std::sqrt(varianceVec[1] / pixelCounter);
-      varianceVec[2] = std::sqrt(varianceVec[2] / pixelCounter);
-      return varianceVec;
-    };
+      variance[0] = std::sqrt(variance[0] / count);
+      variance[1] = std::sqrt(variance[1] / count);
+      variance[2] = std::sqrt(variance[2] / count);
+      return variance;
+    }
 
     void AppWindow::computeColorBalancingParameter() {
       if (!computeColorBalancing) {
@@ -625,7 +613,7 @@ namespace ape {
           Ogre::HardwareBuffer::HBL_NORMAL); // for best performance use HBL_DISCARD!
       const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
-      //* FIXME check functionality of above and remove this
+      // FIXME check functionality of above and remove this
       unsigned char* pDest = static_cast<unsigned char*>(pixelBox.data);
       unsigned char* frameData=frame.data;
 
@@ -638,32 +626,25 @@ namespace ape {
           *pDest++ = frameData[3 * (width * j + i) + 1]; // G
           *pDest++ = frameData[3 * (width * j + i) + 2]; // R
           *pDest++ = 127; //A
-
-          /*pDest++ = frameData[0]; frameData++;
-          *pDest++ = frameData[0]; frameData++;
-          *pDest++ = frameData[0]; frameData++;
-          *pDest++=127;*/
         }
 
         pDest += pixelBox.getRowSkip() *
                  Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
 
-      }//*/
-
-      // Unlock the pixel buffer
+      }
       pixelBuffer->unlock();
     }
 
-    void AppWindow::update(
-        float timeStep, imageProcessing::CameraStream* stream,
-        const glm::mat4x4& viewMatrix) {
+    void AppWindow::update(float timeStep, imageProcessing::CameraStream* stream,
+      const glm::mat4x4& viewMatrix)
+    {
       glfwPollEvents();
 
-      //const float* vmPtr = glm::value_ptr(viewMatrix);
-      Ogre::Matrix4 matrix = Ogre::Matrix4(viewMatrix[0][0], viewMatrix[0][1], viewMatrix[0][2], viewMatrix[0][3],
-                                           viewMatrix[1][0], viewMatrix[1][1], viewMatrix[1][2], viewMatrix[1][3],
-                                           viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2], viewMatrix[2][3],
-                                           viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2], viewMatrix[3][3]);
+      Ogre::Matrix4 matrix = Ogre::Matrix4(
+        viewMatrix[0][0], viewMatrix[0][1], viewMatrix[0][2], viewMatrix[0][3],
+        viewMatrix[1][0], viewMatrix[1][1], viewMatrix[1][2], viewMatrix[1][3],
+        viewMatrix[2][0], viewMatrix[2][1], viewMatrix[2][2], viewMatrix[2][3],
+        viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2], viewMatrix[3][3]);
       mainCam->setCustomViewMatrix(true, matrix);
 
       updateBackgroundTexture(
@@ -673,13 +654,11 @@ namespace ape {
       root->renderOneFrame(timeStep);
       renderWindow->update(true);
 
-      //we need this ...
       Ogre::WindowEventUtilities::messagePump();
     }
 
     bool AppWindow::isClosed() {
       return (glfwWindowShouldClose(glfwWindow)==GLFW_TRUE);
-      //return renderWindow->isClosed();
     }
 
     Ogre::SceneManager* AppWindow::getSceneMgr() {
@@ -691,9 +670,9 @@ namespace ape {
     }
 
     void AppWindow::setWindowHint(std::string hint) {
-      auto title=std::string("Ape!")+
-                 std::string((hint=="")?"":" - ")+
-                 hint;
+      auto title = std::string("Ape!")+
+                   std::string((hint=="")?"":" - ")+
+                   hint;
       glfwSetWindowTitle(glfwWindow,title.c_str());
     }
 
@@ -701,8 +680,9 @@ namespace ape {
       supplTextArea->setCaption(info);
     }
 
-    void
-    AppWindow::processKeyEvent(int key, int scancode, int action, int mods) {
+    void AppWindow::processKeyEvent(int key, int scancode, int action,
+      int mods)
+    {
       keyEventHandler.callExceptIfNotSet(key,scancode,action,mods);
     }
 
@@ -772,18 +752,12 @@ namespace ape {
       Ogre::MaterialPtr baseMaterial = Ogre::MaterialManager::getSingleton().getByName("TextureColorBalance");
       Ogre::MaterialPtr material = baseMaterial->clone(surfaceMaterialName);
       material->getTechnique(0)->getPass(0)->getTextureUnitState("DiffuseMap")->setTextureName(textureName);
-      /*Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
-          materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-      material->getTechnique(0)->getPass(0)->createTextureUnitState(
-          ogreTexture->getName());*/
       material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
 
       Ogre::MaterialPtr buttonMaterial = Ogre::MaterialManager::getSingleton().create(buttonMaterialName, "General");
       buttonMaterial->getTechnique(0)->getPass(0)->createTextureUnitState(textureName);
       buttonMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);
       buttonMaterial->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CullingMode::CULL_NONE);
-
-
 
       InternalMaterial iMat;
       iMat.buttonMatPtr = buttonMaterial;
@@ -814,7 +788,8 @@ namespace ape {
           mouseRay, WORLD_OBJECT, resultVec, &resultObj, subIndex);
 
       if (found) {
-        Ogre::Entity* entity = static_cast<Ogre::Entity*>(resultObj->getParentSceneNode()->getAttachedObject(0));
+        Ogre::Entity* entity = static_cast<Ogre::Entity*>(
+          resultObj->getParentSceneNode()->getAttachedObject(0));
         entitySelectionEventHandler.callExceptIfNotSet(entity,subIndex);
       } else {
         entitySelectionEventHandler.callExceptIfNotSet(nullptr,-1);

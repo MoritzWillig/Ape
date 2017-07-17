@@ -13,7 +13,6 @@ namespace ape {
 
 }
 
-
 // FIXME: Refactor this to be in the same file as the function which reads
 // in the parameters
 int saveCameraIntrinsics(std::string filename, cv::Size imageSize,
@@ -58,14 +57,12 @@ int main(int argc, char** argv) {
     8, 5, 1.0f, 0.8f, dictionary);
 
 #if 0
-
   cv::Size boardSize(1920, 1080);
   cv::Mat boardImage;
   board->draw(boardSize, boardImage);
 
   cv::imwrite("/tmp/board.jpg", boardImage);
 #endif
-
 
   std::vector<std::vector<std::vector<cv::Point2f>>> allCorners;
   std::vector<std::vector<int>> allIds;

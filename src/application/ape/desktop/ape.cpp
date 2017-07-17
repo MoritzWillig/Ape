@@ -48,10 +48,9 @@ struct Conf {
 };
 
 struct DistCoeffs {
-	float coeffs[5];
+  float coeffs[5];
 };
 
-//FIXME move to helper class
 static void readCameraParameters(
   std::string filename, glm::mat3x3& camMatrix, DistCoeffs& distCoeffs) {
   std::ifstream fs(filename);
@@ -99,7 +98,6 @@ int main(int argc, char** argv) {
   //setup image processing
   glm::mat3x3 camMatrix;
   DistCoeffs distCoeffs;
-  //FIXME magic string
   readCameraParameters(conf.intrinsics, camMatrix, distCoeffs);
 
   auto ipController=

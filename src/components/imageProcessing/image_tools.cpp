@@ -8,17 +8,6 @@
 namespace ape {
   namespace imageProcessing {
 
-    void equalizeHistogram(cv::Mat & image) {
-      cv::cvtColor(image, image, CV_BGR2YCrCb);
-      cv::Mat channels[3];
-      cv::split(image, channels);
-
-      cv::equalizeHist(channels[0], channels[0]);
-      cv::merge(channels, 3, image);
-
-      cv::cvtColor(image, image, CV_YCrCb2BGR);
-    }
-
 #define CH_B 0
 #define CH_G 1
 #define CH_R 2
@@ -36,7 +25,6 @@ namespace ape {
         else if (x < 0.0f) return -1.0f;
         else return 0.0f;
       };
-
       auto K = [&] (float x) -> float {
           if (std::abs(x) >= THRES_A)
               return 2.0f * sign(x);
@@ -161,7 +149,6 @@ namespace ape {
           << " gains: " << gains << std::endl;
       } // end iteration
     }
-
 
   } // namespace end
 } // namespace end
