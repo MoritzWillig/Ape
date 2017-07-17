@@ -11,6 +11,7 @@ namespace ape {
         glm::vec2 position;
         glm::vec2 size;
       protected:
+        void generateShape();
       public:
         //Default
         OgreButton() = default;
@@ -39,6 +40,12 @@ namespace ape {
         virtual ~OgreButton() = default;
 
         bool hit(glm::vec2 position);
+
+        void setPosition(glm::vec2 position);
+
+        void setSize(glm::vec2 size);
+
+        virtual void updateOgreObject() override;
       };
 
     }

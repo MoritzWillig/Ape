@@ -18,8 +18,8 @@ namespace ape {
         CustomValueCallback<
             IVisualizationController::TextureGenerationRequestHandler,
             void*>& textureGenerationRequestHandler):
-        Stage(appWindow), overlay(), abortButton(),
-        overlayChangeRequestHandler(overlayChangeRequestHandler),
+        Stage(appWindow), overlay(), abortButton(), selectionButton(),
+        okButton(), overlayChangeRequestHandler(overlayChangeRequestHandler),
         textureGenerationRequestHandler(textureGenerationRequestHandler),
         vertex1(), vertex2(), lastMousePosition(), generationFinishedHandler(),
         selectionState(SelectionState::CapturingP1) {
@@ -34,8 +34,32 @@ namespace ape {
       );
       abortButton->textureName.setValue("close_ico");
       abortButton->updateOgreObject();
-
       overlay.childs.push_back(abortButton);
+
+      okButton=std::make_shared<ape::visualization::shapes::OgreButton>(
+          appWindow,
+          0.79,
+          -0.79,
+          0.2,
+          0.2,
+          Ogre::ColourValue(1.0,1.0,1.0,1.0f)
+      );
+      okButton->textureName.setValue("texSelect_ico");
+      okButton->updateOgreObject();
+      overlay.childs.push_back(okButton);
+
+      selectionButton=std::make_shared<ape::visualization::shapes::OgreButton>(
+          appWindow,
+          -0.25,
+          0.25,
+          0.5,
+          0.5,
+          Ogre::ColourValue(0.5,0.5,0.8,0.2f)
+      );
+      //selectionButton->textureName.setValue("selectionLayoutMaterial");
+      overlay.childs.push_back(selectionButton);
+
+
       setActive(false);
     }
 
@@ -46,9 +70,9 @@ namespace ape {
         vertex1.reset();
         vertex2.reset();
         selectionState = SelectionState::CapturingP1;
-        performStateTransition(SelectionState::CapturingP1);
 
         overlay.setVisible(true);
+        performStateTransition(SelectionState::CapturingP1);
       } else {
         overlay.setVisible(false);
       }
@@ -74,6 +98,8 @@ namespace ape {
       //add new state elements
       switch (selectionState) {
         case SelectionState::CapturingP1:
+          selectionButton->setVisible(false);
+          selectionButton->updateOgreObject();
           std::cout<<"Click to select first edge"<<std::endl;
           break;
         case SelectionState::CapturingP2:
@@ -109,6 +135,7 @@ namespace ape {
         }
           break;
         case SelectionState::Confirmation:
+          selectionButton->setVisible(false);
           std::cout<<"Generation successful. Press any key to proceed"<<std::endl;
           //FIXME show result - "name" field + "ok"/"_abort" button
           break;
@@ -167,6 +194,24 @@ namespace ape {
 
       lastMousePosition.x=(float)x;
       lastMousePosition.y=(float)y;
+
+      if (selectionState==SelectionState::CapturingP2) {
+        auto v1=vertex1.getValue();
+        glm::vec2 lowerVec;
+        lowerVec.x=std::min(lastMousePosition.x,v1.x);
+        lowerVec.y=std::max(lastMousePosition.y,v1.y);
+        glm::vec2 upperVec;
+        lowerVec.x=std::max(lastMousePosition.x,v1.x);
+        lowerVec.y=std::min(lastMousePosition.y,v1.y);
+
+
+        glm::vec2 size=upperVec-lowerVec;
+
+        selectionButton->setPosition(lowerVec);
+        selectionButton->setSize(size);
+        selectionButton->updateOgreObject();
+      }
+
     }
 
     void TextureSynthesisSelectionStage::processMouseButtonEvent(int button,
@@ -203,12 +248,21 @@ namespace ape {
         case SelectionState::Waiting:
           //wait for the user to edit the vectors (not implemented yet)
           //or to press enter
+          if ((button==GLFW_MOUSE_BUTTON_LEFT) && (action==GLFW_RELEASE)) {
+            if ((okButton->isVisible()) && okButton->hit(lastMousePosition)) {
+              performStateTransition(SelectionState::Generating);
+            }
+          }
           break;
         case SelectionState::Generating:
           //this stage can not be canceled by user input ...
           break;
         case SelectionState::Confirmation:
           //FIXME not implemented
+          if ((okButton->isVisible()) && okButton->hit(lastMousePosition)) {
+            overlayChangeRequestHandler.callExceptIfNotSet(
+                IVisualizationController::Overlay::WorldScreen);
+          }
           break;
       }
     }

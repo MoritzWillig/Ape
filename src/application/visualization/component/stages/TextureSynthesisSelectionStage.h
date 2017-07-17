@@ -22,6 +22,8 @@ namespace ape {
     private:
       shapes::Container overlay;
       std::shared_ptr<ape::visualization::shapes::OgreButton> abortButton;
+      std::shared_ptr<ape::visualization::shapes::OgreButton> selectionButton;
+      std::shared_ptr<ape::visualization::shapes::OgreButton> okButton;
 
       CustomValueCallback<
           IVisualizationController::OverlayChangeRequestHandler,
