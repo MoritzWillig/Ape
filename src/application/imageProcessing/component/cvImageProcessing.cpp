@@ -26,6 +26,7 @@ namespace ape {
           glm::mat3x3 cameraIntrinsics,
           float* distCoeffs) :
         cvCameraStream(nullptr), lazyCameraStream(nullptr), cameraFrozen(false),
+        whiteBalanceEnabled(false),
         searchedMarkerSignal(), marker(&searchedMarkerSignal),
         transformation(&searchedMarkerSignal),
         //FIXME magic numbers
@@ -265,12 +266,18 @@ namespace ape {
                                                     cv::Mat source) {
       cv::Mat result;
 
-      robustAWB(source);
+      if (whiteBalanceEnabled) {
+        robustAWB(source);
+      }
       TextureSynthesis textureSynthesis(
           source, width, height);
       //FIXME magic numbers, yay!
       textureSynthesis.generateTexture(5,result);
       return result;
+    }
+
+    void CvImageProcessingController::setWhiteBalance(bool enabled) {
+      whiteBalanceEnabled=enabled;
     }
 
   }

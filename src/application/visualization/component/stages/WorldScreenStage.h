@@ -12,6 +12,7 @@
 #include "Stage.h"
 #include "../visualization.h"
 #include "SurfaceSelectionStage.h"
+#include "../../../imageProcessing/component/imageProcessing.h"
 
 namespace ape {
   namespace visualization {
@@ -19,6 +20,8 @@ namespace ape {
     class WorldScreenStage: public Stage {
     private:
       glm::vec2 lastMousePosition;
+
+      ape::imageProcessing::IImageProcessingController* ipController;
 
       shapes::Container overlay;
       std::shared_ptr<shapes::OgreButton> texSynthButton;
@@ -39,6 +42,7 @@ namespace ape {
 
       WorldScreenStage(
           AppWindow* appWindow,
+          ape::imageProcessing::IImageProcessingController* ipController,
           CustomValueCallback<
               IVisualizationController::OverlayChangeRequestHandler,
               void*>& overlayChangeRequestHandler,

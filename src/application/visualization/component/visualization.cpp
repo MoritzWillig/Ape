@@ -12,9 +12,10 @@ namespace ape {
     }
 
     std::shared_ptr<IVisualizationController> IVisualizationController::createInstance(
+        imageProcessing::IImageProcessingController* ipController,
         imageProcessing::CameraStream* stream
     ) {
-      return std::make_shared<OGREVisualizationController>(stream);
+      return std::make_shared<OGREVisualizationController>(ipController, stream);
     }
 
   }

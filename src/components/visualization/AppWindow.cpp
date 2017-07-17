@@ -292,7 +292,7 @@ namespace ape {
       // set the font name to the font resource that you just created.
       textArea->setFontName("MyFont");
       // say something
-      textArea->setCaption("Color balancing enabled");
+      textArea->setCaption("Color balancing disabled");
 
       // Create an overlay, and add the panel
       Ogre::Overlay* overlay = overlayMgr.create("OverlayName");

@@ -60,6 +60,8 @@ namespace ape {
           glm::mat3x3 cameraIntrinsics,
           float* distCoeffs
       );
+
+      virtual void setWhiteBalance(bool enabled) = 0;
     };
 
   }

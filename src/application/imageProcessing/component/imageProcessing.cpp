@@ -16,6 +16,5 @@ namespace ape {
           cameraIntrinsics, distCoeffs
       );
     }
-
   }
 }
