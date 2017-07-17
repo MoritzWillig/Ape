@@ -201,11 +201,13 @@ namespace ape {
         lowerVec.x=std::min(lastMousePosition.x,v1.x);
         lowerVec.y=std::max(lastMousePosition.y,v1.y);
         glm::vec2 upperVec;
-        lowerVec.x=std::max(lastMousePosition.x,v1.x);
-        lowerVec.y=std::min(lastMousePosition.y,v1.y);
+        upperVec.x=std::max(lastMousePosition.x,v1.x);
+        upperVec.y=std::min(lastMousePosition.y,v1.y);
 
-
-        glm::vec2 size=upperVec-lowerVec;
+        glm::vec2 size=glm::vec2(
+            upperVec.x-lowerVec.x,
+            lowerVec.y-upperVec.y
+        );
 
         selectionButton->setPosition(lowerVec);
         selectionButton->setSize(size);
