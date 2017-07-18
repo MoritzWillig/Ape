@@ -3,7 +3,8 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 
-#include "image_tools.h"
+#include "imageTools.h"
+#include "colorSpaces.h"
 
 namespace ape {
   namespace imageProcessing {
@@ -57,25 +58,10 @@ namespace ape {
 #ifdef DEBUG_GREY_PIXELS
         cv::Mat grays(image.rows, image.cols, CV_8UC3);
 #endif
-        // convert image to float
-        cv::Mat imageFloat;
-        image.convertTo(imageFloat, CV_32FC3);
 
         // convert to YUV
-        cv::Mat yuvImage(image.rows, image.cols, CV_32FC3);
-        for (int y = 0; y < image.rows; ++y) {
-          for (int x = 0; x < image.cols; ++x) {
-
-              unsigned char b = image.at<cv::Vec3b>(y, x)[0];
-              unsigned char g = image.at<cv::Vec3b>(y, x)[1];
-              unsigned char r = image.at<cv::Vec3b>(y, x)[2];
-              cv::Vec3f & yuv = yuvImage.at<cv::Vec3f>(y, x);
-
-              yuv[0] =  0.299f*r + 0.587f*g + 0.114f*b;
-              yuv[1] = -0.299f*r - 0.587f*g + 0.886f*b;
-              yuv[2] =  0.701f*r - 0.587f*g - 0.114f*b;
-          }
-        }
+        cv::Mat yuvImage;
+        colorSpaces::BGR2YUV(image, yuvImage);
 
         // estimate illumination: find grey points in the image which satisfy
         // (|U| + |V|) / Y < T

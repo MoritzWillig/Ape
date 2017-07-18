@@ -4,6 +4,8 @@
 
 #include "AppWindow.h"
 
+#include "math_defines.h"
+
 #include <OGRE/Ogre.h>
 #include <OGRE/OgreFontManager.h>
 #include <OGRE/OgreTextAreaOverlayElement.h>
@@ -399,86 +401,6 @@ namespace ape {
       glfwTerminate();
     }
 
-    //FIXME move to math defines.h
-    constexpr float m_1_sqrt_2 = 1.0f / std::sqrt(2.0f);
-    constexpr float m_1_sqrt_3 = 1.0f / std::sqrt(3.0f);
-    constexpr float m_1_sqrt_6 = 1.0f / std::sqrt(6.0f);
-    #define POW2(x) ((x)*(x))
-
-    // FIXME move to image conversion class
-    void RGBtoLAlphaBeta(Ogre::Image image)
-    {
-      Ogre::PixelBox pixelBox = image.getPixelBox();
-      Ogre::uint8 * data = static_cast<Ogre::uint8*>(pixelBox.data);
-      for (size_t j = 0; j < image.getHeight(); j++) {
-        for (size_t i = 0; i < image.getWidth(); i++) {
-          std::size_t index = 4 * (image.getWidth()*j + i);
-
-          float B = (float)data[index]; //blue
-          float G = (float)data[index + 1]; //green
-          float R = (float)data[index + 2]; //red
-
-          float L = 0.3811 * R + 0.5783 * G + 0.0402 * B;
-          float M = 0.1967 * R + 1.1834 * G + 0.0782 * B;
-          float S = 0.0241 * R + 0.1288 * G + 0.8444 * B;
-
-          float l     = m_1_sqrt_3 * L + m_1_sqrt_3 * M + m_1_sqrt_3 * S;
-          float alpha = m_1_sqrt_6 * L + m_1_sqrt_6 * M - 2 * m_1_sqrt_6 * S;
-          float beta  = m_1_sqrt_2 * L - m_1_sqrt_2 * M;
-
-          data[index] = l;
-          data[index + 1] = alpha;
-          data[index + 2] = beta;
-        }
-      }
-    }
-
-    void RGBtoLAlphaBeta(Ogre::ColourValue& color)
-    {
-      float L = 0.3811 * color.r + 0.5783 * color.g + 0.0402 * color.b;
-      float M = 0.1967 * color.r + 0.7244 * color.g + 0.0782 * color.b;
-      float S = 0.0241 * color.r + 0.1288 * color.g + 0.8444 * color.b;
-
-      // Workaround to fix undefined log of 0
-      if (L == 0)
-        L = 1 / 255.f;
-      if (M == 0)
-        M = 1 / 255.f;
-      if (S == 0)
-        S = 1 / 255.f;
-
-      L = std::log(L);
-      M = std::log(M);
-      S = std::log(S);
-
-      float l     = m_1_sqrt_3 * L + m_1_sqrt_3 * M + m_1_sqrt_3 * S;
-      float alpha = m_1_sqrt_6 * L + m_1_sqrt_6 * M - 2 * m_1_sqrt_6 * S;
-      float beta  = m_1_sqrt_2 * L - m_1_sqrt_2 * M;
-
-      color.r = l;
-      color.g = alpha;
-      color.b = beta;
-    }
-
-    void LAlphaBetaToRGB(Ogre::ColourValue& color)
-    {
-      float L = m_1_sqrt_3 * color.r + m_1_sqrt_6 * color.g + m_1_sqrt_2 * color.b;
-      float M = m_1_sqrt_3 * color.r + m_1_sqrt_6 * color.g - m_1_sqrt_2 * color.b;
-      float S = m_1_sqrt_3 * color.r - 2 * m_1_sqrt_6 * color.g;
-
-      L = std::exp(L);
-      M = std::exp(M);
-      S = std::exp(S);
-
-      float R =  4.4679 * L - 3.5873 * M + 0.1193 * S;
-      float G = -1.2186 * L + 2.3809 * M - 0.1624 * S;
-      float B =  0.0497 * L - 0.2439 * M + 1.2045 * S;
-
-      color.r = R;
-      color.g = G;
-      color.b = B;
-    }
-
     int frameCounter = 0;
 
     Ogre::Vector3 computeMean(Ogre::TexturePtr texture)
@@ -500,12 +422,16 @@ namespace ape {
             && pixels[index + 2] == 0) {
             continue;
           }
-          Ogre::ColourValue color((float)pixels[index + 2] / 255.0f,
-            (float)pixels[index + 1] / 255.0f, (float)pixels[index] / 255.0f);
-          RGBtoLAlphaBeta(color);
-          meanVec[2] += color.b; //blue
-          meanVec[1] += color.g; //green
-          meanVec[0] += color.r; //red
+
+          ape::imageProcessing::colorSpaces::RGB rgb(
+            (float)pixels[index] / 255.0f,
+            (float)pixels[index + 1] / 255.0f,
+            (float)pixels[index + 2] / 255.0f);
+          ape::imageProcessing::colorSpaces::LAB lab = rgb.toLAB();
+
+          meanVec[0] += lab.l;
+          meanVec[1] += lab.a;
+          meanVec[2] += lab.b;
           count++;
         }
       }
@@ -534,12 +460,16 @@ namespace ape {
               && pixels[index + 2] == 0) {
               continue;
             }
-            Ogre::ColourValue color((float)pixels[index + 2],
-              (float)pixels[index + 1], (float)pixels[index]);
-            RGBtoLAlphaBeta(color);
-            variance[2] += POW2((color.b - mean[2])); //blue
-            variance[1] += POW2((color.g - mean[1])); //green
-            variance[0] += POW2((color.r - mean[0])); //red
+
+            ape::imageProcessing::colorSpaces::RGB rgb(
+              (float)pixels[index] / 255.0f,
+              (float)pixels[index + 1] / 255.0f,
+              (float)pixels[index + 2] / 255.0f);
+            ape::imageProcessing::colorSpaces::LAB lab = rgb.toLAB();
+
+            variance[0] += POW2((lab.l - mean[0]));
+            variance[1] += POW2((lab.a - mean[1]));
+            variance[2] += POW2((lab.b - mean[2]));
             count++;
         }
       }
