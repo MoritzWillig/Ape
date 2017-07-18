@@ -10,6 +10,8 @@
 #include <glm/mat4x4.hpp>
 #include <opencv2/core/mat.hpp>
 
+#include "../application/imageProcessing/component/colorSpaces.h"
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

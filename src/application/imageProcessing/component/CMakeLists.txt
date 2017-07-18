@@ -30,6 +30,8 @@ set(APE_IMAGEPROCESSING_COMPONENT_SOURCES
         imageProcessing.cpp
         cvImageProcessing.cpp
         ProcessingContextImplementation.cpp
+        colorSpaces.cpp
+        imageTools.cpp
         )
 
 add_library(apeImageProcessing OBJECT ${APE_IMAGEPROCESSING_COMPONENT_SOURCES} ${HEADER1} ${HEADER2})

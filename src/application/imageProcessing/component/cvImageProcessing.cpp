@@ -14,8 +14,8 @@
 #include <algorithm>
 #include <opencv2/imgproc.hpp>
 #include <textureSynthesis/TextureSynthesis.h>
-#include <image_tools.h>
 
+#include "imageTools.h"
 #include "smoothing/MeanSmoother.h"
 
 
@@ -48,8 +48,8 @@ namespace ape {
       setProcessingContext(ProcessingContext::Context::Stream);
       detectorParams->adaptiveThreshWinSizeMax = 50;
       detectorParams->adaptiveThreshWinSizeStep = 5;
-      detectorParams->doCornerRefinement = true;
-      //detectorParams->cornerRefinementMethod = true;
+      //detectorParams->doCornerRefinement = true;
+      detectorParams->cornerRefinementMethod = true;
       detectorParams->cornerRefinementMaxIterations = 60;
       detectorParams->cornerRefinementMinAccuracy = 0.01;
     }
